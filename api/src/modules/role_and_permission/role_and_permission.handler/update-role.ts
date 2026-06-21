@@ -1,0 +1,25 @@
+import { AppEnv } from '@artisancode/types'
+import { Context } from 'hono'
+
+import { responseSuccess } from '@/common/rest_response'
+import { getUserContext } from '@/common/store/user-context'
+import { IRoleAndPermissionUsecase } from '@/contracts/role_and_permission.contract'
+import * as Entity from '@/entities/role.entity'
+
+export function updateRoleHandler(usecase: IRoleAndPermissionUsecase) {
+  return async (c: Context<AppEnv>) => {
+    const id = c.req.param('id') ?? ''
+    const user = getUserContext()
+    const companyId = user?.company_id || ''
+    const body = c.get('body')
+
+    const payload = { ...body, id } as Entity.UpdateRoleReq
+
+    if (companyId) {
+      payload.company_id = companyId
+    }
+
+    const data = await usecase.updateRole(payload)
+    return c.json(responseSuccess(data, 'Role updated successfully'))
+  }
+}

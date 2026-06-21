@@ -1,0 +1,29 @@
+import { withSpan } from '@artisancode/observability'
+import { AppEnv } from '@artisancode/types'
+import { Context } from 'hono'
+
+import { responseSuccess } from '@/common/rest_response'
+import { getUserContext } from '@/common/store/user-context'
+import { IInvoiceUsecase } from '@/contracts/invoice.contract'
+import * as Entity from '@/entities/invoice.entity'
+
+export function createInvoiceHandler(usecase: IInvoiceUsecase) {
+  return async (c: Context<AppEnv>) => {
+    return withSpan('InvoiceHandler.create', async () => {
+      const user = getUserContext()
+      const body = c.get('body') as Entity.CreateInvoiceReq
+
+      const payload: Entity.CreateInvoiceReq = {
+        ...body,
+      }
+
+      payload.company_id = user?.company_id || ''
+      if (user?.branch_id) {
+        payload.branch_id = user.branch_id
+      }
+
+      const result = await usecase.create(payload)
+      return c.json(responseSuccess(result))
+    })
+  }
+}

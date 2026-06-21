@@ -1,0 +1,6 @@
+# files
+.env
+
+# folders
+.DS_Store
+node_modules

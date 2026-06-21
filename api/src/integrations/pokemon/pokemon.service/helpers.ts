@@ -1,0 +1,95 @@
+import {
+  CircuitBreakerError,
+  TimeoutError,
+  createRetryPolicy,
+  createCircuitBreakerPolicy,
+  createTimeoutPolicy,
+  wrapPolicies,
+} from '@artisancode/resilience'
+import { AppError, ErrorCode } from '@artisancode/types'
+import { isBrokenCircuitError, isTaskCancelledError } from 'cockatiel'
+
+import type { Pokemon } from '@/contracts/integration'
+
+import type { PokemonClientConfig } from '../client'
+import type { ResiliencePolicy } from '@artisancode/resilience'
+import type { IHttpClient } from '@artisancode/types'
+
+export interface PokemonServiceDeps {
+  config: PokemonClientConfig
+  httpClient: IHttpClient
+}
+
+export interface PokeApiPokemonResponse {
+  id: number
+  name: string
+  height: number
+  weight: number
+  types: { type: { name: string } }[]
+  abilities: { ability: { name: string } }[]
+  sprites: {
+    front_default: string | null
+    front_shiny: string | null
+  }
+}
+
+export interface PokeApiListResponse {
+  count: number
+  next: string | null
+  previous: string | null
+  results: { name: string; url: string }[]
+}
+
+// Lazily-initialized resilience policy (cache Promise to avoid race condition)
+let resiliencyPromise: Promise<ResiliencePolicy> | null = null
+
+export function getResiliency(): Promise<ResiliencePolicy> {
+  if (!resiliencyPromise) {
+    resiliencyPromise = (async () => {
+      const retryPolicy = await createRetryPolicy({ maxAttempts: 3 })
+      const circuitBreakerPolicy = await createCircuitBreakerPolicy({ threshold: 5 })
+      const timeoutPolicy = await createTimeoutPolicy({ duration: 10_000 })
+      return wrapPolicies(retryPolicy, circuitBreakerPolicy, timeoutPolicy)
+    })()
+  }
+  return resiliencyPromise
+}
+
+export async function withErrorHandling<T>(fn: () => Promise<T>): Promise<T> {
+  try {
+    return await fn()
+  } catch (error) {
+    if (isTaskCancelledError(error)) {
+      throw new TimeoutError()
+    }
+    if (isBrokenCircuitError(error)) {
+      throw new CircuitBreakerError()
+    }
+    if (error instanceof AppError) {
+      throw error
+    }
+    throw new AppError(
+      ErrorCode.HTTP_INTERNAL_ERROR,
+      error instanceof Error ? error.message : 'Unknown error',
+      {
+        httpCode: 500,
+        data: error,
+      },
+    )
+  }
+}
+
+export function mapPokemonResponse(data: PokeApiPokemonResponse): Pokemon {
+  return {
+    id: data.id,
+    name: data.name,
+    height: data.height,
+    weight: data.weight,
+    types: data.types.map((t) => t.type.name),
+    abilities: data.abilities.map((a) => a.ability.name),
+    sprites: {
+      front_default: data.sprites.front_default,
+      front_shiny: data.sprites.front_shiny,
+    },
+  }
+}

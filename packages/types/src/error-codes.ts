@@ -1,0 +1,79 @@
+// ── General ─────────────────────────────────────────────
+export const ErrorCode = {
+  VALIDATION_ERROR: 'VALIDATION_ERROR',
+  NOT_FOUND: 'NOT_FOUND',
+  UNAUTHORIZED: 'UNAUTHORIZED',
+  FORBIDDEN: 'FORBIDDEN',
+  CONFLICT: 'CONFLICT',
+  TOO_MANY_REQUESTS: 'TOO_MANY_REQUESTS',
+  REQUEST_TIMEOUT: 'REQUEST_TIMEOUT',
+  INTERNAL_ERROR: 'INTERNAL_ERROR',
+  SERVICE_UNAVAILABLE: 'SERVICE_UNAVAILABLE',
+  NOT_IMPLEMENTED: 'NOT_IMPLEMENTED',
+
+  // ── HTTP Client ────────────────────────────────────────
+  HTTP_BAD_REQUEST: 'HTTP_BAD_REQUEST',
+  HTTP_UNAUTHORIZED: 'HTTP_UNAUTHORIZED',
+  HTTP_FORBIDDEN: 'HTTP_FORBIDDEN',
+  HTTP_NOT_FOUND: 'HTTP_NOT_FOUND',
+  HTTP_TIMEOUT: 'HTTP_TIMEOUT',
+  HTTP_INTERNAL_ERROR: 'HTTP_INTERNAL_ERROR',
+  NETWORK_ERROR: 'NETWORK_ERROR',
+  HTTP_TOO_MANY_REQUESTS: 'HTTP_TOO_MANY_REQUESTS',
+  HTTP_BAD_GATEWAY: 'HTTP_BAD_GATEWAY',
+  HTTP_SERVICE_UNAVAILABLE: 'HTTP_SERVICE_UNAVAILABLE',
+
+  // ── Auth ───────────────────────────────────────────────
+  AUTH_INVALID_CREDENTIALS: 'AUTH_INVALID_CREDENTIALS',
+  AUTH_TOKEN_EXPIRED: 'AUTH_TOKEN_EXPIRED',
+  AUTH_TOKEN_INVALID: 'AUTH_TOKEN_INVALID',
+
+  // ── Database ───────────────────────────────────────────
+  DB_RECORD_NOT_FOUND: 'DB_RECORD_NOT_FOUND',
+  DB_DUPLICATE_ENTRY: 'DB_DUPLICATE_ENTRY',
+  DB_TRANSACTION_FAILED: 'DB_TRANSACTION_FAILED',
+
+  // ── External Service ───────────────────────────────────
+  EXTERNAL_SERVICE_ERROR: 'EXTERNAL_SERVICE_ERROR',
+  PAYMENT_GATEWAY_ERROR: 'PAYMENT_GATEWAY_ERROR',
+  STORAGE_ERROR: 'STORAGE_ERROR',
+
+  // ── Resilience ─────────────────────────────────────────
+  CIRCUIT_BREAKER_OPEN: 'CIRCUIT_BREAKER_OPEN',
+  RESILIENCE_EXHAUSTED: 'RESILIENCE_EXHAUSTED',
+
+  // ── Invoice ────────────────────────────────────────────
+  INVOICE_NOT_FOUND: 'INVOICE_NOT_FOUND',
+  INVOICE_ALREADY_PAID: 'INVOICE_ALREADY_PAID',
+  INVOICE_EXPIRED: 'INVOICE_EXPIRED',
+  INVOICE_PAYMENT_FAILED: 'INVOICE_PAYMENT_FAILED',
+  INVOICE_STATUS_INVALID: 'INVOICE_STATUS_INVALID',
+
+  // ── Enrollment ─────────────────────────────────────────
+  ENROLLMENT_NOT_FOUND: 'ENROLLMENT_NOT_FOUND',
+
+  // ── Company ────────────────────────────────────────────
+  COMPANY_NOT_FOUND: 'COMPANY_NOT_FOUND',
+
+  // ── Role ───────────────────────────────────────────────
+  ROLE_COMPANY_REQUIRED: 'ROLE_COMPANY_REQUIRED',
+
+  // ── Program ────────────────────────────────────────────
+  PROGRAM_PRICE_NOT_FOUND: 'PROGRAM_PRICE_NOT_FOUND',
+} as const
+
+export type ErrorCode = (typeof ErrorCode)[keyof typeof ErrorCode]
+
+// ── HTTP Client codes only ──────────────────────────────
+export const HttpErrorCode = {
+  HTTP_BAD_REQUEST: ErrorCode.HTTP_BAD_REQUEST,
+  HTTP_UNAUTHORIZED: ErrorCode.HTTP_UNAUTHORIZED,
+  HTTP_FORBIDDEN: ErrorCode.HTTP_FORBIDDEN,
+  HTTP_NOT_FOUND: ErrorCode.HTTP_NOT_FOUND,
+  HTTP_TIMEOUT: ErrorCode.HTTP_TIMEOUT,
+  HTTP_TOO_MANY_REQUESTS: ErrorCode.HTTP_TOO_MANY_REQUESTS,
+  HTTP_BAD_GATEWAY: ErrorCode.HTTP_BAD_GATEWAY,
+  HTTP_SERVICE_UNAVAILABLE: ErrorCode.HTTP_SERVICE_UNAVAILABLE,
+} as const
+
+export type HttpErrorCode = (typeof HttpErrorCode)[keyof typeof HttpErrorCode]

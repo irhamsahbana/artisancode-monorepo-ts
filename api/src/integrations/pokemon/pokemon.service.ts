@@ -1,0 +1,28 @@
+import type { IPokemonService } from '@/contracts/integration'
+
+import { getPokemonById } from './pokemon.service/get-by-id'
+import { getPokemonByName } from './pokemon.service/get-by-name'
+import { listPokemon } from './pokemon.service/list'
+import { searchPokemon } from './pokemon.service/search'
+
+import type { PokemonClientConfig } from './client'
+import type { PokemonServiceDeps } from './pokemon.service/helpers'
+import type { IHttpClient } from '@artisancode/types'
+
+export type { PokemonServiceDeps } from './pokemon.service/helpers'
+
+export function createPokemonService(
+  config: PokemonClientConfig,
+  httpClient: IHttpClient,
+): IPokemonService {
+  const deps: PokemonServiceDeps = { config, httpClient }
+
+  return {
+    getById: (id) => getPokemonById(deps, id),
+    getByName: (name) => getPokemonByName(deps, name),
+    list: (limit, offset) => listPokemon(deps, limit, offset),
+    search: (query) => searchPokemon(deps, query),
+  }
+}
+
+export default createPokemonService

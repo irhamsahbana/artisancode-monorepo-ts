@@ -1,0 +1,12 @@
+# Files
+.vscode
+.env
+error.log
+*.bun-build
+
+# Directories
+.dist
+curl
+dist
+node_modules
+prd

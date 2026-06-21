@@ -1,0 +1,13 @@
+{
+  "name": "@artisancode/logger",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "dependencies": {
+    "@opentelemetry/api": "^1.9.0",
+    "winston": "^3.17.0"
+  }
+}

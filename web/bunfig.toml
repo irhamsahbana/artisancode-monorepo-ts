@@ -1,0 +1,3 @@
+#:schema https://bun.sh/bunfig.schema.json
+[serve.static]
+env = "BUN_PUBLIC_*"

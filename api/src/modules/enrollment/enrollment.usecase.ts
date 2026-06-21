@@ -1,0 +1,69 @@
+import { withSpan } from '@artisancode/observability'
+
+import { IBranchRepo } from '@/contracts/branch.contract'
+import { IEnrollmentRepo, IEnrollmentUsecase } from '@/contracts/enrollment.contract'
+import { IStorageService, ITransactor } from '@/contracts/integration'
+import { IInvoiceUsecase } from '@/contracts/invoice.contract'
+import { IProgramRepo } from '@/contracts/program.contract'
+import { IStudentRepo } from '@/contracts/student.contract'
+import * as Entity from '@/entities/enrollment.entity'
+import { Program } from '@/entities/program.entity'
+
+import { checkScheduleConflict } from './enrollment.usecase/check-schedule-conflict'
+import { createEnrollment } from './enrollment.usecase/create'
+import { deleteEnrollment } from './enrollment.usecase/delete'
+import { findEnrollmentById } from './enrollment.usecase/find-by-id'
+import { findEnrollmentList } from './enrollment.usecase/find-list'
+import { generateEnrollmentInvoice } from './enrollment.usecase/generate-invoice'
+import { updateEnrollment } from './enrollment.usecase/update'
+import { uploadPaymentProof } from './enrollment.usecase/upload-payment-proof'
+
+export interface EnrollmentUsecaseDeps {
+  repo: IEnrollmentRepo
+  branchRepo: IBranchRepo
+  studentRepo: IStudentRepo
+  programRepo: IProgramRepo
+  invoiceUsecase: IInvoiceUsecase
+  transactor: ITransactor
+  storage: IStorageService
+  checkScheduleConflict: (
+    newProgram: Program,
+    existingEnrollments: Entity.Enrollment[],
+  ) => Promise<void>
+}
+
+export function createEnrollmentUsecase(
+  repo: IEnrollmentRepo,
+  branchRepo: IBranchRepo,
+  studentRepo: IStudentRepo,
+  programRepo: IProgramRepo,
+  invoiceUsecase: IInvoiceUsecase,
+  transactor: ITransactor,
+  storage: IStorageService,
+): IEnrollmentUsecase {
+  const deps: EnrollmentUsecaseDeps = {
+    repo,
+    branchRepo,
+    studentRepo,
+    programRepo,
+    invoiceUsecase,
+    transactor,
+    storage,
+    checkScheduleConflict: (newProgram, existingEnrollments) =>
+      checkScheduleConflict(deps, newProgram, existingEnrollments),
+  }
+
+  return {
+    create: (req) => withSpan('EnrollmentUsecase.create', () => createEnrollment(deps, req)),
+    update: (req) => withSpan('EnrollmentUsecase.update', () => updateEnrollment(deps, req)),
+    generateInvoice: (req) =>
+      withSpan('EnrollmentUsecase.generateInvoice', () => generateEnrollmentInvoice(deps, req)),
+    delete: (id, companyId) => deleteEnrollment(deps, id, companyId),
+    findById: (id, companyId) => findEnrollmentById(deps, id, companyId),
+    findList: (req) => findEnrollmentList(deps, req),
+    uploadPaymentProof: (req) =>
+      withSpan('EnrollmentUsecase.uploadPaymentProof', () => uploadPaymentProof(deps, req)),
+  }
+}
+
+export default createEnrollmentUsecase

@@ -1,0 +1,23 @@
+import { withSpan } from '@artisancode/observability'
+
+import { IActivityLogRepo, IActivityLogUsecase } from '@/contracts/activity_log.contract'
+
+import { createActivityLog } from './activity_log.usecase/create'
+import { findActivityLogById } from './activity_log.usecase/find-by-id'
+import { findActivityLogList } from './activity_log.usecase/find-list'
+
+export interface ActivityLogUsecaseDeps {
+  repo: IActivityLogRepo
+}
+
+export function createActivityLogUsecase(repo: IActivityLogRepo): IActivityLogUsecase {
+  const deps: ActivityLogUsecaseDeps = { repo }
+
+  return {
+    create: (req) => withSpan('ActivityLogUsecase.create', () => createActivityLog(deps, req)),
+    findById: (id, companyId) => findActivityLogById(deps, id, companyId),
+    findList: (req) => findActivityLogList(deps, req),
+  }
+}
+
+export default createActivityLogUsecase

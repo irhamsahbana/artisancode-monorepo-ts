@@ -1,0 +1,36 @@
+import { withSpan } from '@artisancode/observability'
+import { AppEnv } from '@artisancode/types'
+import { Context } from 'hono'
+
+import { responseSuccess } from '@/common/rest_response'
+import { getUserContext } from '@/common/store/user-context'
+import { IInvoiceUsecase } from '@/contracts/invoice.contract'
+import * as Entity from '@/entities/invoice.entity'
+
+export function findInvoiceListHandler(usecase: IInvoiceUsecase) {
+  return async (c: Context<AppEnv>) => {
+    return withSpan('InvoiceHandler.findList', async () => {
+      const query = c.get('body')?._query || c.req.query()
+      const { page, limit, enrollment_id, status } = query as {
+        page: number
+        limit: number
+        enrollment_id: string
+        status: string
+      }
+      const user = getUserContext()
+
+      const payload: Entity.GetInvoiceReq = {
+        company_id: user?.company_id || '',
+        enrollment_id,
+        status,
+        pagination: {
+          page: Number(page) || 1,
+          per_page: Number(limit) || 10,
+        },
+      }
+
+      const result = await usecase.findList(payload)
+      return c.json(responseSuccess(result))
+    })
+  }
+}

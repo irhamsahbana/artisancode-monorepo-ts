@@ -1,0 +1,13 @@
+{
+  "name": "@artisancode/resilience",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "dependencies": {
+    "@artisancode/types": "workspace:*",
+    "cockatiel": "^4.0.0"
+  }
+}

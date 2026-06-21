@@ -1,0 +1,23 @@
+import { AppEnv } from '@artisancode/types'
+import { Context } from 'hono'
+
+import { responseSuccess } from '@/common/rest_response'
+import { getUserContext } from '@/common/store/user-context'
+import { ICompanyUsecase } from '@/contracts/company.contract'
+import * as Entity from '@/entities/company.entity'
+
+export function deleteCompanyHandler(usecase: ICompanyUsecase) {
+  return async (c: Context<AppEnv>) => {
+    const id = c.req.param('id')
+    const user = getUserContext()
+    const companyId = user?.company_id || ''
+
+    const payload: Entity.GetCompanyReq = { id }
+    if (companyId) {
+      payload.accessible_company_id = companyId
+    }
+
+    await usecase.delete(payload)
+    return c.json(responseSuccess(null, 'Company deleted successfully'))
+  }
+}

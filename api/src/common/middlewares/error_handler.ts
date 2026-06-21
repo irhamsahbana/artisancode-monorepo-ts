@@ -1,0 +1,28 @@
+import { AppError } from '@artisancode/types'
+import { AppEnv } from '@artisancode/types'
+import { ErrorHandler } from 'hono'
+import { ContentfulStatusCode } from 'hono/utils/http-status'
+
+import { responseError } from '@/common/rest_response'
+import { env } from '@/config/env'
+import logger from '@/config/logger'
+
+export const errorHandler: ErrorHandler<AppEnv> = (err, c) => {
+  // Handle AppError (Business Logic Errors)
+  if (err instanceof AppError) {
+    const errorResponse = err.getHttpResponse()
+    logger.error('AppError occurred:', err.getErrorResponse())
+    return c.json(errorResponse, err.toHttpStatus() as ContentfulStatusCode)
+  }
+
+  // For non-production environments, send detailed error for unexpected errors
+  if (env.APP_ENV !== 'production') {
+    const errorResponse = responseError(err.message, undefined)
+    logger.error('Unexpected error occurred:', err)
+    return c.json(errorResponse, 500)
+  }
+
+  // For production, send a generic error message
+  logger.error(err)
+  return c.json(responseError('Internal Server Error', undefined), 500)
+}

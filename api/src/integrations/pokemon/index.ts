@@ -1,0 +1,32 @@
+import { HttpAdapter } from '@artisancode/http-client'
+
+import type { IPokemonService } from '@/contracts/integration'
+
+import { createPokemonClientConfig } from './client'
+import { createPokemonService } from './pokemon.service'
+
+export class PokemonIntegration implements IPokemonService {
+  private service: IPokemonService
+
+  constructor() {
+    const config = createPokemonClientConfig()
+    const httpClient = new HttpAdapter()
+    this.service = createPokemonService(config, httpClient)
+  }
+
+  getById(id: number) {
+    return this.service.getById(id)
+  }
+
+  getByName(name: string) {
+    return this.service.getByName(name)
+  }
+
+  list(limit?: number, offset?: number) {
+    return this.service.list(limit, offset)
+  }
+
+  search(query: string) {
+    return this.service.search(query)
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "name": "@artisancode/http-client",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "dependencies": {
+    "@artisancode/logger": "workspace:*",
+    "@artisancode/types": "workspace:*",
+    "@opentelemetry/api": "^1.9.0"
+  }
+}
