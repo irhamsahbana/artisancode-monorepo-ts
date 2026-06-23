@@ -1,9 +1,9 @@
 import { boolean, index, integer, numeric, pgTable, text, uuid } from 'drizzle-orm/pg-core'
 
 import { customerPotentialEnum, customerStatusEnum, customerTypeEnum, genderEnum } from '../enums'
+import { categories } from './category'
 import { companies } from './company'
 import { defaultId, softDelete, timestamps } from './helpers'
-import { masterItems } from './master_item'
 
 export const customers = pgTable(
   'customers',
@@ -14,8 +14,9 @@ export const customers = pgTable(
       .references(() => companies.id),
     name: text('name').notNull(),
     type: customerTypeEnum('type').notNull(),
-    categoryId: uuid('category_id').references(() => masterItems.id),
-    areaId: uuid('area_id').references(() => masterItems.id),
+    categoryId: uuid('category_id').references(() => categories.id),
+    segmentationId: uuid('segmentation_id').references(() => categories.id),
+    areaId: uuid('area_id').references(() => categories.id),
     status: customerStatusEnum('status').notNull().default('prospect'),
     potential: customerPotentialEnum('potential').notNull().default('medium'),
     hasContractHistory: boolean('has_contract_history').notNull().default(false),

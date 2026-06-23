@@ -10,7 +10,6 @@ export {
   defaultId,
   enrollments,
   invoices,
-  masterItems,
   payments,
   permissions,
   productPrices,

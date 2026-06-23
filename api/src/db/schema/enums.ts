@@ -57,17 +57,10 @@ export const billingCycleEnum = pgEnum('billing_cycle', [
 
 export const fileStatusEnum = pgEnum('file_status', ['pending', 'attached', 'deleted', 'failed'])
 
-export const masterItemTypeEnum = pgEnum('master_item_type', [
-  'customer_category',
-  'segmentation',
-  'area',
-  'relation_status',
-])
-
 export const customerTypeEnum = pgEnum('customer_type', ['individual', 'business'])
 
 export const customerStatusEnum = pgEnum('customer_status', ['prospect', 'active', 'inactive'])
 
 export const customerPotentialEnum = pgEnum('customer_potential', ['high', 'medium', 'low'])
 
-export const genderEnum = pgEnum('gender', ['Male', 'Female'])
+export const genderEnum = pgEnum('gender', ['male', 'female'])
