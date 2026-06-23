@@ -9,6 +9,7 @@ export interface Customer {
   name: string
   type: CustomerType
   categoryId: string
+  segmentationId: string
   areaId: string
   status: CustomerStatus
   potential: CustomerPotential
@@ -17,7 +18,7 @@ export interface Customer {
   lastContractYear?: number
   primaryContactId?: string
   // personal
-  gender?: 'Male' | 'Female'
+  gender?: 'male' | 'female'
   address?: string
   birthPlace?: string
   dateOfBirth?: string
@@ -46,13 +47,14 @@ export interface CreateCustomerReq {
   name: string
   type: CustomerType
   categoryId: string
+  segmentationId: string
   areaId: string
   status?: CustomerStatus
   potential?: CustomerPotential
   hasContractHistory?: boolean
   lastRevenue?: number
   lastContractYear?: number
-  gender?: 'Male' | 'Female'
+  gender?: 'male' | 'female'
   address?: string
   birthPlace?: string
   dateOfBirth?: string
@@ -76,13 +78,14 @@ export interface UpdateCustomerReq {
   name?: string
   type?: CustomerType
   categoryId?: string
+  segmentationId?: string
   areaId?: string
   status?: CustomerStatus
   potential?: CustomerPotential
   hasContractHistory?: boolean
   lastRevenue?: number
   lastContractYear?: number
-  gender?: 'Male' | 'Female'
+  gender?: 'male' | 'female'
   address?: string
   birthPlace?: string
   dateOfBirth?: string
@@ -108,6 +111,7 @@ export interface GetCustomerReq {
   status?: CustomerStatus
   potential?: CustomerPotential
   categoryId?: string
+  segmentationId?: string
   areaId?: string
   hasContractHistory?: boolean
   pagination?: PaginationQuery
