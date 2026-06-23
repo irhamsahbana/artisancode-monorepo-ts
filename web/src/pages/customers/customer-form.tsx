@@ -1,121 +1,188 @@
-import { ArrowLeft } from 'lucide-react'
-import { useState } from 'react'
-import { useParams, useNavigate } from 'react-router'
-import { toast } from 'sonner'
+import { ArrowLeft } from "lucide-react";
+import { useEffect, useState } from "react";
+import { useParams, useNavigate } from "react-router";
+import { toast } from "sonner";
 
-import { Button } from '@/components/ui/button'
-import { Card, CardContent } from '@/components/ui/card'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { Separator } from '@/components/ui/separator'
-import { customers, type Customer } from '@/data/customers'
-import { masterData } from '@/data/master'
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Separator } from "@/components/ui/separator";
+import { useCategoryList } from "@/hooks/use-categories";
+import {
+  useCreateCustomer,
+  useCustomer,
+  useUpdateCustomer,
+} from "@/hooks/use-customers";
+
+import type { Customer } from "@artisancode/api-types";
 
 interface FormState {
-  name: string
-  type: Customer['type']
-  categoryId: string
-  segmentationId: string
-  areaId: string
-  status: Customer['status']
-  potential: Customer['potential']
-  gender: string
-  address: string
-  birthPlace: string
-  dateOfBirth: string
-  religion: string
-  education: string
-  email: string
-  spouseName: string
-  spouseOccupation: string
-  childrenNames: string
-  childrenOccupation: string
-  character: string
-  hobby: string
-  companyName: string
-  position: string
-  companyAddress: string
-  whatsapp: string
-  notes: string
+  name: string;
+  type: Customer["type"];
+  categoryId: string;
+  segmentationId: string;
+  areaId: string;
+  status: Customer["status"];
+  potential: Customer["potential"];
+  gender: string;
+  address: string;
+  birthPlace: string;
+  dateOfBirth: string;
+  religion: string;
+  education: string;
+  email: string;
+  spouseName: string;
+  spouseOccupation: string;
+  childrenNames: string;
+  childrenOccupation: string;
+  character: string;
+  hobby: string;
+  companyName: string;
+  position: string;
+  companyAddress: string;
+  whatsapp: string;
+  notes: string;
 }
 
 const empty: FormState = {
-  name: '',
-  type: 'business',
-  categoryId: '',
-  segmentationId: '',
-  areaId: '',
-  status: 'prospect',
-  potential: 'medium',
-  gender: '',
-  address: '',
-  birthPlace: '',
-  dateOfBirth: '',
-  religion: '',
-  education: '',
-  email: '',
-  spouseName: '',
-  spouseOccupation: '',
-  childrenNames: '',
-  childrenOccupation: '',
-  character: '',
-  hobby: '',
-  companyName: '',
-  position: '',
-  companyAddress: '',
-  whatsapp: '',
-  notes: '',
-}
+  name: "",
+  type: "business",
+  categoryId: "",
+  segmentationId: "",
+  areaId: "",
+  status: "prospect",
+  potential: "medium",
+  gender: "",
+  address: "",
+  birthPlace: "",
+  dateOfBirth: "",
+  religion: "",
+  education: "",
+  email: "",
+  spouseName: "",
+  spouseOccupation: "",
+  childrenNames: "",
+  childrenOccupation: "",
+  character: "",
+  hobby: "",
+  companyName: "",
+  position: "",
+  companyAddress: "",
+  whatsapp: "",
+  notes: "",
+};
 
 export function CustomerForm() {
-  const { id } = useParams()
-  const navigate = useNavigate()
-  const existing = id ? customers.find((c) => c.id === id) : undefined
-  const isEdit = !!existing
+  const { id } = useParams<{ id: string }>();
+  const navigate = useNavigate();
+  const isEdit = !!id;
 
-  const [form, setForm] = useState<FormState>(
-    existing
-      ? {
-          name: existing.name,
-          type: existing.type,
-          categoryId: existing.categoryId,
-          segmentationId: existing.segmentationId,
-          areaId: existing.areaId,
-          status: existing.status,
-          potential: existing.potential,
-          gender: existing.gender ?? '',
-          address: existing.address ?? '',
-          birthPlace: existing.birthPlace ?? '',
-          dateOfBirth: existing.dateOfBirth ?? '',
-          religion: existing.religion ?? '',
-          education: existing.education ?? '',
-          email: existing.email ?? '',
-          spouseName: existing.spouseName ?? '',
-          spouseOccupation: existing.spouseOccupation ?? '',
-          childrenNames: existing.childrenNames ?? '',
-          childrenOccupation: existing.childrenOccupation ?? '',
-          character: existing.character ?? '',
-          hobby: existing.hobby ?? '',
-          companyName: existing.companyName ?? '',
-          position: existing.position ?? '',
-          companyAddress: existing.companyAddress ?? '',
-          whatsapp: existing.whatsapp ?? '',
-          notes: existing.notes ?? '',
-        }
-      : empty,
-  )
+  const { data: existing } = useCustomer(id ?? "");
+  const { data: categoriesData } = useCategoryList("customer_category");
+  const { data: segmentationsData } = useCategoryList("segmentation");
+  const { data: areasData } = useCategoryList("area");
+  const { mutateAsync: createCustomer, isPending: creating } =
+    useCreateCustomer();
+  const { mutateAsync: updateCustomer, isPending: updating } =
+    useUpdateCustomer(id ?? "");
+
+  const [form, setForm] = useState<FormState>(empty);
+
+  useEffect(() => {
+    if (existing) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setForm({
+        name: existing.name,
+        type: existing.type,
+        categoryId: existing.categoryId ?? "",
+        segmentationId: existing.segmentationId ?? "",
+        areaId: existing.areaId ?? "",
+        status: existing.status,
+        potential: existing.potential,
+        gender: existing.gender ?? "",
+        address: existing.address ?? "",
+        birthPlace: existing.birthPlace ?? "",
+        dateOfBirth: existing.dateOfBirth ?? "",
+        religion: existing.religion ?? "",
+        education: existing.education ?? "",
+        email: existing.email ?? "",
+        spouseName: existing.spouseName ?? "",
+        spouseOccupation: existing.spouseOccupation ?? "",
+        childrenNames: existing.childrenNames ?? "",
+        childrenOccupation: existing.childrenOccupation ?? "",
+        character: existing.character ?? "",
+        hobby: existing.hobby ?? "",
+        companyName: existing.companyName ?? "",
+        position: existing.position ?? "",
+        companyAddress: existing.companyAddress ?? "",
+        whatsapp: existing.whatsapp ?? "",
+        notes: existing.notes ?? "",
+      });
+    }
+  }, [existing]);
 
   function set<K extends keyof FormState>(key: K, val: FormState[K]) {
-    setForm((prev) => ({ ...prev, [key]: val }))
+    setForm((prev) => ({ ...prev, [key]: val }));
   }
 
-  function handleSubmit(e: React.FormEvent) {
-    e.preventDefault()
-    // ponytail: mock only — no API call, just show toast and navigate
-    toast.success(isEdit ? 'Pelanggan berhasil diperbarui.' : 'Pelanggan berhasil ditambahkan.')
-    navigate(isEdit ? `/customers/${id}` : '/customers')
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    const body = {
+      name: form.name,
+      type: form.type,
+      categoryId: form.categoryId || undefined,
+      segmentationId: form.segmentationId || undefined,
+      areaId: form.areaId || undefined,
+      status: form.status,
+      potential: form.potential,
+      gender: (form.gender as Customer["gender"]) || undefined,
+      address: form.address || undefined,
+      birthPlace: form.birthPlace || undefined,
+      dateOfBirth: form.dateOfBirth || undefined,
+      religion: form.religion || undefined,
+      education: form.education || undefined,
+      email: form.email || undefined,
+      spouseName: form.spouseName || undefined,
+      spouseOccupation: form.spouseOccupation || undefined,
+      childrenNames: form.childrenNames || undefined,
+      childrenOccupation: form.childrenOccupation || undefined,
+      character: form.character || undefined,
+      hobby: form.hobby || undefined,
+      companyName: form.companyName || undefined,
+      position: form.position || undefined,
+      companyAddress: form.companyAddress || undefined,
+      whatsapp: form.whatsapp || undefined,
+      notes: form.notes || undefined,
+    };
+    try {
+      if (isEdit) {
+        await updateCustomer(body);
+        toast.success("Pelanggan berhasil diperbarui.");
+        navigate(`/customers/${id}`);
+      } else {
+        await createCustomer(body);
+        toast.success("Pelanggan berhasil ditambahkan.");
+        navigate("/customers");
+      }
+    } catch {
+      toast.error("Gagal menyimpan data pelanggan.");
+    }
   }
+
+  const categories =
+    categoriesData?.items.filter((c) => c.status === "active") ?? [];
+  const segmentations =
+    segmentationsData?.items.filter((s) => s.status === "active") ?? [];
+  const areas = areasData?.items.filter((a) => a.status === "active") ?? [];
+  const isPending = creating || updating;
 
   return (
     <div>
@@ -123,7 +190,9 @@ export function CustomerForm() {
         <Button variant="ghost" size="icon" onClick={() => navigate(-1)}>
           <ArrowLeft className="h-4 w-4" />
         </Button>
-        <h1 className="text-xl font-semibold">{isEdit ? 'Edit Pelanggan' : 'Tambah Pelanggan'}</h1>
+        <h1 className="text-xl font-semibold">
+          {isEdit ? "Edit Pelanggan" : "Tambah Pelanggan"}
+        </h1>
       </div>
 
       <Card>
@@ -134,15 +203,20 @@ export function CustomerForm() {
                 <Input
                   required
                   value={form.name}
-                  onChange={(e) => set('name', e.target.value)}
+                  onChange={(e) => set("name", e.target.value)}
                   placeholder="Nama pelanggan"
                 />
               </Field>
             </div>
 
             <Field label="Jenis *">
-              <Select value={form.type} onValueChange={(v) => set('type', v as Customer['type'])}>
-                <SelectTrigger className="w-full"><SelectValue /></SelectTrigger>
+              <Select
+                value={form.type}
+                onValueChange={(v) => set("type", v as Customer["type"])}
+              >
+                <SelectTrigger className="w-full">
+                  <SelectValue />
+                </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="business">Badan Usaha</SelectItem>
                   <SelectItem value="individual">Perorangan</SelectItem>
@@ -150,42 +224,68 @@ export function CustomerForm() {
               </Select>
             </Field>
 
-            <Field label="Kategori *">
-              <Select value={form.categoryId} onValueChange={(v) => set('categoryId', v)}>
-                <SelectTrigger className="w-full"><SelectValue placeholder="Pilih kategori" /></SelectTrigger>
+            <Field label="Kategori">
+              <Select
+                value={form.categoryId}
+                onValueChange={(v) => set("categoryId", v)}
+              >
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder="Pilih kategori" />
+                </SelectTrigger>
                 <SelectContent>
-                  {masterData.customerTypes.filter((t) => t.isActive).map((t) => (
-                    <SelectItem key={t.id} value={t.id}>{t.name}</SelectItem>
+                  {categories.map((c) => (
+                    <SelectItem key={c.id} value={c.id}>
+                      {c.name}
+                    </SelectItem>
                   ))}
                 </SelectContent>
               </Select>
             </Field>
 
             <Field label="Segmentasi">
-              <Select value={form.segmentationId} onValueChange={(v) => set('segmentationId', v)}>
-                <SelectTrigger className="w-full"><SelectValue placeholder="Pilih segmentasi" /></SelectTrigger>
+              <Select
+                value={form.segmentationId}
+                onValueChange={(v) => set("segmentationId", v)}
+              >
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder="Pilih segmentasi" />
+                </SelectTrigger>
                 <SelectContent>
-                  {masterData.segmentations.filter((s) => s.isActive).map((s) => (
-                    <SelectItem key={s.id} value={s.id}>{s.name}</SelectItem>
+                  {segmentations.map((s) => (
+                    <SelectItem key={s.id} value={s.id}>
+                      {s.name}
+                    </SelectItem>
                   ))}
                 </SelectContent>
               </Select>
             </Field>
 
-            <Field label="Area *">
-              <Select value={form.areaId} onValueChange={(v) => set('areaId', v)}>
-                <SelectTrigger className="w-full"><SelectValue placeholder="Pilih area" /></SelectTrigger>
+            <Field label="Area">
+              <Select
+                value={form.areaId}
+                onValueChange={(v) => set("areaId", v)}
+              >
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder="Pilih area" />
+                </SelectTrigger>
                 <SelectContent>
-                  {masterData.areas.filter((a) => a.isActive).map((a) => (
-                    <SelectItem key={a.id} value={a.id}>{a.name}</SelectItem>
+                  {areas.map((a) => (
+                    <SelectItem key={a.id} value={a.id}>
+                      {a.name}
+                    </SelectItem>
                   ))}
                 </SelectContent>
               </Select>
             </Field>
 
             <Field label="Status *">
-              <Select value={form.status} onValueChange={(v) => set('status', v as Customer['status'])}>
-                <SelectTrigger className="w-full"><SelectValue /></SelectTrigger>
+              <Select
+                value={form.status}
+                onValueChange={(v) => set("status", v as Customer["status"])}
+              >
+                <SelectTrigger className="w-full">
+                  <SelectValue />
+                </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="prospect">Prospek</SelectItem>
                   <SelectItem value="active">Aktif</SelectItem>
@@ -195,8 +295,15 @@ export function CustomerForm() {
             </Field>
 
             <Field label="Potensi">
-              <Select value={form.potential} onValueChange={(v) => set('potential', v as Customer['potential'])}>
-                <SelectTrigger className="w-full"><SelectValue /></SelectTrigger>
+              <Select
+                value={form.potential}
+                onValueChange={(v) =>
+                  set("potential", v as Customer["potential"])
+                }
+              >
+                <SelectTrigger className="w-full">
+                  <SelectValue />
+                </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="high">Tinggi</SelectItem>
                   <SelectItem value="medium">Sedang</SelectItem>
@@ -209,7 +316,7 @@ export function CustomerForm() {
               <Field label="WhatsApp">
                 <Input
                   value={form.whatsapp}
-                  onChange={(e) => set('whatsapp', e.target.value)}
+                  onChange={(e) => set("whatsapp", e.target.value)}
                   placeholder="628xxxxxxxxxx"
                 />
               </Field>
@@ -220,45 +327,71 @@ export function CustomerForm() {
                 <Input
                   type="email"
                   value={form.email}
-                  onChange={(e) => set('email', e.target.value)}
+                  onChange={(e) => set("email", e.target.value)}
                   placeholder="email@contoh.com"
                 />
               </Field>
             </div>
 
-            <div className="sm:col-span-2"><Separator /><p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide pt-1">Info Pribadi</p></div>
+            <div className="sm:col-span-2">
+              <Separator />
+              <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide pt-1">
+                Info Pribadi
+              </p>
+            </div>
 
             <Field label="Jenis Kelamin">
-              <Select value={form.gender} onValueChange={(v) => set('gender', v)}>
-                <SelectTrigger className="w-full"><SelectValue placeholder="Pilih jenis kelamin" /></SelectTrigger>
+              <Select
+                value={form.gender}
+                onValueChange={(v) => set("gender", v)}
+              >
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder="Pilih jenis kelamin" />
+                </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="Male">Laki-laki</SelectItem>
-                  <SelectItem value="Female">Perempuan</SelectItem>
+                  <SelectItem value="male">Laki-laki</SelectItem>
+                  <SelectItem value="female">Perempuan</SelectItem>
                 </SelectContent>
               </Select>
             </Field>
 
             <Field label="Tempat Lahir">
-              <Input value={form.birthPlace} onChange={(e) => set('birthPlace', e.target.value)} placeholder="Makassar" />
+              <Input
+                value={form.birthPlace}
+                onChange={(e) => set("birthPlace", e.target.value)}
+                placeholder="Makassar"
+              />
             </Field>
 
             <Field label="Tanggal Lahir">
-              <Input type="date" value={form.dateOfBirth} onChange={(e) => set('dateOfBirth', e.target.value)} />
+              <Input
+                type="date"
+                value={form.dateOfBirth}
+                onChange={(e) => set("dateOfBirth", e.target.value)}
+              />
             </Field>
 
             <Field label="Agama">
-              <Input value={form.religion} onChange={(e) => set('religion', e.target.value)} placeholder="Islam" />
+              <Input
+                value={form.religion}
+                onChange={(e) => set("religion", e.target.value)}
+                placeholder="Islam"
+              />
             </Field>
 
             <Field label="Pendidikan Terakhir">
-              <Input value={form.education} onChange={(e) => set('education', e.target.value)} placeholder="Sarjana S-1" />
+              <Input
+                value={form.education}
+                onChange={(e) => set("education", e.target.value)}
+                placeholder="Sarjana S-1"
+              />
             </Field>
 
             <div className="sm:col-span-2">
               <Field label="Alamat">
                 <textarea
                   value={form.address}
-                  onChange={(e) => set('address', e.target.value)}
+                  onChange={(e) => set("address", e.target.value)}
                   placeholder="Alamat lengkap sesuai KTP/domisili"
                   rows={2}
                   className="flex w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring resize-none"
@@ -266,62 +399,105 @@ export function CustomerForm() {
               </Field>
             </div>
 
-            <div className="sm:col-span-2"><Separator /><p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide pt-1">Karakter & Hobi</p></div>
+            <div className="sm:col-span-2">
+              <Separator />
+              <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide pt-1">
+                Karakter & Hobi
+              </p>
+            </div>
 
             <Field label="Karakter Pelanggan">
-              <Input value={form.character} onChange={(e) => set('character', e.target.value)} placeholder="Suka nego, dll." />
+              <Input
+                value={form.character}
+                onChange={(e) => set("character", e.target.value)}
+                placeholder="Suka nego, dll."
+              />
             </Field>
 
             <Field label="Hobi">
-              <Input value={form.hobby} onChange={(e) => set('hobby', e.target.value)} placeholder="Olahraga, golf, dll." />
+              <Input
+                value={form.hobby}
+                onChange={(e) => set("hobby", e.target.value)}
+                placeholder="Olahraga, golf, dll."
+              />
             </Field>
 
-            <div className="sm:col-span-2"><Separator /><p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide pt-1">Info Keluarga</p></div>
+            <div className="sm:col-span-2">
+              <Separator />
+              <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide pt-1">
+                Info Keluarga
+              </p>
+            </div>
 
             <Field label="Nama Suami/Istri">
-              <Input value={form.spouseName} onChange={(e) => set('spouseName', e.target.value)} />
+              <Input
+                value={form.spouseName}
+                onChange={(e) => set("spouseName", e.target.value)}
+              />
             </Field>
 
             <Field label="Pekerjaan Suami/Istri">
-              <Input value={form.spouseOccupation} onChange={(e) => set('spouseOccupation', e.target.value)} />
+              <Input
+                value={form.spouseOccupation}
+                onChange={(e) => set("spouseOccupation", e.target.value)}
+              />
             </Field>
 
             <Field label="Nama Anak Kandung">
-              <Input value={form.childrenNames} onChange={(e) => set('childrenNames', e.target.value)} />
+              <Input
+                value={form.childrenNames}
+                onChange={(e) => set("childrenNames", e.target.value)}
+              />
             </Field>
 
             <Field label="Pekerjaan Anak">
-              <Input value={form.childrenOccupation} onChange={(e) => set('childrenOccupation', e.target.value)} />
+              <Input
+                value={form.childrenOccupation}
+                onChange={(e) => set("childrenOccupation", e.target.value)}
+              />
             </Field>
 
-            <div className="sm:col-span-2"><Separator /><p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide pt-1">Info Perusahaan</p></div>
+            <div className="sm:col-span-2">
+              <Separator />
+              <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide pt-1">
+                Info Perusahaan
+              </p>
+            </div>
 
             <Field label="Nama Perusahaan">
-              <Input value={form.companyName} onChange={(e) => set('companyName', e.target.value)} />
+              <Input
+                value={form.companyName}
+                onChange={(e) => set("companyName", e.target.value)}
+              />
             </Field>
 
             <Field label="Jabatan">
-              <Input value={form.position} onChange={(e) => set('position', e.target.value)} />
+              <Input
+                value={form.position}
+                onChange={(e) => set("position", e.target.value)}
+              />
             </Field>
 
             <div className="sm:col-span-2">
               <Field label="Alamat Perusahaan">
                 <textarea
                   value={form.companyAddress}
-                  onChange={(e) => set('companyAddress', e.target.value)}
+                  onChange={(e) => set("companyAddress", e.target.value)}
                   rows={2}
                   className="flex w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring resize-none"
                 />
               </Field>
             </div>
 
-            <div className="sm:col-span-2"><Separator /></div>
+            <div className="sm:col-span-2">
+              <Separator />
+            </div>
 
             <div className="sm:col-span-2">
               <Field label="Catatan">
                 <textarea
                   value={form.notes}
-                  onChange={(e) => set('notes', e.target.value)}
+                  onChange={(e) => set("notes", e.target.value)}
                   placeholder="Catatan tambahan..."
                   rows={3}
                   className="flex w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring resize-none"
@@ -330,23 +506,39 @@ export function CustomerForm() {
             </div>
 
             <div className="sm:col-span-2 flex justify-end gap-2">
-              <Button type="button" variant="outline" onClick={() => navigate(-1)}>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => navigate(-1)}
+              >
                 Batal
               </Button>
-              <Button type="submit">{isEdit ? 'Simpan Perubahan' : 'Tambah Pelanggan'}</Button>
+              <Button type="submit" disabled={isPending}>
+                {isPending
+                  ? "Menyimpan..."
+                  : isEdit
+                    ? "Simpan Perubahan"
+                    : "Tambah Pelanggan"}
+              </Button>
             </div>
           </form>
         </CardContent>
       </Card>
     </div>
-  )
+  );
 }
 
-function Field({ label, children }: { label: string; children: React.ReactNode }) {
+function Field({
+  label,
+  children,
+}: {
+  label: string;
+  children: React.ReactNode;
+}) {
   return (
     <div className="grid gap-1.5">
       <Label>{label}</Label>
       {children}
     </div>
-  )
+  );
 }

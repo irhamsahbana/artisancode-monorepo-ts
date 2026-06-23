@@ -1,20 +1,34 @@
-import { useState } from 'react'
-import { useNavigate } from 'react-router'
+import { useState } from "react";
+import { useNavigate } from "react-router";
+import { toast } from "sonner";
 
-import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+} from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { useLogin } from "@/hooks/use-auth";
 
 export function Login() {
-  const navigate = useNavigate()
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
+  const navigate = useNavigate();
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const { mutate: doLogin, isPending } = useLogin();
 
   function handleSubmit(e: React.FormEvent) {
-    e.preventDefault()
-    // ponytail: mock auth — any credentials pass
-    navigate('/dashboard')
+    e.preventDefault();
+    doLogin(
+      { email, password },
+      {
+        onSuccess: () => navigate("/dashboard"),
+        onError: () => toast.error("Email atau password salah."),
+      },
+    );
   }
 
   return (
@@ -48,10 +62,12 @@ export function Login() {
                 autoComplete="current-password"
               />
             </div>
-            <Button type="submit" className="w-full mt-1">Masuk</Button>
+            <Button type="submit" className="w-full mt-1" disabled={isPending}>
+              {isPending ? "Memproses..." : "Masuk"}
+            </Button>
           </form>
         </CardContent>
       </Card>
     </div>
-  )
+  );
 }

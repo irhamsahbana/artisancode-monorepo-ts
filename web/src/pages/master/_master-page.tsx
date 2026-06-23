@@ -1,72 +1,110 @@
-import { Plus, Pencil } from 'lucide-react'
-import { useState } from 'react'
-import { toast } from 'sonner'
+import { Plus, Pencil } from "lucide-react";
+import { useState } from "react";
+import { toast } from "sonner";
 
-import { DataTable } from '@/components/shared/data-table'
-import type { Column } from '@/components/shared/data-table'
-import { PageHeader } from '@/components/shared/page-header'
-import { Badge } from '@/components/ui/badge'
-import { Button } from '@/components/ui/button'
-import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
-import type { MasterItem } from '@/data/master'
+import type { Column } from "@/components/shared/data-table";
+import { DataTable } from "@/components/shared/data-table";
+import { PageHeader } from "@/components/shared/page-header";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  useCategoryList,
+  useCreateCategory,
+  useUpdateCategory,
+} from "@/hooks/use-categories";
+import type { CategoryItem } from "@/services/category";
 
+interface Props {
+  title: string;
+  group: string;
+}
 
-interface Props { title: string; items: MasterItem[] }
+export function MasterPage({ title, group }: Props) {
+  const { data, isLoading } = useCategoryList(group);
+  const { mutate: create } = useCreateCategory(group);
+  const { mutate: update } = useUpdateCategory(group);
 
-export function MasterPage({ title, items: initial }: Props) {
-  const [items, setItems] = useState(initial)
-  const [open, setOpen] = useState(false)
-  const [editing, setEditing] = useState<MasterItem | null>(null)
-  const [name, setName] = useState('')
+  const [open, setOpen] = useState(false);
+  const [editing, setEditing] = useState<CategoryItem | null>(null);
+  const [name, setName] = useState("");
+
+  const items = data?.items ?? [];
 
   function openAdd() {
-    setEditing(null)
-    setName('')
-    setOpen(true)
+    setEditing(null);
+    setName("");
+    setOpen(true);
   }
 
-  function openEdit(item: MasterItem) {
-    setEditing(item)
-    setName(item.name)
-    setOpen(true)
+  function openEdit(item: CategoryItem) {
+    setEditing(item);
+    setName(item.name);
+    setOpen(true);
   }
 
   function handleSave() {
-    if (!name.trim()) return
+    if (!name.trim()) return;
     if (editing) {
-      setItems((prev) => prev.map((i) => (i.id === editing.id ? { ...i, name: name.trim() } : i)))
-      toast.success('Berhasil diperbarui.')
+      update(
+        { id: editing.id, name: name.trim() },
+        {
+          onSuccess: () => {
+            toast.success("Berhasil diperbarui.");
+            setOpen(false);
+          },
+        },
+      );
     } else {
-      const newItem: MasterItem = { id: `new-${Date.now()}`, name: name.trim(), isActive: true }
-      setItems((prev) => [...prev, newItem])
-      toast.success('Berhasil ditambahkan.')
+      create(name.trim(), {
+        onSuccess: () => {
+          toast.success("Berhasil ditambahkan.");
+          setOpen(false);
+        },
+      });
     }
-    setOpen(false)
   }
 
-  function toggleActive(item: MasterItem) {
-    setItems((prev) => prev.map((i) => (i.id === item.id ? { ...i, isActive: !i.isActive } : i)))
-    toast.success(item.isActive ? 'Dinonaktifkan.' : 'Diaktifkan.')
+  function toggleActive(item: CategoryItem) {
+    update(
+      { id: item.id, status: item.status === "active" ? "inactive" : "active" },
+      {
+        onSuccess: () =>
+          toast.success(
+            item.status === "active" ? "Dinonaktifkan." : "Diaktifkan.",
+          ),
+      },
+    );
   }
 
-  const columns: Column<MasterItem>[] = [
-    { key: 'name', label: 'Nama', render: (i) => <span className="font-medium">{i.name}</span> },
+  const columns: Column<CategoryItem>[] = [
     {
-      key: 'status',
-      label: 'Status',
+      key: "name",
+      label: "Nama",
+      render: (i) => <span className="font-medium">{i.name}</span>,
+    },
+    {
+      key: "status",
+      label: "Status",
       render: (i) => (
         <Badge
-          variant={i.isActive ? 'default' : 'outline'}
+          variant={i.status === "active" ? "default" : "outline"}
           className="cursor-pointer"
           onClick={() => toggleActive(i)}
         >
-          {i.isActive ? 'Aktif' : 'Nonaktif'}
+          {i.status === "active" ? "Aktif" : "Nonaktif"}
         </Badge>
       ),
     },
-  ]
+  ];
 
   return (
     <div>
@@ -82,6 +120,7 @@ export function MasterPage({ title, items: initial }: Props) {
       <DataTable
         data={items}
         columns={columns}
+        loading={isLoading}
         searchPlaceholder={`Cari ${title.toLowerCase()}...`}
         searchFn={(i, q) => i.name.toLowerCase().includes(q.toLowerCase())}
         actions={(item) => (
@@ -94,7 +133,9 @@ export function MasterPage({ title, items: initial }: Props) {
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent className="sm:max-w-sm">
           <DialogHeader>
-            <DialogTitle>{editing ? `Edit ${title}` : `Tambah ${title}`}</DialogTitle>
+            <DialogTitle>
+              {editing ? `Edit ${title}` : `Tambah ${title}`}
+            </DialogTitle>
           </DialogHeader>
           <div className="grid gap-1.5 py-2">
             <Label>Nama</Label>
@@ -102,16 +143,20 @@ export function MasterPage({ title, items: initial }: Props) {
               value={name}
               onChange={(e) => setName(e.target.value)}
               placeholder={`Nama ${title.toLowerCase()}`}
-              onKeyDown={(e) => e.key === 'Enter' && handleSave()}
+              onKeyDown={(e) => e.key === "Enter" && handleSave()}
               autoFocus
             />
           </div>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setOpen(false)}>Batal</Button>
-            <Button onClick={handleSave}>{editing ? 'Simpan' : 'Tambah'}</Button>
+            <Button variant="outline" onClick={() => setOpen(false)}>
+              Batal
+            </Button>
+            <Button onClick={handleSave}>
+              {editing ? "Simpan" : "Tambah"}
+            </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
     </div>
-  )
+  );
 }
