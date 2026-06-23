@@ -11,7 +11,6 @@ import dashboardRouter from '@/modules/dashboard/dashboard.index'
 import enrollmentRouter from '@/modules/enrollment/enrollment.index'
 import healthRouter from '@/modules/health/health.index'
 import invoiceRouter from '@/modules/invoice/invoice.index'
-import masterRouter from '@/modules/master/master.index'
 import programRouter from '@/modules/program/program.index'
 import roleAndPermissionRouter from '@/modules/role_and_permission/role_and_permission.index'
 import storageRouter from '@/modules/storage/storage.index'
@@ -39,7 +38,6 @@ router.route('/role-and-permissions', roleAndPermissionRouter)
 router.route('/storage', storageRouter)
 router.route('/webhooks', webhookRouter)
 // CRM routes
-router.route('/master', masterRouter)
 router.route('/customers', customerRouter)
 router.route('/contacts', contactRouter)
 router.route('/business-profile', businessProfileRouter)
