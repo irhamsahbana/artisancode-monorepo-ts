@@ -5,22 +5,8 @@
     {
       "idx": 0,
       "version": "7",
-      "when": 1781957600744,
-      "tag": "0000_dry_vision",
-      "breakpoints": true
-    },
-    {
-      "idx": 1,
-      "version": "7",
-      "when": 1781974196279,
-      "tag": "0001_woozy_black_knight",
-      "breakpoints": true
-    },
-    {
-      "idx": 2,
-      "version": "7",
-      "when": 1781974532465,
-      "tag": "0002_petite_baron_strucker",
+      "when": 1782117031739,
+      "tag": "0000_lonely_jack_flag",
       "breakpoints": true
     }
   ]

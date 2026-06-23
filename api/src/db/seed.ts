@@ -11,7 +11,7 @@ import postgres from 'postgres'
 import { hashPassword } from '@/common/encryption'
 import * as schema from '@/db/schema'
 
-const { companies, roles, users, masterItems, customers, contacts } = schema
+const { companies, roles, users, categories, customers, contacts } = schema
 
 // ---------------------------------------------------------------------------
 // DB connection (standalone — does not go through the app's singleton)
@@ -36,6 +36,8 @@ const MASTER_ITEMS = {
   area: ['Jakarta', 'Surabaya', 'Bandung', 'Medan', 'Makassar', 'Semarang', 'Bali'],
   relation_status: ['New', 'Existing', 'Partner', 'Ex-Client', 'Prospect'],
 } as const
+
+type MasterGroup = keyof typeof MASTER_ITEMS
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -111,28 +113,28 @@ async function seedMasterItems(companyId: string) {
     relation_status: [],
   }
 
-  for (const [type, names] of Object.entries(MASTER_ITEMS)) {
+  for (const [group, names] of Object.entries(MASTER_ITEMS)) {
     for (const name of names) {
-      const existing = await db.query.masterItems.findFirst({
+      const existing = await db.query.categories.findFirst({
         where: (t, { eq, and, isNull }) =>
           and(
             eq(t.companyId, companyId),
-            eq(t.type, type as keyof typeof MASTER_ITEMS),
+            eq(t.group, group),
             eq(t.name, name),
             isNull(t.deletedAt),
           ),
       })
       if (existing) {
-        ids[type].push(existing.id)
+        ids[group].push(existing.id)
         continue
       }
       const [row] = await db
-        .insert(masterItems)
-        .values({ companyId, type: type as keyof typeof MASTER_ITEMS, name })
+        .insert(categories)
+        .values({ companyId, group: group as MasterGroup, name })
         .returning()
-      ids[type].push(row.id)
+      ids[group].push(row.id)
     }
-    console.log(`  master_items[${type}]: ${ids[type].length} records`)
+    console.log(`  categories[${group}]: ${ids[group].length} records`)
   }
 
   return ids
@@ -163,13 +165,14 @@ async function seedCustomers(companyId: string, masterIds: Record<string, string
         status,
         potential,
         categoryId: pick(masterIds['customer_category']),
+        segmentationId: pick(masterIds['segmentation']),
         areaId: pick(masterIds['area']),
         hasContractHistory: Math.random() > 0.5,
         lastRevenue:
           Math.random() > 0.5 ? String(faker.number.int({ min: 10, max: 5000 }) * 1_000_000) : null,
         lastContractYear: Math.random() > 0.5 ? faker.number.int({ min: 2018, max: 2025 }) : null,
         // personal (individual only)
-        gender: type === 'individual' ? pick(['Male', 'Female'] as const) : null,
+        gender: type === 'individual' ? pick(['male', 'female'] as const) : null,
         address: faker.location.streetAddress(),
         email: faker.internet.email(),
         whatsapp: `08${faker.string.numeric(10)}`,

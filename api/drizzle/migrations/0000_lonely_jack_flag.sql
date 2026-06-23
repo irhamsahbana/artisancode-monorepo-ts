@@ -1,9 +1,13 @@
 CREATE TYPE "public"."billing_cycle" AS ENUM('monthly', 'quarterly', 'annually', 'one_time');--> statement-breakpoint
 CREATE TYPE "public"."billing_interval" AS ENUM('day', 'week', 'month', 'year');--> statement-breakpoint
 CREATE TYPE "public"."billing_type" AS ENUM('one_time', 'recurring');--> statement-breakpoint
+CREATE TYPE "public"."customer_potential" AS ENUM('high', 'medium', 'low');--> statement-breakpoint
+CREATE TYPE "public"."customer_status" AS ENUM('prospect', 'active', 'inactive');--> statement-breakpoint
+CREATE TYPE "public"."customer_type" AS ENUM('individual', 'business');--> statement-breakpoint
 CREATE TYPE "public"."employee_status" AS ENUM('active', 'inactive', 'on_leave', 'terminated');--> statement-breakpoint
 CREATE TYPE "public"."enrollment_status" AS ENUM('active', 'inactive');--> statement-breakpoint
 CREATE TYPE "public"."file_status" AS ENUM('pending', 'attached', 'deleted', 'failed');--> statement-breakpoint
+CREATE TYPE "public"."gender" AS ENUM('male', 'female');--> statement-breakpoint
 CREATE TYPE "public"."invoice_status" AS ENUM('draft', 'unpaid', 'paid', 'overdue', 'pending', 'expired', 'failed', 'cancelled');--> statement-breakpoint
 CREATE TYPE "public"."payment_mode" AS ENUM('pay_now', 'pay_later');--> statement-breakpoint
 CREATE TYPE "public"."pricing_type" AS ENUM('daily', 'weekly', 'monthly', 'yearly', 'custom');--> statement-breakpoint
@@ -57,6 +61,61 @@ CREATE TABLE "companies" (
 	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
 	"name" text DEFAULT '' NOT NULL,
 	"status" "status" DEFAULT 'active' NOT NULL,
+	"business_type" text,
+	"phone" text,
+	"email" text,
+	"address" text,
+	"created_at" timestamp with time zone DEFAULT now() NOT NULL,
+	"updated_at" timestamp with time zone DEFAULT now() NOT NULL,
+	"deleted_at" timestamp with time zone
+);
+--> statement-breakpoint
+CREATE TABLE "contacts" (
+	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
+	"customer_id" uuid NOT NULL,
+	"name" text NOT NULL,
+	"position" text,
+	"whatsapp" text,
+	"email" text,
+	"notes" text,
+	"is_primary" boolean DEFAULT false NOT NULL,
+	"created_at" timestamp with time zone DEFAULT now() NOT NULL,
+	"updated_at" timestamp with time zone DEFAULT now() NOT NULL,
+	"deleted_at" timestamp with time zone
+);
+--> statement-breakpoint
+CREATE TABLE "customers" (
+	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
+	"company_id" uuid NOT NULL,
+	"name" text NOT NULL,
+	"type" "customer_type" NOT NULL,
+	"category_id" uuid,
+	"segmentation_id" uuid,
+	"area_id" uuid,
+	"status" "customer_status" DEFAULT 'prospect' NOT NULL,
+	"potential" "customer_potential" DEFAULT 'medium' NOT NULL,
+	"has_contract_history" boolean DEFAULT false NOT NULL,
+	"last_revenue" numeric,
+	"last_contract_year" integer,
+	"primary_contact_id" uuid,
+	"gender" "gender",
+	"address" text,
+	"birth_place" text,
+	"date_of_birth" text,
+	"religion" text,
+	"education" text,
+	"email" text,
+	"spouse_name" text,
+	"spouse_occupation" text,
+	"children_names" text,
+	"children_occupation" text,
+	"character" text,
+	"hobby" text,
+	"company_name" text,
+	"position" text,
+	"company_address" text,
+	"whatsapp" text,
+	"notes" text,
 	"created_at" timestamp with time zone DEFAULT now() NOT NULL,
 	"updated_at" timestamp with time zone DEFAULT now() NOT NULL,
 	"deleted_at" timestamp with time zone
@@ -266,6 +325,11 @@ CREATE TABLE "users" (
 	CONSTRAINT "users_email_unique" UNIQUE("email")
 );
 --> statement-breakpoint
+ALTER TABLE "contacts" ADD CONSTRAINT "contacts_customer_id_customers_id_fk" FOREIGN KEY ("customer_id") REFERENCES "public"."customers"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "customers" ADD CONSTRAINT "customers_company_id_companies_id_fk" FOREIGN KEY ("company_id") REFERENCES "public"."companies"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "customers" ADD CONSTRAINT "customers_category_id_categories_id_fk" FOREIGN KEY ("category_id") REFERENCES "public"."categories"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "customers" ADD CONSTRAINT "customers_segmentation_id_categories_id_fk" FOREIGN KEY ("segmentation_id") REFERENCES "public"."categories"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "customers" ADD CONSTRAINT "customers_area_id_categories_id_fk" FOREIGN KEY ("area_id") REFERENCES "public"."categories"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "invoices" ADD CONSTRAINT "invoices_enrollment_id_enrollments_id_fk" FOREIGN KEY ("enrollment_id") REFERENCES "public"."enrollments"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "payments" ADD CONSTRAINT "payments_invoice_id_invoices_id_fk" FOREIGN KEY ("invoice_id") REFERENCES "public"."invoices"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "product_prices" ADD CONSTRAINT "product_prices_product_pricing_id_product_pricings_id_fk" FOREIGN KEY ("product_pricing_id") REFERENCES "public"."product_pricings"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
@@ -282,6 +346,8 @@ CREATE INDEX "categories_company_id_deleted_at_idx" ON "categories" USING btree 
 CREATE INDEX "categories_status_idx" ON "categories" USING btree ("status");--> statement-breakpoint
 CREATE INDEX "companies_status_idx" ON "companies" USING btree ("status");--> statement-breakpoint
 CREATE INDEX "companies_deleted_at_idx" ON "companies" USING btree ("deleted_at");--> statement-breakpoint
+CREATE INDEX "contacts_customer_id_deleted_at_idx" ON "contacts" USING btree ("customer_id","deleted_at");--> statement-breakpoint
+CREATE INDEX "customers_company_id_deleted_at_idx" ON "customers" USING btree ("company_id","deleted_at");--> statement-breakpoint
 CREATE INDEX "enrollments_company_id_deleted_at_idx" ON "enrollments" USING btree ("company_id","deleted_at");--> statement-breakpoint
 CREATE INDEX "invoices_company_id_deleted_at_idx" ON "invoices" USING btree ("company_id","deleted_at");--> statement-breakpoint
 CREATE INDEX "invoices_enrollment_id_idx" ON "invoices" USING btree ("enrollment_id");--> statement-breakpoint
