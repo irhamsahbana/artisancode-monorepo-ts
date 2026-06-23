@@ -1,9 +1,9 @@
 export interface DashboardStats {
-  totalCustomers: number
-  activeCustomers: number
-  prospects: number
-  inactiveCustomers: number
-  highPotential: number
+  totalCustomers: number;
+  activeCustomers: number;
+  prospects: number;
+  inactiveCustomers: number;
+  highPotential: number;
 }
 
 export const dashboardStats: DashboardStats = {
@@ -12,4 +12,4 @@ export const dashboardStats: DashboardStats = {
   prospects: 3,
   inactiveCustomers: 2,
   highPotential: 4,
-}
+};
