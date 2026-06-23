@@ -1,28 +1,27 @@
-import { LayoutDashboard, Users, Database, User } from 'lucide-react'
-import { Tag, PieChart, MapPin, Network } from 'lucide-react'
-import { useState } from 'react'
-import { NavLink, useLocation } from 'react-router'
+import { LayoutDashboard, Users, Database, User } from "lucide-react";
+import { Tag, PieChart, MapPin, Network } from "lucide-react";
+import { useState } from "react";
+import { NavLink, useLocation } from "react-router";
 
 import {
   Sheet,
   SheetContent,
   SheetHeader,
   SheetTitle,
-} from '@/components/ui/sheet'
-import { cn } from '@/lib/utils'
-
+} from "@/components/ui/sheet";
+import { cn } from "@/lib/utils";
 
 const masterItems = [
-  { to: '/master/customer-types', label: 'Jenis Pelanggan', icon: Tag },
-  { to: '/master/segmentation', label: 'Segmentasi', icon: PieChart },
-  { to: '/master/areas', label: 'Area', icon: MapPin },
-  { to: '/master/relation-status', label: 'Status Relasi', icon: Network },
-]
+  { to: "/master/customer-types", label: "Jenis Pelanggan", icon: Tag },
+  { to: "/master/segmentation", label: "Segmentasi", icon: PieChart },
+  { to: "/master/areas", label: "Area", icon: MapPin },
+  { to: "/master/relation-status", label: "Status Relasi", icon: Network },
+];
 
 export function BottomNav() {
-  const location = useLocation()
-  const [masterOpen, setMasterOpen] = useState(false)
-  const masterActive = location.pathname.startsWith('/master')
+  const location = useLocation();
+  const [masterOpen, setMasterOpen] = useState(false);
+  const masterActive = location.pathname.startsWith("/master");
 
   return (
     <>
@@ -30,7 +29,10 @@ export function BottomNav() {
         <NavLink
           to="/dashboard"
           className={({ isActive }) =>
-            cn('flex flex-col items-center gap-0.5 text-xs', isActive ? 'text-primary' : 'text-muted-foreground')
+            cn(
+              "flex flex-col items-center gap-0.5 text-xs",
+              isActive ? "text-primary" : "text-muted-foreground",
+            )
           }
         >
           <LayoutDashboard className="h-5 w-5" />
@@ -39,7 +41,10 @@ export function BottomNav() {
         <NavLink
           to="/customers"
           className={({ isActive }) =>
-            cn('flex flex-col items-center gap-0.5 text-xs', isActive ? 'text-primary' : 'text-muted-foreground')
+            cn(
+              "flex flex-col items-center gap-0.5 text-xs",
+              isActive ? "text-primary" : "text-muted-foreground",
+            )
           }
         >
           <Users className="h-5 w-5" />
@@ -48,8 +53,8 @@ export function BottomNav() {
         <button
           onClick={() => setMasterOpen(true)}
           className={cn(
-            'flex flex-col items-center gap-0.5 text-xs',
-            masterActive ? 'text-primary' : 'text-muted-foreground',
+            "flex flex-col items-center gap-0.5 text-xs",
+            masterActive ? "text-primary" : "text-muted-foreground",
           )}
         >
           <Database className="h-5 w-5" />
@@ -58,7 +63,10 @@ export function BottomNav() {
         <NavLink
           to="/settings/account"
           className={({ isActive }) =>
-            cn('flex flex-col items-center gap-0.5 text-xs', isActive ? 'text-primary' : 'text-muted-foreground')
+            cn(
+              "flex flex-col items-center gap-0.5 text-xs",
+              isActive ? "text-primary" : "text-muted-foreground",
+            )
           }
         >
           <User className="h-5 w-5" />
@@ -79,8 +87,10 @@ export function BottomNav() {
                 onClick={() => setMasterOpen(false)}
                 className={({ isActive }) =>
                   cn(
-                    'flex items-center gap-3 rounded-md px-3 py-2.5 text-sm',
-                    isActive ? 'bg-primary text-primary-foreground' : 'hover:bg-muted',
+                    "flex items-center gap-3 rounded-md px-3 py-2.5 text-sm",
+                    isActive
+                      ? "bg-primary text-primary-foreground"
+                      : "hover:bg-muted",
                   )
                 }
               >
@@ -92,5 +102,5 @@ export function BottomNav() {
         </SheetContent>
       </Sheet>
     </>
-  )
+  );
 }

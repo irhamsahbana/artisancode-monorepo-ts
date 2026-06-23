@@ -1,12 +1,12 @@
-import { Outlet } from 'react-router'
+import { Outlet } from "react-router";
 
-import { SidebarProvider, SidebarInset } from '@/components/ui/sidebar'
-import { useIsMobile } from '@/hooks/use-mobile'
+import { SidebarProvider, SidebarInset } from "@/components/ui/sidebar";
+import { useIsMobile } from "@/hooks/use-mobile";
 
-import { DesktopHeader } from './desktop/header'
-import { DesktopSidebar } from './desktop/sidebar'
-import { BottomNav } from './mobile/bottom-nav'
-import { MobileHeader } from './mobile/mobile-header'
+import { DesktopHeader } from "./desktop/header";
+import { DesktopSidebar } from "./desktop/sidebar";
+import { BottomNav } from "./mobile/bottom-nav";
+import { MobileHeader } from "./mobile/mobile-header";
 
 function DesktopLayout() {
   return (
@@ -19,7 +19,7 @@ function DesktopLayout() {
         </main>
       </SidebarInset>
     </SidebarProvider>
-  )
+  );
 }
 
 function MobileLayout() {
@@ -31,10 +31,10 @@ function MobileLayout() {
       </main>
       <BottomNav />
     </div>
-  )
+  );
 }
 
 export function AppLayout() {
-  const isMobile = useIsMobile()
-  return isMobile ? <MobileLayout /> : <DesktopLayout />
+  const isMobile = useIsMobile();
+  return isMobile ? <MobileLayout /> : <DesktopLayout />;
 }

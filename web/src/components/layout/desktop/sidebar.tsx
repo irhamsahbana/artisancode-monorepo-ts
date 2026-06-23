@@ -7,10 +7,11 @@ import {
   Network,
   Building2,
   User,
+  LogOut,
   ChevronDown,
-} from 'lucide-react'
-import { useState } from 'react'
-import { NavLink } from 'react-router'
+} from "lucide-react";
+import { useState } from "react";
+import { NavLink, useNavigate } from "react-router";
 
 import {
   Sidebar,
@@ -26,28 +27,35 @@ import {
   SidebarMenuSub,
   SidebarMenuSubButton,
   SidebarMenuSubItem,
-} from '@/components/ui/sidebar'
-import { cn } from '@/lib/utils'
+} from "@/components/ui/sidebar";
+import { clearToken } from "@/hooks/use-auth";
+import { cn } from "@/lib/utils";
 
 const mainNav = [
-  { to: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
-  { to: '/customers', label: 'Pelanggan', icon: Users },
-]
+  { to: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
+  { to: "/customers", label: "Pelanggan", icon: Users },
+];
 
 const masterNav = [
-  { to: '/master/customer-types', label: 'Jenis Pelanggan', icon: Tag },
-  { to: '/master/segmentation', label: 'Segmentasi', icon: PieChart },
-  { to: '/master/areas', label: 'Area', icon: MapPin },
-  { to: '/master/relation-status', label: 'Status Relasi', icon: Network },
-]
+  { to: "/master/customer-types", label: "Jenis Pelanggan", icon: Tag },
+  { to: "/master/segmentation", label: "Segmentasi", icon: PieChart },
+  { to: "/master/areas", label: "Area", icon: MapPin },
+  { to: "/master/relation-status", label: "Status Relasi", icon: Network },
+];
 
 const settingsNav = [
-  { to: '/settings/profile', label: 'Profil Bisnis', icon: Building2 },
-  { to: '/settings/account', label: 'Akun', icon: User },
-]
+  { to: "/settings/profile", label: "Profil Bisnis", icon: Building2 },
+  { to: "/settings/account", label: "Akun", icon: User },
+];
 
 export function DesktopSidebar() {
-  const [masterOpen, setMasterOpen] = useState(true)
+  const [masterOpen, setMasterOpen] = useState(true);
+  const navigate = useNavigate();
+
+  function handleLogout() {
+    clearToken();
+    navigate("/login");
+  }
 
   return (
     <Sidebar>
@@ -65,7 +73,10 @@ export function DesktopSidebar() {
                     <NavLink
                       to={to}
                       className={({ isActive }) =>
-                        cn('flex items-center gap-2', isActive && 'font-medium text-primary')
+                        cn(
+                          "flex items-center gap-2",
+                          isActive && "font-medium text-primary",
+                        )
                       }
                     >
                       <Icon className="h-4 w-4" />
@@ -85,7 +96,10 @@ export function DesktopSidebar() {
           >
             Master Data
             <ChevronDown
-              className={cn('h-4 w-4 transition-transform', masterOpen && 'rotate-180')}
+              className={cn(
+                "h-4 w-4 transition-transform",
+                masterOpen && "rotate-180",
+              )}
             />
           </SidebarGroupLabel>
           {masterOpen && (
@@ -99,7 +113,10 @@ export function DesktopSidebar() {
                           <NavLink
                             to={to}
                             className={({ isActive }) =>
-                              cn('flex items-center gap-2', isActive && 'font-medium text-primary')
+                              cn(
+                                "flex items-center gap-2",
+                                isActive && "font-medium text-primary",
+                              )
                             }
                           >
                             <Icon className="h-3.5 w-3.5" />
@@ -125,7 +142,10 @@ export function DesktopSidebar() {
                     <NavLink
                       to={to}
                       className={({ isActive }) =>
-                        cn('flex items-center gap-2', isActive && 'font-medium text-primary')
+                        cn(
+                          "flex items-center gap-2",
+                          isActive && "font-medium text-primary",
+                        )
                       }
                     >
                       <Icon className="h-4 w-4" />
@@ -139,9 +159,19 @@ export function DesktopSidebar() {
         </SidebarGroup>
       </SidebarContent>
 
-      <SidebarFooter className="border-t px-4 py-3 text-xs text-muted-foreground">
-        v0.1.0
+      <SidebarFooter className="border-t px-2 py-2">
+        <SidebarMenu>
+          <SidebarMenuItem>
+            <SidebarMenuButton
+              onClick={handleLogout}
+              className="w-full cursor-pointer text-muted-foreground"
+            >
+              <LogOut className="h-4 w-4" />
+              Keluar
+            </SidebarMenuButton>
+          </SidebarMenuItem>
+        </SidebarMenu>
       </SidebarFooter>
     </Sidebar>
-  )
+  );
 }

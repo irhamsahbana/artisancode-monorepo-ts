@@ -1,5 +1,5 @@
-import { ThemeToggle } from '@/components/theme-toggle'
-import { Avatar, AvatarFallback } from '@/components/ui/avatar'
+import { ThemeToggle } from "@/components/theme-toggle";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 
 export function MobileHeader() {
   return (
@@ -12,5 +12,5 @@ export function MobileHeader() {
         </Avatar>
       </div>
     </header>
-  )
+  );
 }

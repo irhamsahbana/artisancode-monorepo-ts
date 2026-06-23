@@ -1,7 +1,7 @@
-import { ThemeToggle } from '@/components/theme-toggle'
-import { Avatar, AvatarFallback } from '@/components/ui/avatar'
-import { Separator } from '@/components/ui/separator'
-import { SidebarTrigger } from '@/components/ui/sidebar'
+import { ThemeToggle } from "@/components/theme-toggle";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Separator } from "@/components/ui/separator";
+import { SidebarTrigger } from "@/components/ui/sidebar";
 
 export function DesktopHeader() {
   return (
@@ -14,5 +14,5 @@ export function DesktopHeader() {
         <AvatarFallback className="text-xs">AD</AvatarFallback>
       </Avatar>
     </header>
-  )
+  );
 }
