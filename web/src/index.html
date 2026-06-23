@@ -9,6 +9,11 @@
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap" />
     <link rel="stylesheet" href="./tailwind-out.css" />
     <title>CRM Wika</title>
+    <script>
+      if (typeof process === "undefined") {
+        globalThis.process = { env: {}, stdout: { isTTY: false } };
+      }
+    </script>
   </head>
   <body>
     <div id="root"></div>
