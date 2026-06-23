@@ -16,6 +16,7 @@ export function createCustomerHandler(usecase: ICustomerUsecase) {
       name: body.name,
       type: body.type,
       categoryId: body.category_id,
+      segmentationId: body.segmentation_id,
       areaId: body.area_id,
       status: body.status,
       potential: body.potential,

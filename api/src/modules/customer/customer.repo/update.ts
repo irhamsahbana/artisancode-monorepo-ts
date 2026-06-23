@@ -17,6 +17,7 @@ export async function updateCustomer(
   if (req.name !== undefined) updates.name = req.name
   if (req.type !== undefined) updates.type = req.type
   if (req.categoryId !== undefined) updates.categoryId = req.categoryId
+  if (req.segmentationId !== undefined) updates.segmentationId = req.segmentationId
   if (req.areaId !== undefined) updates.areaId = req.areaId
   if (req.status !== undefined) updates.status = req.status
   if (req.potential !== undefined) updates.potential = req.potential

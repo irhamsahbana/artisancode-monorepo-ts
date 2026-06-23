@@ -15,6 +15,7 @@ export async function createCustomer(
       name: req.name,
       type: req.type,
       categoryId: req.categoryId,
+      segmentationId: req.segmentationId,
       areaId: req.areaId,
       status: req.status ?? 'prospect',
       potential: req.potential ?? 'medium',

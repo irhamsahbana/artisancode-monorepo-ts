@@ -17,6 +17,7 @@ export function findCustomerListHandler(usecase: ICustomerUsecase) {
       status,
       potential,
       category_id,
+      segmentation_id,
       area_id,
       has_contract_history,
     } = query as Record<string, string>
@@ -29,6 +30,7 @@ export function findCustomerListHandler(usecase: ICustomerUsecase) {
       status: status as Entity.CustomerStatus | undefined,
       potential: potential as Entity.CustomerPotential | undefined,
       categoryId: category_id,
+      segmentationId: segmentation_id,
       areaId: area_id,
       hasContractHistory:
         has_contract_history !== undefined ? has_contract_history === 'true' : undefined,

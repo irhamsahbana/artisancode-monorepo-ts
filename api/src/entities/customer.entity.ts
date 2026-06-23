@@ -3,7 +3,7 @@ import { PaginationMetadata, PaginationQuery } from './pagination.entity'
 export type CustomerType = 'individual' | 'business'
 export type CustomerStatus = 'prospect' | 'active' | 'inactive'
 export type CustomerPotential = 'high' | 'medium' | 'low'
-export type Gender = 'Male' | 'Female'
+export type Gender = 'male' | 'female'
 
 export const CustomerTypes: CustomerType[] = ['individual', 'business']
 export const CustomerStatuses: CustomerStatus[] = ['prospect', 'active', 'inactive']
@@ -15,6 +15,7 @@ export interface Customer {
   name: string
   type: CustomerType
   categoryId: string | null
+  segmentationId: string | null
   areaId: string | null
   status: CustomerStatus
   potential: CustomerPotential
@@ -50,6 +51,7 @@ export interface CreateCustomerReq {
   name: string
   type: CustomerType
   categoryId?: string
+  segmentationId?: string
   areaId?: string
   status?: CustomerStatus
   potential?: CustomerPotential
@@ -82,6 +84,7 @@ export interface UpdateCustomerReq {
   name?: string
   type?: CustomerType
   categoryId?: string
+  segmentationId?: string
   areaId?: string
   status?: CustomerStatus
   potential?: CustomerPotential
@@ -116,6 +119,7 @@ export interface GetCustomerReq {
   status?: CustomerStatus
   potential?: CustomerPotential
   categoryId?: string
+  segmentationId?: string
   areaId?: string
   hasContractHistory?: boolean
   pagination?: PaginationQuery

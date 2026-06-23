@@ -6,13 +6,14 @@ export const createCustomerSchema = z.object({
   name: z.string().min(1).max(255),
   type: z.enum(CustomerTypes as [string, ...string[]]),
   category_id: z.uuid().optional(),
+  segmentation_id: z.uuid().optional(),
   area_id: z.uuid().optional(),
   status: z.enum(CustomerStatuses as [string, ...string[]]).optional(),
   potential: z.enum(CustomerPotentials as [string, ...string[]]).optional(),
   has_contract_history: z.boolean().optional(),
   last_revenue: z.number().optional(),
   last_contract_year: z.number().int().optional(),
-  gender: z.enum(['Male', 'Female']).optional(),
+  gender: z.enum(['male', 'female']).optional(),
   address: z.string().optional(),
   birth_place: z.string().optional(),
   date_of_birth: z.string().optional(),
@@ -44,6 +45,7 @@ export const getCustomerListSchema = z.object({
   status: z.enum(CustomerStatuses as [string, ...string[]]).optional(),
   potential: z.enum(CustomerPotentials as [string, ...string[]]).optional(),
   category_id: z.uuid().optional(),
+  segmentation_id: z.uuid().optional(),
   area_id: z.uuid().optional(),
   has_contract_history: z
     .string()

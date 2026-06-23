@@ -19,6 +19,7 @@ function toEntity(data: typeof customers.$inferSelect): Entity.Customer {
     name: data.name,
     type: data.type,
     categoryId: data.categoryId,
+    segmentationId: data.segmentationId,
     areaId: data.areaId,
     status: data.status,
     potential: data.potential,

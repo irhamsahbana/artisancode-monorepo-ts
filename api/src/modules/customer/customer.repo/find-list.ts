@@ -18,6 +18,7 @@ export async function findCustomerList(
     status,
     potential,
     categoryId,
+    segmentationId,
     areaId,
     hasContractHistory,
   } = req
@@ -31,6 +32,7 @@ export async function findCustomerList(
   if (status) conditions.push(eq(customers.status, status))
   if (potential) conditions.push(eq(customers.potential, potential))
   if (categoryId) conditions.push(eq(customers.categoryId, categoryId))
+  if (segmentationId) conditions.push(eq(customers.segmentationId, segmentationId))
   if (areaId) conditions.push(eq(customers.areaId, areaId))
   if (hasContractHistory !== undefined)
     conditions.push(eq(customers.hasContractHistory, hasContractHistory))
