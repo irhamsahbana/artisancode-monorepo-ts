@@ -1,5 +1,4 @@
 import { AppError, ErrorCode } from '@artisancode/types'
-import { logger } from '@artisancode/logger'
 
 import { buildUrl } from './build-url'
 import { injectTraceHeaders } from './inject-trace-headers'
@@ -66,16 +65,16 @@ export async function httpClient<T = unknown>(
     }
   } catch (error) {
     if (error instanceof AppError) {
-      logger.error(`[HTTP] ${method} ${url} failed: ${error.httpCode} ${error.message}`)
+      console.error(`[HTTP] ${method} ${url} failed: ${error.httpCode} ${error.message}`)
       throw error
     }
 
     if (error instanceof TypeError) {
-      logger.error(`[HTTP] ${method} ${url} network error: ${error.message}`)
+      console.error(`[HTTP] ${method} ${url} network error: ${error.message}`)
       throw new AppError(ErrorCode.HTTP_BAD_GATEWAY, `Network error: ${error.message}`, { httpCode: 502 })
     }
 
-    logger.error(`[HTTP] ${method} ${url} error:`, error)
+    console.error(`[HTTP] ${method} ${url} error:`, error)
     throw error
   }
 }
