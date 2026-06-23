@@ -7,7 +7,7 @@ import { getExecutor } from '@/common/executor'
 import { authenticate } from '@/common/middlewares/auth.middleware'
 import { responseSuccess } from '@/common/rest_response'
 import { getUserContext } from '@/common/store/user-context'
-import { customers, masterItems } from '@/db/schema'
+import { categories, customers } from '@/db/schema'
 
 const router = new Hono()
 
@@ -46,24 +46,24 @@ router.get('/', authenticate, async (c: Context<AppEnv>) => {
     exec
       .select({
         categoryId: customers.categoryId,
-        name: masterItems.name,
+        name: categories.name,
         count: sql<number>`count(*)::int`,
       })
       .from(customers)
-      .leftJoin(masterItems, eq(customers.categoryId, masterItems.id))
+      .leftJoin(categories, eq(customers.categoryId, categories.id))
       .where(base)
-      .groupBy(customers.categoryId, masterItems.name),
+      .groupBy(customers.categoryId, categories.name),
 
     exec
       .select({
         areaId: customers.areaId,
-        name: masterItems.name,
+        name: categories.name,
         count: sql<number>`count(*)::int`,
       })
       .from(customers)
-      .leftJoin(masterItems, eq(customers.areaId, masterItems.id))
+      .leftJoin(categories, eq(customers.areaId, categories.id))
       .where(base)
-      .groupBy(customers.areaId, masterItems.name),
+      .groupBy(customers.areaId, categories.name),
 
     exec
       .select({ potential: customers.potential, count: sql<number>`count(*)::int` })
