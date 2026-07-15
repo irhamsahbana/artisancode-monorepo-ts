@@ -1,5 +1,6 @@
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { QueryClient } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
+import { PersistQueryClientProvider } from "@tanstack/react-query-persist-client";
 import { ThemeProvider } from "next-themes";
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
@@ -9,6 +10,7 @@ import { GuestRoute } from "@/components/guest-route";
 import { AppLayout } from "@/components/layout/app-layout";
 import { ProtectedRoute } from "@/components/protected-route";
 import { Toaster } from "@/components/ui/sonner";
+import { persister } from "@/lib/query-persister";
 import { AccountSettings } from "@/pages/account-settings";
 import { BusinessProfile } from "@/pages/business-profile";
 import { CustomerDetail } from "@/pages/customers/customer-detail";
@@ -20,7 +22,10 @@ import { Areas } from "@/pages/master/areas";
 import { CustomerTypes } from "@/pages/master/customer-types";
 import { RelationStatus } from "@/pages/master/relation-status";
 import { Segmentation } from "@/pages/master/segmentation";
+import { registerPwa } from "@/register-sw";
 import "./index.css";
+
+const ONE_DAY_MS = 1000 * 60 * 60 * 24;
 
 const router = createBrowserRouter([
   {
@@ -53,14 +58,21 @@ const router = createBrowserRouter([
   },
 ]);
 
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+  defaultOptions: { queries: { gcTime: ONE_DAY_MS } },
+});
+
+registerPwa();
 
 const elem = document.getElementById("root");
 if (!elem) throw new Error("Missing #root element");
 
 const app = (
   <StrictMode>
-    <QueryClientProvider client={queryClient}>
+    <PersistQueryClientProvider
+      client={queryClient}
+      persistOptions={{ persister, maxAge: ONE_DAY_MS }}
+    >
       <ThemeProvider
         attribute="class"
         defaultTheme="system"
@@ -71,7 +83,7 @@ const app = (
         <Toaster />
       </ThemeProvider>
       <ReactQueryDevtools initialIsOpen={false} />
-    </QueryClientProvider>
+    </PersistQueryClientProvider>
   </StrictMode>
 );
 
