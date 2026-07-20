@@ -9,6 +9,7 @@ import { createBrowserRouter, RouterProvider, Navigate } from "react-router";
 import { GuestRoute } from "@/components/guest-route";
 import { AppLayout } from "@/components/layout/app-layout";
 import { ProtectedRoute } from "@/components/protected-route";
+import { ErrorBoundary } from "@/components/shared/error-boundary";
 import { Toaster } from "@/components/ui/sonner";
 import { persister } from "@/lib/query-persister";
 import { AccountSettings } from "@/pages/account-settings";
@@ -35,9 +36,11 @@ const router = createBrowserRouter([
   {
     path: "/",
     element: <ProtectedRoute />,
+    errorElement: <ErrorBoundary />,
     children: [
       {
         element: <AppLayout />,
+        errorElement: <ErrorBoundary />,
         children: [
           { index: true, element: <Navigate to="/dashboard" replace /> },
           { path: "dashboard", element: <Dashboard /> },
