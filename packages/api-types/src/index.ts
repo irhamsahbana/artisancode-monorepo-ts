@@ -20,6 +20,13 @@ export type {
 } from './customer'
 export type { DashboardMetrics } from './dashboard'
 export type {
+  BroadcastTemplate,
+  BroadcastOccasion,
+  BroadcastLog,
+  CreateBroadcastTemplateReq,
+  BroadcastList,
+} from './broadcast'
+export type {
   Project,
   ProjectStatus,
   ProjectVisit,

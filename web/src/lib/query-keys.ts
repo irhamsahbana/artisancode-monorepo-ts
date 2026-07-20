@@ -27,4 +27,8 @@ export const queryKeys = {
     detail: (id: string) => ["projects", "detail", id] as const,
     visits: (projectId: string) => ["projects", "visits", projectId] as const,
   },
+  broadcasts: {
+    all: ["broadcasts"] as const,
+    list: () => ["broadcasts", "list"] as const,
+  },
 } as const;
