@@ -9,6 +9,7 @@ import {
   MapPin,
   Network,
   Package,
+  Ruler,
   Building2,
   User,
   LogOut,
@@ -49,6 +50,7 @@ const masterNav = [
   { to: "/master/areas", label: "Area", icon: MapPin },
   { to: "/master/relation-status", label: "Status Relasi", icon: Network },
   { to: "/master/products", label: "Produk", icon: Package },
+  { to: "/master/uoms", label: "Satuan", icon: Ruler },
 ];
 
 const settingsNav = [

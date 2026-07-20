@@ -43,4 +43,8 @@ export const queryKeys = {
     all: ["products"] as const,
     list: (q?: string) => ["products", "list", q] as const,
   },
+  uoms: {
+    all: ["uoms"] as const,
+    list: (q?: string) => ["uoms", "list", q] as const,
+  },
 } as const;

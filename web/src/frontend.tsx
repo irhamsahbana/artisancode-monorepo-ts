@@ -26,6 +26,7 @@ import { Areas } from "@/pages/master/areas";
 import { Products } from "@/pages/master/products";
 import { RelationStatus } from "@/pages/master/relation-status";
 import { Segmentation } from "@/pages/master/segmentation";
+import { Uoms } from "@/pages/master/uoms";
 import { ProjectDetail } from "@/pages/projects/project-detail";
 import { ProjectForm } from "@/pages/projects/project-form";
 import { ProjectList } from "@/pages/projects/project-list";
@@ -75,6 +76,7 @@ const router = createBrowserRouter([
           { path: "master/areas", element: <Areas /> },
           { path: "master/relation-status", element: <RelationStatus /> },
           { path: "master/products", element: <Products /> },
+          { path: "master/uoms", element: <Uoms /> },
           { path: "settings/profile", element: <BusinessProfile /> },
           { path: "settings/account", element: <AccountSettings /> },
         ],
