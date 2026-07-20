@@ -33,7 +33,7 @@ import type {
 // ponytail: hardcoded category set (not master data) — see
 // UNIT_OF_MEASUREMENT_CATEGORIES in @artisancode/api-types, the source of
 // truth both this Select and any future BE schema enum validate against.
-const categoryLabel: Record<UnitOfMeasurementCategory, string> = {
+export const categoryLabel: Record<UnitOfMeasurementCategory, string> = {
   length: "Panjang",
   area: "Luas",
   volume: "Volume",
@@ -43,10 +43,12 @@ const categoryLabel: Record<UnitOfMeasurementCategory, string> = {
   other: "Lainnya",
 };
 
-const categoryOptions = Object.entries(categoryLabel).map(([value, label]) => ({
-  value,
-  label,
-}));
+export const categoryOptions = Object.entries(categoryLabel).map(
+  ([value, label]) => ({
+    value,
+    label,
+  }),
+);
 
 const categoryFilters: FilterOption[] = [
   { key: "category", label: "Kategori", options: categoryOptions },

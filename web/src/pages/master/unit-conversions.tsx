@@ -29,10 +29,18 @@ import {
   useUnitConversions,
   useUpdateUnitConversion,
 } from "@/hooks/use-unit-conversions";
+import { categoryOptions } from "@/pages/master/uoms";
 import { convertQuantity } from "@/services/unit-conversion";
 
-import type { UnitConversion } from "@artisancode/api-types";
+import type {
+  UnitConversion,
+  UnitOfMeasurementCategory,
+} from "@artisancode/api-types";
 import type { ReactNode } from "react";
+
+function unitCategory(unitId: string) {
+  return mockUnitsOfMeasurement.find((u) => u.id === unitId)?.category;
+}
 
 function unitLabel(unitId: string) {
   const unit = mockUnitsOfMeasurement.find((u) => u.id === unitId);
@@ -51,9 +59,15 @@ export function UnitConversions() {
 
   const [open, setOpen] = useState(false);
   const [editing, setEditing] = useState<UnitConversion | null>(null);
+  const [category, setCategory] = useState<UnitOfMeasurementCategory | "">("");
   const [fromUnitId, setFromUnitId] = useState("");
   const [toUnitId, setToUnitId] = useState("");
   const [factor, setFactor] = useState("");
+
+  const unitsInCategory = useMemo(
+    () => mockUnitsOfMeasurement.filter((u) => u.category === category),
+    [category],
+  );
 
   const items = useMemo(() => data?.items ?? [], [data]);
 
@@ -73,6 +87,7 @@ export function UnitConversions() {
 
   function openAdd() {
     setEditing(null);
+    setCategory("");
     setFromUnitId("");
     setToUnitId("");
     setFactor("");
@@ -81,16 +96,31 @@ export function UnitConversions() {
 
   function openEdit(item: UnitConversion) {
     setEditing(item);
+    setCategory(unitCategory(item.fromUnitId) ?? "");
     setFromUnitId(item.fromUnitId);
     setToUnitId(item.toUnitId);
     setFactor(String(item.factor));
     setOpen(true);
   }
 
+  function handleCategoryChange(value: string) {
+    setCategory(value as UnitOfMeasurementCategory);
+    setFromUnitId("");
+    setToUnitId("");
+  }
+
   function handleSave() {
     const factorNum = Number(factor);
-    if (!fromUnitId || !toUnitId || !factor.trim() || Number.isNaN(factorNum)) {
-      toast.error("Lengkapi satuan asal, satuan tujuan, dan faktor konversi.");
+    if (
+      !category ||
+      !fromUnitId ||
+      !toUnitId ||
+      !factor.trim() ||
+      Number.isNaN(factorNum)
+    ) {
+      toast.error(
+        "Lengkapi tipe satuan, satuan asal, satuan tujuan, dan faktor konversi.",
+      );
       return;
     }
     if (fromUnitId === toUnitId) {
@@ -134,7 +164,7 @@ export function UnitConversions() {
   ];
 
   return (
-    <div>
+    <div className="flex flex-col gap-8">
       <PageHeader
         title="Konversi Satuan"
         description="Kelola faktor konversi antar satuan ukur."
@@ -156,7 +186,7 @@ export function UnitConversions() {
         )}
       />
 
-      <Card className="mt-6">
+      <Card>
         <CardHeader>
           <CardTitle>Coba Konversi</CardTitle>
         </CardHeader>
@@ -221,13 +251,31 @@ export function UnitConversions() {
             </DialogTitle>
           </DialogHeader>
           <div className="grid gap-3 py-2">
+            <Field label="Tipe Satuan">
+              <Select value={category} onValueChange={handleCategoryChange}>
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder="Pilih tipe satuan" />
+                </SelectTrigger>
+                <SelectContent>
+                  {categoryOptions.map((o) => (
+                    <SelectItem key={o.value} value={o.value}>
+                      {o.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </Field>
             <Field label="Dari Satuan">
-              <Select value={fromUnitId} onValueChange={setFromUnitId}>
+              <Select
+                value={fromUnitId}
+                onValueChange={setFromUnitId}
+                disabled={!category}
+              >
                 <SelectTrigger className="w-full">
                   <SelectValue placeholder="Pilih satuan" />
                 </SelectTrigger>
                 <SelectContent>
-                  {mockUnitsOfMeasurement.map((u) => (
+                  {unitsInCategory.map((u) => (
                     <SelectItem key={u.id} value={u.id}>
                       {u.name} ({u.symbol})
                     </SelectItem>
@@ -236,12 +284,16 @@ export function UnitConversions() {
               </Select>
             </Field>
             <Field label="Ke Satuan">
-              <Select value={toUnitId} onValueChange={setToUnitId}>
+              <Select
+                value={toUnitId}
+                onValueChange={setToUnitId}
+                disabled={!category}
+              >
                 <SelectTrigger className="w-full">
                   <SelectValue placeholder="Pilih satuan" />
                 </SelectTrigger>
                 <SelectContent>
-                  {mockUnitsOfMeasurement.map((u) => (
+                  {unitsInCategory.map((u) => (
                     <SelectItem key={u.id} value={u.id}>
                       {u.name} ({u.symbol})
                     </SelectItem>
