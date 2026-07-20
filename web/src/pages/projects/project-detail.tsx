@@ -10,6 +10,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useCustomers } from "@/hooks/use-customers";
+import { useProducts } from "@/hooks/use-products";
 import {
   useProject,
   useProjectVisits,
@@ -29,6 +30,7 @@ export function ProjectDetail() {
   const { data: project, isLoading } = useProject(id ?? "");
   const { data: customersData } = useCustomers({ per_page: 100 });
   const { data: visits } = useProjectVisits(id ?? "");
+  const { data: productsData } = useProducts();
 
   const customer = customersData?.items.find(
     (c) => c.id === project?.customerId,
@@ -54,6 +56,9 @@ export function ProjectDetail() {
         <div className="flex-1">
           <h1 className="text-xl font-semibold">{project.name}</h1>
           <div className="mt-1 flex items-center gap-2">
+            <span className="font-mono text-xs text-muted-foreground">
+              {project.projectNumber}
+            </span>
             <Badge variant={projectStatusVariant[project.status]}>
               {projectStatusLabel[project.status]}
             </Badge>
@@ -115,6 +120,34 @@ export function ProjectDetail() {
               )}
             </CardContent>
           </Card>
+
+          {project.products && project.products.length > 0 && (
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-sm">Produk</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <ul className="divide-y">
+                  {project.products.map((line) => {
+                    const product = productsData?.items.find(
+                      (p) => p.id === line.productId,
+                    );
+                    return (
+                      <li
+                        key={line.productId}
+                        className="flex items-center justify-between py-2 text-sm"
+                      >
+                        <span>{product?.name ?? line.productId}</span>
+                        <span className="text-muted-foreground">
+                          {line.quantity} {product?.unit ?? ""}
+                        </span>
+                      </li>
+                    );
+                  })}
+                </ul>
+              </CardContent>
+            </Card>
+          )}
 
           <VisitLog projectId={project.id} visits={visits ?? []} />
         </div>
