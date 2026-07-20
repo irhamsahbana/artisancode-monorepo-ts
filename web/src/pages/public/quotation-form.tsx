@@ -2,12 +2,17 @@ import { useState } from "react";
 import { useNavigate } from "react-router";
 import { toast } from "sonner";
 
+import { Combobox } from "@/components/shared/combobox";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { useDebouncedValue } from "@/hooks/use-debounced-value";
+import { useProducts } from "@/hooks/use-products";
 import { useCreateQuotation } from "@/hooks/use-quotations";
+import { useUoms } from "@/hooks/use-uoms";
+import { digitsOnly, formatThousands } from "@/lib/utils";
 
 interface FormState {
   requesterName: string;
@@ -35,6 +40,22 @@ export function QuotationForm() {
   const navigate = useNavigate();
   const { mutateAsync, isPending } = useCreateQuotation();
   const [form, setForm] = useState<FormState>(empty);
+  const [unit, setUnit] = useState("");
+
+  const productQuery = useDebouncedValue(form.productName);
+  const { data: productsData, isLoading: productsLoading } =
+    useProducts(productQuery);
+  const unitQuery = useDebouncedValue(unit);
+  const { data: uomsData, isLoading: uomsLoading } = useUoms(unitQuery);
+
+  const productOptions = (productsData?.items ?? []).map((p) => ({
+    value: p.name,
+    hint: p.unit,
+  }));
+  const unitOptions = (uomsData?.items ?? []).map((u) => ({
+    value: u.symbol,
+    hint: u.name,
+  }));
 
   function set<K extends keyof FormState>(key: K, val: FormState[K]) {
     setForm((prev) => ({ ...prev, [key]: val }));
@@ -54,11 +75,12 @@ export function QuotationForm() {
         email: form.email || undefined,
         productName: form.productName || undefined,
         specification: form.specification || undefined,
-        quantity: form.quantity || undefined,
+        quantity: [form.quantity, unit].filter(Boolean).join(" ") || undefined,
         notes: form.notes || undefined,
       });
       toast.success("Permintaan terkirim. Kami akan segera menghubungi Anda.");
       setForm(empty);
+      setUnit("");
     } catch {
       toast.error("Gagal mengirim permintaan. Coba lagi.");
     }
@@ -80,7 +102,7 @@ export function QuotationForm() {
             <form onSubmit={handleSubmit} className="grid gap-5">
               <div className="grid gap-5 sm:grid-cols-2">
                 <div className="sm:col-span-2">
-                  <Field label="Nama Lengkap *" required>
+                  <Field label="Nama Lengkap" required>
                     <Input
                       required
                       value={form.requesterName}
@@ -98,7 +120,7 @@ export function QuotationForm() {
                   />
                 </Field>
 
-                <Field label="WhatsApp *" required>
+                <Field label="WhatsApp" required>
                   <Input
                     required
                     type="tel"
@@ -121,10 +143,12 @@ export function QuotationForm() {
 
                 <div className="sm:col-span-2">
                   <Field label="Nama Produk (opsional)">
-                    <Input
+                    <Combobox
                       value={form.productName}
-                      onChange={(e) => set("productName", e.target.value)}
-                      placeholder="Contoh: Ready Mix K-300, U-Box, Box Culvert"
+                      onChange={(v) => set("productName", v)}
+                      options={productOptions}
+                      loading={productsLoading}
+                      placeholder="Pilih dari daftar atau ketik manual"
                     />
                   </Field>
                 </div>
@@ -140,12 +164,25 @@ export function QuotationForm() {
                   </Field>
                 </div>
 
-                <div className="sm:col-span-2">
+                <div className="grid grid-cols-2 gap-3 sm:col-span-2">
                   <Field label="Jumlah / Volume (opsional)">
                     <Input
-                      value={form.quantity}
-                      onChange={(e) => set("quantity", e.target.value)}
-                      placeholder="Contoh: 500 m³, 100 pcs"
+                      type="text"
+                      inputMode="numeric"
+                      value={formatThousands(form.quantity)}
+                      onChange={(e) =>
+                        set("quantity", digitsOnly(e.target.value))
+                      }
+                      placeholder="Contoh: 500"
+                    />
+                  </Field>
+                  <Field label="Satuan (opsional)">
+                    <Combobox
+                      value={unit}
+                      onChange={setUnit}
+                      options={unitOptions}
+                      loading={uomsLoading}
+                      placeholder="Pilih dari daftar atau ketik manual"
                     />
                   </Field>
                 </div>
