@@ -50,6 +50,13 @@ export type {
   CreateProjectVisitReq,
 } from './project'
 export type {
+  Product,
+  CreateProductReq,
+  UpdateProductReq,
+  GetProductReq,
+  ProductList,
+} from './product'
+export type {
   MasterItem,
   CreateMasterItemReq,
   UpdateMasterItemReq,

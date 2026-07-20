@@ -43,6 +43,7 @@ interface Props<T> {
   filterFn?: (row: T, filters: Record<string, string>) => boolean;
   pageSize?: number;
   actions?: (row: T) => ReactNode;
+  loading?: boolean;
 }
 
 export function DataTable<T>({
@@ -54,6 +55,7 @@ export function DataTable<T>({
   filterFn,
   pageSize = 10,
   actions,
+  loading,
 }: Props<T>) {
   const [query, setQuery] = useState("");
   const [activeFilters, setActiveFilters] = useState<Record<string, string>>(
@@ -133,7 +135,15 @@ export function DataTable<T>({
             </TableRow>
           </TableHeader>
           <TableBody>
-            {pageData.length === 0 ? (
+            {loading ? (
+              <TableRow>
+                <TableCell colSpan={allColumns.length}>
+                  <p className="py-6 text-center text-sm text-muted-foreground">
+                    Memuat...
+                  </p>
+                </TableCell>
+              </TableRow>
+            ) : pageData.length === 0 ? (
               <TableRow>
                 <TableCell colSpan={allColumns.length}>
                   <EmptyState />

@@ -8,6 +8,7 @@ import {
   PieChart,
   MapPin,
   Network,
+  Package,
   Building2,
   User,
   LogOut,
@@ -47,6 +48,7 @@ const masterNav = [
   { to: "/master/segmentation", label: "Segmentasi", icon: PieChart },
   { to: "/master/areas", label: "Area", icon: MapPin },
   { to: "/master/relation-status", label: "Status Relasi", icon: Network },
+  { to: "/master/products", label: "Produk", icon: Package },
 ];
 
 const settingsNav = [

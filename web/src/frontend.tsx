@@ -23,6 +23,7 @@ import { CustomerList } from "@/pages/customers/customer-list";
 import { Dashboard } from "@/pages/dashboard";
 import { Login } from "@/pages/login";
 import { Areas } from "@/pages/master/areas";
+import { Products } from "@/pages/master/products";
 import { RelationStatus } from "@/pages/master/relation-status";
 import { Segmentation } from "@/pages/master/segmentation";
 import { ProjectDetail } from "@/pages/projects/project-detail";
@@ -73,6 +74,7 @@ const router = createBrowserRouter([
           { path: "master/segmentation", element: <Segmentation /> },
           { path: "master/areas", element: <Areas /> },
           { path: "master/relation-status", element: <RelationStatus /> },
+          { path: "master/products", element: <Products /> },
           { path: "settings/profile", element: <BusinessProfile /> },
           { path: "settings/account", element: <AccountSettings /> },
         ],
