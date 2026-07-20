@@ -47,4 +47,8 @@ export const queryKeys = {
     all: ["uoms"] as const,
     list: (q?: string) => ["uoms", "list", q] as const,
   },
+  unitConversions: {
+    all: ["unitConversions"] as const,
+    list: () => ["unitConversions", "list"] as const,
+  },
 } as const;

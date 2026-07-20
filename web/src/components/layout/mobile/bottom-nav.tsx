@@ -5,7 +5,14 @@ import {
   Database,
   User,
 } from "lucide-react";
-import { PieChart, MapPin, Network, Package, Ruler } from "lucide-react";
+import {
+  PieChart,
+  MapPin,
+  Network,
+  Package,
+  Ruler,
+  ArrowLeftRight,
+} from "lucide-react";
 import { useState } from "react";
 import { NavLink, useLocation } from "react-router";
 
@@ -23,6 +30,11 @@ const masterItems = [
   { to: "/master/relation-status", label: "Status Relasi", icon: Network },
   { to: "/master/products", label: "Produk", icon: Package },
   { to: "/master/uoms", label: "Satuan", icon: Ruler },
+  {
+    to: "/master/unit-conversions",
+    label: "Konversi Satuan",
+    icon: ArrowLeftRight,
+  },
 ];
 
 export function BottomNav() {

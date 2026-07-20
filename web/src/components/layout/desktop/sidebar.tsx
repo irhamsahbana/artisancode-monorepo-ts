@@ -10,6 +10,7 @@ import {
   Network,
   Package,
   Ruler,
+  ArrowLeftRight,
   Building2,
   User,
   LogOut,
@@ -51,6 +52,11 @@ const masterNav = [
   { to: "/master/relation-status", label: "Status Relasi", icon: Network },
   { to: "/master/products", label: "Produk", icon: Package },
   { to: "/master/uoms", label: "Satuan", icon: Ruler },
+  {
+    to: "/master/unit-conversions",
+    label: "Konversi Satuan",
+    icon: ArrowLeftRight,
+  },
 ];
 
 const settingsNav = [
