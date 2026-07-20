@@ -59,6 +59,7 @@ export type {
 } from './product'
 export type {
   UnitOfMeasurement,
+  UnitOfMeasurementCategory,
   CreateUnitOfMeasurementReq,
   UpdateUnitOfMeasurementReq,
   GetUnitOfMeasurementReq,
@@ -68,6 +69,7 @@ export type {
   UpdateUnitConversionReq,
   UnitConversionList,
 } from './uom'
+export { UNIT_OF_MEASUREMENT_CATEGORIES } from './uom'
 export type {
   MasterItem,
   CreateMasterItemReq,

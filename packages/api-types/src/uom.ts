@@ -1,9 +1,25 @@
 import type { PaginationMetadata, PaginationQuery } from './common'
 
+// ponytail: fixed set, not master data — validate against this on both FE
+// (form Select) and BE (schema enum) instead of a manageable category table.
+export const UNIT_OF_MEASUREMENT_CATEGORIES = [
+  'length',
+  'area',
+  'volume',
+  'mass',
+  'time',
+  'quantity',
+  'other',
+] as const
+
+export type UnitOfMeasurementCategory =
+  (typeof UNIT_OF_MEASUREMENT_CATEGORIES)[number]
+
 export interface UnitOfMeasurement {
   id: string
   name: string
   symbol: string
+  category: UnitOfMeasurementCategory
   isActive: boolean
   createdAt: string
   updatedAt: string
@@ -12,16 +28,19 @@ export interface UnitOfMeasurement {
 export interface CreateUnitOfMeasurementReq {
   name: string
   symbol: string
+  category: UnitOfMeasurementCategory
 }
 
 export interface UpdateUnitOfMeasurementReq {
   name?: string
   symbol?: string
+  category?: UnitOfMeasurementCategory
   isActive?: boolean
 }
 
 export interface GetUnitOfMeasurementReq {
   q?: string
+  category?: UnitOfMeasurementCategory
   isActive?: boolean
   pagination?: PaginationQuery
 }

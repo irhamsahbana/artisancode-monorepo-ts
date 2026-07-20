@@ -44,6 +44,7 @@ function mockCreate(
     id: `uom${crypto.randomUUID()}`,
     name: body.name,
     symbol: body.symbol,
+    category: body.category,
     isActive: true,
     createdAt: now,
     updatedAt: now,

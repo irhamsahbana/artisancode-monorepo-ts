@@ -2,7 +2,7 @@ import { Plus, Pencil } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 
-import type { Column } from "@/components/shared/data-table";
+import type { Column, FilterOption } from "@/components/shared/data-table";
 import { DataTable } from "@/components/shared/data-table";
 import { PageHeader } from "@/components/shared/page-header";
 import { Badge } from "@/components/ui/badge";
@@ -16,9 +16,41 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { useCreateUom, useUoms, useUpdateUom } from "@/hooks/use-uoms";
 
-import type { UnitOfMeasurement } from "@artisancode/api-types";
+import type {
+  UnitOfMeasurement,
+  UnitOfMeasurementCategory,
+} from "@artisancode/api-types";
+
+// ponytail: hardcoded category set (not master data) — see
+// UNIT_OF_MEASUREMENT_CATEGORIES in @artisancode/api-types, the source of
+// truth both this Select and any future BE schema enum validate against.
+const categoryLabel: Record<UnitOfMeasurementCategory, string> = {
+  length: "Panjang",
+  area: "Luas",
+  volume: "Volume",
+  mass: "Massa",
+  time: "Waktu",
+  quantity: "Jumlah",
+  other: "Lainnya",
+};
+
+const categoryOptions = Object.entries(categoryLabel).map(([value, label]) => ({
+  value,
+  label,
+}));
+
+const categoryFilters: FilterOption[] = [
+  { key: "category", label: "Kategori", options: categoryOptions },
+];
 
 export function Uoms() {
   const { data, isLoading } = useUoms();
@@ -29,6 +61,7 @@ export function Uoms() {
   const [editing, setEditing] = useState<UnitOfMeasurement | null>(null);
   const [name, setName] = useState("");
   const [symbol, setSymbol] = useState("");
+  const [category, setCategory] = useState<UnitOfMeasurementCategory | "">("");
 
   const items = data?.items ?? [];
 
@@ -36,6 +69,7 @@ export function Uoms() {
     setEditing(null);
     setName("");
     setSymbol("");
+    setCategory("");
     setOpen(true);
   }
 
@@ -43,14 +77,18 @@ export function Uoms() {
     setEditing(item);
     setName(item.name);
     setSymbol(item.symbol);
+    setCategory(item.category);
     setOpen(true);
   }
 
   function handleSave() {
-    if (!name.trim() || !symbol.trim()) return;
+    if (!name.trim() || !symbol.trim() || !category) {
+      toast.error("Lengkapi nama, simbol, dan kategori satuan.");
+      return;
+    }
     if (editing) {
       update(
-        { id: editing.id, name: name.trim(), symbol: symbol.trim() },
+        { id: editing.id, name: name.trim(), symbol: symbol.trim(), category },
         {
           onSuccess: () => {
             toast.success("Satuan berhasil diperbarui.");
@@ -60,7 +98,7 @@ export function Uoms() {
       );
     } else {
       create(
-        { name: name.trim(), symbol: symbol.trim() },
+        { name: name.trim(), symbol: symbol.trim(), category },
         {
           onSuccess: () => {
             toast.success("Satuan berhasil ditambahkan.");
@@ -91,6 +129,13 @@ export function Uoms() {
       key: "symbol",
       label: "Simbol",
       render: (i) => i.symbol,
+    },
+    {
+      key: "category",
+      label: "Kategori",
+      render: (i) => (
+        <Badge variant="outline">{categoryLabel[i.category]}</Badge>
+      ),
     },
     {
       key: "status",
@@ -124,6 +169,8 @@ export function Uoms() {
         loading={isLoading}
         searchPlaceholder="Cari satuan..."
         searchFn={(i, q) => i.name.toLowerCase().includes(q.toLowerCase())}
+        filters={categoryFilters}
+        filterFn={(i, f) => i.category === f.category}
         actions={(item) => (
           <Button variant="ghost" size="icon" onClick={() => openEdit(item)}>
             <Pencil className="h-4 w-4" />
@@ -156,6 +203,26 @@ export function Uoms() {
                 placeholder="kg, gram, sak, unit, dll."
                 onKeyDown={(e) => e.key === "Enter" && handleSave()}
               />
+            </div>
+            <div className="grid gap-1.5">
+              <Label>Kategori</Label>
+              <Select
+                value={category}
+                onValueChange={(v) =>
+                  setCategory(v as UnitOfMeasurementCategory)
+                }
+              >
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder="Pilih kategori" />
+                </SelectTrigger>
+                <SelectContent>
+                  {categoryOptions.map((o) => (
+                    <SelectItem key={o.value} value={o.value}>
+                      {o.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
           </div>
           <DialogFooter>
