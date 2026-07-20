@@ -19,7 +19,6 @@ import { CustomerList } from "@/pages/customers/customer-list";
 import { Dashboard } from "@/pages/dashboard";
 import { Login } from "@/pages/login";
 import { Areas } from "@/pages/master/areas";
-import { CustomerTypes } from "@/pages/master/customer-types";
 import { RelationStatus } from "@/pages/master/relation-status";
 import { Segmentation } from "@/pages/master/segmentation";
 import { registerPwa } from "@/register-sw";
@@ -46,7 +45,6 @@ const router = createBrowserRouter([
           { path: "customers/new", element: <CustomerForm /> },
           { path: "customers/:id", element: <CustomerDetail /> },
           { path: "customers/:id/edit", element: <CustomerForm /> },
-          { path: "master/customer-types", element: <CustomerTypes /> },
           { path: "master/segmentation", element: <Segmentation /> },
           { path: "master/areas", element: <Areas /> },
           { path: "master/relation-status", element: <RelationStatus /> },

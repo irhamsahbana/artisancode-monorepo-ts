@@ -1,14 +1,11 @@
 import type { PaginationMetadata, PaginationQuery } from './common'
 
-export type CustomerType = 'individual' | 'business'
 export type CustomerStatus = 'prospect' | 'active' | 'inactive'
 export type CustomerPotential = 'high' | 'medium' | 'low'
 
 export interface Customer {
   id: string
   name: string
-  type: CustomerType
-  categoryId: string
   segmentationId: string
   areaId: string
   status: CustomerStatus
@@ -45,8 +42,6 @@ export interface Customer {
 
 export interface CreateCustomerReq {
   name: string
-  type: CustomerType
-  categoryId: string
   segmentationId: string
   areaId: string
   status?: CustomerStatus
@@ -76,8 +71,6 @@ export interface CreateCustomerReq {
 
 export interface UpdateCustomerReq {
   name?: string
-  type?: CustomerType
-  categoryId?: string
   segmentationId?: string
   areaId?: string
   status?: CustomerStatus
@@ -107,10 +100,8 @@ export interface UpdateCustomerReq {
 
 export interface GetCustomerReq {
   q?: string
-  type?: CustomerType
   status?: CustomerStatus
   potential?: CustomerPotential
-  categoryId?: string
   segmentationId?: string
   areaId?: string
   hasContractHistory?: boolean

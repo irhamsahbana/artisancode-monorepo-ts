@@ -1,5 +1,5 @@
 import { LayoutDashboard, Users, Database, User } from "lucide-react";
-import { Tag, PieChart, MapPin, Network } from "lucide-react";
+import { PieChart, MapPin, Network } from "lucide-react";
 import { useState } from "react";
 import { NavLink, useLocation } from "react-router";
 
@@ -12,7 +12,6 @@ import {
 import { cn } from "@/lib/utils";
 
 const masterItems = [
-  { to: "/master/customer-types", label: "Jenis Pelanggan", icon: Tag },
   { to: "/master/segmentation", label: "Segmentasi", icon: PieChart },
   { to: "/master/areas", label: "Area", icon: MapPin },
   { to: "/master/relation-status", label: "Status Relasi", icon: Network },

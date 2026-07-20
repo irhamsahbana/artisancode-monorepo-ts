@@ -9,7 +9,6 @@ export type {
 } from './contact'
 export type {
   Customer,
-  CustomerType,
   CustomerStatus,
   CustomerPotential,
   CreateCustomerReq,

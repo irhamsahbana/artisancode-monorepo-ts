@@ -1,47 +1,11 @@
-export interface Customer {
-  id: string;
-  name: string;
-  type: "individual" | "business";
-  categoryId: string;
-  segmentationId: string;
-  areaId: string;
-  status: "prospect" | "active" | "inactive";
-  potential: "high" | "medium" | "low";
-  hasContractHistory: boolean;
-  lastRevenue?: number;
-  lastContractYear?: number;
-  primaryContactId?: string;
-  // personal
-  gender?: "Male" | "Female";
-  address?: string;
-  birthPlace?: string;
-  dateOfBirth?: string;
-  religion?: string;
-  education?: string;
-  email?: string;
-  // family
-  spouseName?: string;
-  spouseOccupation?: string;
-  childrenNames?: string;
-  childrenOccupation?: string;
-  // traits
-  character?: string;
-  hobby?: string;
-  // company
-  companyName?: string;
-  position?: string;
-  companyAddress?: string;
-  whatsapp?: string;
-  notes?: string;
-  createdAt: string;
-}
+import type { Customer } from "@artisancode/api-types";
 
-export const customers: Customer[] = [
+// ponytail: in-memory source for the UI-only demo. Typed against api-types so
+// switching DEMO_MODE off + uncommenting backend calls is a drop-in.
+export const mockCustomers: Customer[] = [
   {
     id: "c1",
     name: "PT Maju Bersama",
-    type: "business",
-    categoryId: "ct2",
     segmentationId: "seg2",
     areaId: "area1",
     status: "active",
@@ -52,13 +16,12 @@ export const customers: Customer[] = [
     primaryContactId: "con1",
     whatsapp: "628111234567",
     notes: "Klien lama, loyal.",
-    createdAt: "2023-01-15",
+    createdAt: "2023-01-15T00:00:00.000Z",
+    updatedAt: "2024-06-01T00:00:00.000Z",
   },
   {
     id: "c2",
     name: "CV Teknologi Nusantara",
-    type: "business",
-    categoryId: "ct2",
     segmentationId: "seg1",
     areaId: "area3",
     status: "active",
@@ -68,26 +31,26 @@ export const customers: Customer[] = [
     lastContractYear: 2023,
     primaryContactId: "con3",
     whatsapp: "628221234567",
-    createdAt: "2022-06-20",
+    createdAt: "2022-06-20T00:00:00.000Z",
+    updatedAt: "2023-12-10T00:00:00.000Z",
   },
   {
     id: "c3",
-    name: "Budi Santoso",
-    type: "individual",
-    categoryId: "ct1",
-    segmentationId: "seg5",
+    name: "CV Karya Mandiri",
+    segmentationId: "seg1",
     areaId: "area2",
     status: "prospect",
-    potential: "low",
+    potential: "medium",
     hasContractHistory: false,
+    primaryContactId: "con13",
     whatsapp: "628331234567",
-    createdAt: "2024-03-10",
+    notes: "Proyek kecil rumah tinggal.",
+    createdAt: "2024-03-10T00:00:00.000Z",
+    updatedAt: "2024-03-10T00:00:00.000Z",
   },
   {
     id: "c4",
     name: "PT Aneka Solusi Digital",
-    type: "business",
-    categoryId: "ct2",
     segmentationId: "seg3",
     areaId: "area1",
     status: "prospect",
@@ -95,13 +58,12 @@ export const customers: Customer[] = [
     hasContractHistory: false,
     primaryContactId: "con4",
     whatsapp: "628441234567",
-    createdAt: "2024-05-01",
+    createdAt: "2024-05-01T00:00:00.000Z",
+    updatedAt: "2024-05-01T00:00:00.000Z",
   },
   {
     id: "c5",
     name: "Dinas Pendidikan Kota Bandung",
-    type: "business",
-    categoryId: "ct3",
     segmentationId: "seg2",
     areaId: "area3",
     status: "inactive",
@@ -110,13 +72,12 @@ export const customers: Customer[] = [
     lastRevenue: 75000000,
     lastContractYear: 2022,
     primaryContactId: "con5",
-    createdAt: "2021-09-01",
+    createdAt: "2021-09-01T00:00:00.000Z",
+    updatedAt: "2022-09-01T00:00:00.000Z",
   },
   {
     id: "c6",
     name: "Startup Inovasi Indonesia",
-    type: "business",
-    categoryId: "ct2",
     segmentationId: "seg4",
     areaId: "area5",
     status: "active",
@@ -126,39 +87,37 @@ export const customers: Customer[] = [
     lastContractYear: 2024,
     primaryContactId: "con6",
     whatsapp: "628661234567",
-    createdAt: "2023-07-12",
+    createdAt: "2023-07-12T00:00:00.000Z",
+    updatedAt: "2024-07-12T00:00:00.000Z",
   },
   {
     id: "c7",
-    name: "Siti Rahayu",
-    type: "individual",
-    categoryId: "ct1",
+    name: "UD Sumber Rejeki",
     segmentationId: "seg5",
     areaId: "area4",
     status: "active",
     potential: "low",
     hasContractHistory: false,
+    primaryContactId: "con14",
     whatsapp: "628771234567",
-    createdAt: "2024-01-20",
+    createdAt: "2024-01-20T00:00:00.000Z",
+    updatedAt: "2024-01-20T00:00:00.000Z",
   },
   {
     id: "c8",
     name: "Yayasan Peduli Bangsa",
-    type: "business",
-    categoryId: "ct4",
     segmentationId: "seg1",
     areaId: "area1",
     status: "prospect",
     potential: "medium",
     hasContractHistory: false,
     primaryContactId: "con8",
-    createdAt: "2024-04-05",
+    createdAt: "2024-04-05T00:00:00.000Z",
+    updatedAt: "2024-04-05T00:00:00.000Z",
   },
   {
     id: "c9",
     name: "PT Mega Konstruksi",
-    type: "business",
-    categoryId: "ct2",
     segmentationId: "seg3",
     areaId: "area4",
     status: "active",
@@ -168,13 +127,12 @@ export const customers: Customer[] = [
     lastContractYear: 2024,
     primaryContactId: "con9",
     whatsapp: "628991234567",
-    createdAt: "2020-11-30",
+    createdAt: "2020-11-30T00:00:00.000Z",
+    updatedAt: "2024-11-30T00:00:00.000Z",
   },
   {
     id: "c10",
-    name: "Ahmad Fauzi",
-    type: "individual",
-    categoryId: "ct1",
+    name: "PT Fauzi Bangun Perkasa",
     segmentationId: "seg5",
     areaId: "area2",
     status: "inactive",
@@ -182,6 +140,8 @@ export const customers: Customer[] = [
     hasContractHistory: true,
     lastRevenue: 5000000,
     lastContractYear: 2021,
-    createdAt: "2021-03-14",
+    primaryContactId: "con15",
+    createdAt: "2021-03-14T00:00:00.000Z",
+    updatedAt: "2021-03-14T00:00:00.000Z",
   },
 ];

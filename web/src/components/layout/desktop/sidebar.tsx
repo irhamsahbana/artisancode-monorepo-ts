@@ -1,7 +1,6 @@
 import {
   LayoutDashboard,
   Users,
-  Tag,
   PieChart,
   MapPin,
   Network,
@@ -37,7 +36,6 @@ const mainNav = [
 ];
 
 const masterNav = [
-  { to: "/master/customer-types", label: "Jenis Pelanggan", icon: Tag },
   { to: "/master/segmentation", label: "Segmentasi", icon: PieChart },
   { to: "/master/areas", label: "Area", icon: MapPin },
   { to: "/master/relation-status", label: "Status Relasi", icon: Network },

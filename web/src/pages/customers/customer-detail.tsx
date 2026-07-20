@@ -104,12 +104,6 @@ export function CustomerDetail() {
             </CardHeader>
             <CardContent className="grid gap-4 sm:grid-cols-2">
               <Info
-                label="Jenis"
-                value={
-                  customer.type === "business" ? "Badan Usaha" : "Perorangan"
-                }
-              />
-              <Info
                 label="Segmentasi"
                 value={
                   segmentations.find((s) => s.id === customer.segmentationId)

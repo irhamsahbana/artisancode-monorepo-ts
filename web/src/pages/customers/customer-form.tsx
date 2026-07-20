@@ -26,8 +26,6 @@ import type { Customer } from "@artisancode/api-types";
 
 interface FormState {
   name: string;
-  type: Customer["type"];
-  categoryId: string;
   segmentationId: string;
   areaId: string;
   status: Customer["status"];
@@ -54,8 +52,6 @@ interface FormState {
 
 const empty: FormState = {
   name: "",
-  type: "business",
-  categoryId: "",
   segmentationId: "",
   areaId: "",
   status: "prospect",
@@ -86,7 +82,6 @@ export function CustomerForm() {
   const isEdit = !!id;
 
   const { data: existing } = useCustomer(id ?? "");
-  const { data: categoriesData } = useCategoryList("customer_category");
   const { data: segmentationsData } = useCategoryList("segmentation");
   const { data: areasData } = useCategoryList("area");
   const { mutateAsync: createCustomer, isPending: creating } =
@@ -101,8 +96,6 @@ export function CustomerForm() {
       // eslint-disable-next-line react-hooks/set-state-in-effect
       setForm({
         name: existing.name,
-        type: existing.type,
-        categoryId: existing.categoryId ?? "",
         segmentationId: existing.segmentationId ?? "",
         areaId: existing.areaId ?? "",
         status: existing.status,
@@ -137,8 +130,6 @@ export function CustomerForm() {
     e.preventDefault();
     const body = {
       name: form.name,
-      type: form.type,
-      categoryId: form.categoryId || undefined,
       segmentationId: form.segmentationId || undefined,
       areaId: form.areaId || undefined,
       status: form.status,
@@ -177,8 +168,6 @@ export function CustomerForm() {
     }
   }
 
-  const categories =
-    categoriesData?.items.filter((c) => c.status === "active") ?? [];
   const segmentations =
     segmentationsData?.items.filter((s) => s.status === "active") ?? [];
   const areas = areasData?.items.filter((a) => a.status === "active") ?? [];
@@ -208,39 +197,6 @@ export function CustomerForm() {
                 />
               </Field>
             </div>
-
-            <Field label="Jenis *">
-              <Select
-                value={form.type}
-                onValueChange={(v) => set("type", v as Customer["type"])}
-              >
-                <SelectTrigger className="w-full">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="business">Badan Usaha</SelectItem>
-                  <SelectItem value="individual">Perorangan</SelectItem>
-                </SelectContent>
-              </Select>
-            </Field>
-
-            <Field label="Kategori">
-              <Select
-                value={form.categoryId}
-                onValueChange={(v) => set("categoryId", v)}
-              >
-                <SelectTrigger className="w-full">
-                  <SelectValue placeholder="Pilih kategori" />
-                </SelectTrigger>
-                <SelectContent>
-                  {categories.map((c) => (
-                    <SelectItem key={c.id} value={c.id}>
-                      {c.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </Field>
 
             <Field label="Segmentasi">
               <Select
