@@ -20,6 +20,13 @@ export type {
 } from './customer'
 export type { DashboardMetrics } from './dashboard'
 export type {
+  CustomerRating,
+  RiskLevel,
+  CreateCustomerRatingReq,
+  GetCustomerRatingReq,
+  CustomerRatingList,
+} from './rating'
+export type {
   QuotationRequest,
   QuotationStatus,
   CreateQuotationReq,
