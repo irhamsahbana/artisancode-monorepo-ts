@@ -4,3 +4,4 @@
 # folders
 .DS_Store
 node_modules
+settings.local.json*
