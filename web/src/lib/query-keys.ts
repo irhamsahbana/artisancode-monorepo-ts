@@ -20,4 +20,11 @@ export const queryKeys = {
     all: ["dashboard"] as const,
     stats: () => ["dashboard", "stats"] as const,
   },
+  projects: {
+    all: ["projects"] as const,
+    list: (params?: Record<string, unknown>) =>
+      ["projects", "list", params] as const,
+    detail: (id: string) => ["projects", "detail", id] as const,
+    visits: (projectId: string) => ["projects", "visits", projectId] as const,
+  },
 } as const;

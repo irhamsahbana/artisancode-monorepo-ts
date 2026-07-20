@@ -20,6 +20,16 @@ export type {
 } from './customer'
 export type { DashboardMetrics } from './dashboard'
 export type {
+  Project,
+  ProjectStatus,
+  ProjectVisit,
+  CreateProjectReq,
+  UpdateProjectReq,
+  GetProjectReq,
+  ProjectList,
+  CreateProjectVisitReq,
+} from './project'
+export type {
   MasterItem,
   CreateMasterItemReq,
   UpdateMasterItemReq,
