@@ -31,4 +31,8 @@ export const queryKeys = {
     all: ["broadcasts"] as const,
     list: () => ["broadcasts", "list"] as const,
   },
+  quotations: {
+    all: ["quotations"] as const,
+    list: () => ["quotations", "list"] as const,
+  },
 } as const;
