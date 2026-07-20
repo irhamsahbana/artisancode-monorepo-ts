@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router";
 import { toast } from "sonner";
 
+import { LocationPicker } from "@/components/projects/location-picker";
 import { ProductPicker } from "@/components/projects/product-picker";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -31,6 +32,8 @@ interface FormState {
   name: string;
   customerId: string;
   location: string;
+  latitude?: number;
+  longitude?: number;
   sourceOfFunds: string;
   picName: string;
   status: ProjectStatus;
@@ -81,6 +84,8 @@ export function ProjectForm() {
         name: existing.name,
         customerId: existing.customerId,
         location: existing.location ?? "",
+        latitude: existing.latitude,
+        longitude: existing.longitude,
         sourceOfFunds: existing.sourceOfFunds ?? "",
         picName: existing.picName ?? "",
         status: existing.status,
@@ -105,6 +110,8 @@ export function ProjectForm() {
       name: form.name,
       customerId: form.customerId,
       location: form.location || undefined,
+      latitude: form.latitude,
+      longitude: form.longitude,
       sourceOfFunds: form.sourceOfFunds || undefined,
       picName: form.picName || undefined,
       status: form.status,
@@ -197,6 +204,25 @@ export function ProjectForm() {
                 placeholder="Kota / wilayah proyek"
               />
             </Field>
+
+            {(!isEdit || existing) && (
+              <div className="sm:col-span-2">
+                <LocationPicker
+                  latitude={form.latitude}
+                  longitude={form.longitude}
+                  onChange={(latitude, longitude) =>
+                    setForm((prev) => ({ ...prev, latitude, longitude }))
+                  }
+                  onClear={() =>
+                    setForm((prev) => ({
+                      ...prev,
+                      latitude: undefined,
+                      longitude: undefined,
+                    }))
+                  }
+                />
+              </div>
+            )}
 
             <Field label="Sumber Dana">
               <Input

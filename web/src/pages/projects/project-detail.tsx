@@ -3,6 +3,7 @@ import { useState } from "react";
 import { Link, useParams, useNavigate } from "react-router";
 import { toast } from "sonner";
 
+import { LocationView } from "@/components/projects/location-view";
 import { EmptyState } from "@/components/shared/empty-state";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -120,6 +121,28 @@ export function ProjectDetail() {
               )}
             </CardContent>
           </Card>
+
+          {project.latitude != null && project.longitude != null && (
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-sm">Lokasi</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <LocationView
+                  latitude={project.latitude}
+                  longitude={project.longitude}
+                />
+                <a
+                  href={`https://www.openstreetmap.org/?mlat=${project.latitude}&mlon=${project.longitude}#map=16/${project.latitude}/${project.longitude}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="mt-2 inline-block text-xs text-primary hover:underline"
+                >
+                  Buka di OpenStreetMap
+                </a>
+              </CardContent>
+            </Card>
+          )}
 
           {project.products && project.products.length > 0 && (
             <Card>
