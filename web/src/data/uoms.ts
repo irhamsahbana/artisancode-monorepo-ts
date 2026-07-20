@@ -1,0 +1,69 @@
+import type { UnitOfMeasurement } from "@artisancode/api-types";
+
+// ponytail: in-memory unit-of-measurement catalog (Master Data Satuan).
+export const mockUnitsOfMeasurement: UnitOfMeasurement[] = [
+  {
+    id: "uom1",
+    name: "Kilogram",
+    symbol: "kg",
+    isActive: true,
+    createdAt: "2023-01-01T00:00:00.000Z",
+    updatedAt: "2023-01-01T00:00:00.000Z",
+  },
+  {
+    id: "uom2",
+    name: "Gram",
+    symbol: "gram",
+    isActive: true,
+    createdAt: "2023-01-01T00:00:00.000Z",
+    updatedAt: "2023-01-01T00:00:00.000Z",
+  },
+  {
+    id: "uom3",
+    name: "Sak",
+    symbol: "sak",
+    isActive: true,
+    createdAt: "2023-01-01T00:00:00.000Z",
+    updatedAt: "2023-01-01T00:00:00.000Z",
+  },
+  {
+    id: "uom4",
+    name: "Meter Kubik",
+    symbol: "m3",
+    isActive: true,
+    createdAt: "2023-01-01T00:00:00.000Z",
+    updatedAt: "2023-01-01T00:00:00.000Z",
+  },
+  {
+    id: "uom5",
+    name: "Liter",
+    symbol: "liter",
+    isActive: true,
+    createdAt: "2023-01-01T00:00:00.000Z",
+    updatedAt: "2023-01-01T00:00:00.000Z",
+  },
+  {
+    id: "uom6",
+    name: "Meter Persegi",
+    symbol: "m2",
+    isActive: true,
+    createdAt: "2023-01-01T00:00:00.000Z",
+    updatedAt: "2023-01-01T00:00:00.000Z",
+  },
+  {
+    id: "uom7",
+    name: "Batang",
+    symbol: "batang",
+    isActive: true,
+    createdAt: "2023-01-01T00:00:00.000Z",
+    updatedAt: "2023-01-01T00:00:00.000Z",
+  },
+  {
+    id: "uom8",
+    name: "Unit",
+    symbol: "unit",
+    isActive: true,
+    createdAt: "2023-01-01T00:00:00.000Z",
+    updatedAt: "2023-01-01T00:00:00.000Z",
+  },
+];

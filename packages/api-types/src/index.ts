@@ -58,6 +58,17 @@ export type {
   ProductList,
 } from './product'
 export type {
+  UnitOfMeasurement,
+  CreateUnitOfMeasurementReq,
+  UpdateUnitOfMeasurementReq,
+  GetUnitOfMeasurementReq,
+  UnitOfMeasurementList,
+  UnitConversion,
+  CreateUnitConversionReq,
+  UpdateUnitConversionReq,
+  UnitConversionList,
+} from './uom'
+export type {
   MasterItem,
   CreateMasterItemReq,
   UpdateMasterItemReq,
