@@ -1,6 +1,10 @@
 import {
   LayoutDashboard,
   Users,
+  Briefcase,
+  Star,
+  FileText,
+  Megaphone,
   PieChart,
   MapPin,
   Network,
@@ -33,6 +37,10 @@ import { cn } from "@/lib/utils";
 const mainNav = [
   { to: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
   { to: "/customers", label: "Pelanggan", icon: Users },
+  { to: "/projects", label: "Proyek", icon: Briefcase },
+  { to: "/ratings", label: "Penilaian", icon: Star },
+  { to: "/quotations", label: "Penawaran", icon: FileText },
+  { to: "/broadcasts", label: "Broadcast", icon: Megaphone },
 ];
 
 const masterNav = [

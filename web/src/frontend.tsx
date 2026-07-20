@@ -13,6 +13,9 @@ import { ErrorBoundary } from "@/components/shared/error-boundary";
 import { Toaster } from "@/components/ui/sonner";
 import { persister } from "@/lib/query-persister";
 import { AccountSettings } from "@/pages/account-settings";
+import { BroadcastDetail } from "@/pages/broadcasts/broadcast-detail";
+import { BroadcastForm } from "@/pages/broadcasts/broadcast-form";
+import { BroadcastList } from "@/pages/broadcasts/broadcast-list";
 import { BusinessProfile } from "@/pages/business-profile";
 import { CustomerDetail } from "@/pages/customers/customer-detail";
 import { CustomerForm } from "@/pages/customers/customer-form";
@@ -22,6 +25,12 @@ import { Login } from "@/pages/login";
 import { Areas } from "@/pages/master/areas";
 import { RelationStatus } from "@/pages/master/relation-status";
 import { Segmentation } from "@/pages/master/segmentation";
+import { ProjectDetail } from "@/pages/projects/project-detail";
+import { ProjectForm } from "@/pages/projects/project-form";
+import { ProjectList } from "@/pages/projects/project-list";
+import { QuotationForm } from "@/pages/public/quotation-form";
+import { QuotationList } from "@/pages/quotations/quotation-list";
+import { RatingList } from "@/pages/ratings/rating-list";
 import { registerPwa } from "@/register-sw";
 import "./index.css";
 
@@ -32,6 +41,10 @@ const router = createBrowserRouter([
     path: "/login",
     element: <GuestRoute />,
     children: [{ index: true, element: <Login /> }],
+  },
+  {
+    path: "/rfq",
+    element: <QuotationForm />,
   },
   {
     path: "/",
@@ -48,6 +61,15 @@ const router = createBrowserRouter([
           { path: "customers/new", element: <CustomerForm /> },
           { path: "customers/:id", element: <CustomerDetail /> },
           { path: "customers/:id/edit", element: <CustomerForm /> },
+          { path: "projects", element: <ProjectList /> },
+          { path: "projects/new", element: <ProjectForm /> },
+          { path: "projects/:id", element: <ProjectDetail /> },
+          { path: "projects/:id/edit", element: <ProjectForm /> },
+          { path: "ratings", element: <RatingList /> },
+          { path: "quotations", element: <QuotationList /> },
+          { path: "broadcasts", element: <BroadcastList /> },
+          { path: "broadcasts/new", element: <BroadcastForm /> },
+          { path: "broadcasts/:id", element: <BroadcastDetail /> },
           { path: "master/segmentation", element: <Segmentation /> },
           { path: "master/areas", element: <Areas /> },
           { path: "master/relation-status", element: <RelationStatus /> },

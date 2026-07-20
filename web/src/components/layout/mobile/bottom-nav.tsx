@@ -1,4 +1,10 @@
-import { LayoutDashboard, Users, Database, User } from "lucide-react";
+import {
+  LayoutDashboard,
+  Users,
+  Briefcase,
+  Database,
+  User,
+} from "lucide-react";
 import { PieChart, MapPin, Network } from "lucide-react";
 import { useState } from "react";
 import { NavLink, useLocation } from "react-router";
@@ -48,6 +54,18 @@ export function BottomNav() {
         >
           <Users className="h-5 w-5" />
           Pelanggan
+        </NavLink>
+        <NavLink
+          to="/projects"
+          className={({ isActive }) =>
+            cn(
+              "flex flex-col items-center gap-0.5 text-xs",
+              isActive ? "text-primary" : "text-muted-foreground",
+            )
+          }
+        >
+          <Briefcase className="h-5 w-5" />
+          Proyek
         </NavLink>
         <button
           onClick={() => setMasterOpen(true)}
