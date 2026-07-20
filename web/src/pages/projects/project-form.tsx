@@ -22,6 +22,7 @@ import {
   useProject,
   useUpdateProject,
 } from "@/hooks/use-projects";
+import { digitsOnly, formatThousands } from "@/lib/utils";
 
 import type { ProjectProductLine, ProjectStatus } from "@artisancode/api-types";
 
@@ -232,9 +233,12 @@ export function ProjectForm() {
 
             <Field label="Nilai Estimasi (Rp)">
               <Input
-                type="number"
-                value={form.estimatedValue}
-                onChange={(e) => set("estimatedValue", e.target.value)}
+                type="text"
+                inputMode="numeric"
+                value={formatThousands(form.estimatedValue)}
+                onChange={(e) =>
+                  set("estimatedValue", digitsOnly(e.target.value))
+                }
                 placeholder="0"
               />
             </Field>
@@ -284,7 +288,7 @@ export function ProjectForm() {
 
             <div className="sm:col-span-2">
               <Separator />
-              <div className="pt-3">
+              <div className="pt-6">
                 <ProductPicker
                   value={form.products}
                   onChange={(products) => set("products", products)}
