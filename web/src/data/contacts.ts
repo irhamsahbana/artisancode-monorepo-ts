@@ -1,15 +1,7 @@
-export interface Contact {
-  id: string;
-  customerId: string;
-  name: string;
-  position?: string;
-  whatsapp?: string;
-  email?: string;
-  notes?: string;
-  isPrimary: boolean;
-}
+import type { Contact } from "@artisancode/api-types";
 
-export const contacts: Contact[] = [
+// ponytail: in-memory contacts (key persons) for the UI-only demo.
+export const mockContacts: Contact[] = [
   {
     id: "con1",
     customerId: "c1",
@@ -17,7 +9,11 @@ export const contacts: Contact[] = [
     position: "Direktur",
     whatsapp: "628111234567",
     email: "hendra@majubersama.co.id",
+    gender: "male",
+    religion: "Islam",
     isPrimary: true,
+    createdAt: "2023-01-15T00:00:00.000Z",
+    updatedAt: "2023-01-15T00:00:00.000Z",
   },
   {
     id: "con2",
@@ -26,7 +22,11 @@ export const contacts: Contact[] = [
     position: "Manager Keuangan",
     whatsapp: "628112222222",
     email: "dewi@majubersama.co.id",
+    gender: "female",
+    religion: "Kristen",
     isPrimary: false,
+    createdAt: "2023-02-01T00:00:00.000Z",
+    updatedAt: "2023-02-01T00:00:00.000Z",
   },
   {
     id: "con3",
@@ -35,7 +35,11 @@ export const contacts: Contact[] = [
     position: "CEO",
     whatsapp: "628221234567",
     email: "andi@teknologinusantara.id",
+    gender: "male",
+    religion: "Islam",
     isPrimary: true,
+    createdAt: "2022-06-20T00:00:00.000Z",
+    updatedAt: "2022-06-20T00:00:00.000Z",
   },
   {
     id: "con4",
@@ -44,14 +48,22 @@ export const contacts: Contact[] = [
     position: "HRD Manager",
     whatsapp: "628441234567",
     email: "rini@anekacorp.com",
+    gender: "female",
+    religion: "Islam",
     isPrimary: true,
+    createdAt: "2024-05-01T00:00:00.000Z",
+    updatedAt: "2024-05-01T00:00:00.000Z",
   },
   {
     id: "con5",
     customerId: "c5",
     name: "Bapak Suroto",
     position: "Kepala Dinas",
+    gender: "male",
+    religion: "Islam",
     isPrimary: true,
+    createdAt: "2021-09-01T00:00:00.000Z",
+    updatedAt: "2021-09-01T00:00:00.000Z",
   },
   {
     id: "con6",
@@ -60,14 +72,22 @@ export const contacts: Contact[] = [
     position: "Co-Founder",
     whatsapp: "628661234567",
     email: "kevin@innovasi.id",
+    gender: "male",
+    religion: "Buddha",
     isPrimary: true,
+    createdAt: "2023-07-12T00:00:00.000Z",
+    updatedAt: "2023-07-12T00:00:00.000Z",
   },
   {
     id: "con8",
     customerId: "c8",
     name: "Ibu Hartini",
     position: "Sekretaris",
+    gender: "female",
+    religion: "Islam",
     isPrimary: true,
+    createdAt: "2024-04-05T00:00:00.000Z",
+    updatedAt: "2024-04-05T00:00:00.000Z",
   },
   {
     id: "con9",
@@ -76,6 +96,86 @@ export const contacts: Contact[] = [
     position: "Direktur Utama",
     whatsapp: "628991234567",
     email: "bambang@megakons.co.id",
+    gender: "male",
+    religion: "Kristen",
     isPrimary: true,
+    createdAt: "2020-11-30T00:00:00.000Z",
+    updatedAt: "2020-11-30T00:00:00.000Z",
+  },
+  // ponytail: same person at multiple companies ("pinjam perusahaan") so the
+  // Key Person search aggregates companies under one name.
+  {
+    id: "con10",
+    customerId: "c9",
+    name: "Andi Saputra",
+    position: "Konsultan Proyek",
+    whatsapp: "628221234567",
+    email: "andi@megakons.co.id",
+    gender: "male",
+    religion: "Islam",
+    isPrimary: false,
+    createdAt: "2023-05-15T00:00:00.000Z",
+    updatedAt: "2023-05-15T00:00:00.000Z",
+  },
+  {
+    id: "con11",
+    customerId: "c6",
+    name: "Rini Susanti",
+    position: "Advisor",
+    whatsapp: "628441234567",
+    email: "rini@innovasi.id",
+    gender: "female",
+    religion: "Islam",
+    isPrimary: false,
+    createdAt: "2024-01-10T00:00:00.000Z",
+    updatedAt: "2024-01-10T00:00:00.000Z",
+  },
+  {
+    id: "con12",
+    customerId: "c2",
+    name: "Hendra Wijaya",
+    position: "Komisaris",
+    whatsapp: "628111234567",
+    email: "hendra@teknologinusantara.id",
+    gender: "male",
+    religion: "Islam",
+    isPrimary: false,
+    createdAt: "2023-08-20T00:00:00.000Z",
+    updatedAt: "2023-08-20T00:00:00.000Z",
+  },
+  {
+    id: "con13",
+    customerId: "c3",
+    name: "Budi Santoso",
+    position: "Pemilik",
+    whatsapp: "628331234567",
+    gender: "male",
+    religion: "Islam",
+    isPrimary: true,
+    createdAt: "2024-03-10T00:00:00.000Z",
+    updatedAt: "2024-03-10T00:00:00.000Z",
+  },
+  {
+    id: "con14",
+    customerId: "c7",
+    name: "Siti Rahayu",
+    position: "Pemilik",
+    whatsapp: "628771234567",
+    gender: "female",
+    religion: "Islam",
+    isPrimary: true,
+    createdAt: "2024-01-20T00:00:00.000Z",
+    updatedAt: "2024-01-20T00:00:00.000Z",
+  },
+  {
+    id: "con15",
+    customerId: "c10",
+    name: "Ahmad Fauzi",
+    position: "Direktur",
+    gender: "male",
+    religion: "Islam",
+    isPrimary: true,
+    createdAt: "2021-03-14T00:00:00.000Z",
+    updatedAt: "2021-03-14T00:00:00.000Z",
   },
 ];

@@ -6,6 +6,8 @@ export type {
   Contact,
   CreateContactReq,
   UpdateContactReq,
+  ContactSearchResult,
+  GetContactReq,
 } from './contact'
 export type {
   Customer,
