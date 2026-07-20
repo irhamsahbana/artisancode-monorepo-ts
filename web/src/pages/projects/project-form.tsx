@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router";
 import { toast } from "sonner";
 
+import { ProductPicker } from "@/components/projects/product-picker";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -22,9 +23,10 @@ import {
   useUpdateProject,
 } from "@/hooks/use-projects";
 
-import type { ProjectStatus } from "@artisancode/api-types";
+import type { ProjectProductLine, ProjectStatus } from "@artisancode/api-types";
 
 interface FormState {
+  projectNumber: string;
   name: string;
   customerId: string;
   location: string;
@@ -35,10 +37,12 @@ interface FormState {
   spkNumber: string;
   lostReason: string;
   winnerCompetitor: string;
+  products: ProjectProductLine[];
   notes: string;
 }
 
 const empty: FormState = {
+  projectNumber: "",
   name: "",
   customerId: "",
   location: "",
@@ -49,6 +53,7 @@ const empty: FormState = {
   spkNumber: "",
   lostReason: "",
   winnerCompetitor: "",
+  products: [],
   notes: "",
 };
 
@@ -71,6 +76,7 @@ export function ProjectForm() {
     if (existing) {
       // eslint-disable-next-line react-hooks/set-state-in-effect
       setForm({
+        projectNumber: existing.projectNumber,
         name: existing.name,
         customerId: existing.customerId,
         location: existing.location ?? "",
@@ -81,6 +87,7 @@ export function ProjectForm() {
         spkNumber: existing.spkNumber ?? "",
         lostReason: existing.lostReason ?? "",
         winnerCompetitor: existing.winnerCompetitor ?? "",
+        products: existing.products ?? [],
         notes: existing.notes ?? "",
       });
     }
@@ -93,6 +100,7 @@ export function ProjectForm() {
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     const body = {
+      projectNumber: form.projectNumber || undefined,
       name: form.name,
       customerId: form.customerId,
       location: form.location || undefined,
@@ -108,6 +116,7 @@ export function ProjectForm() {
         form.status === "lost" ? form.lostReason || undefined : undefined,
       winnerCompetitor:
         form.status === "lost" ? form.winnerCompetitor || undefined : undefined,
+      products: form.products.length ? form.products : undefined,
       notes: form.notes || undefined,
     };
     try {
@@ -152,6 +161,14 @@ export function ProjectForm() {
                 />
               </Field>
             </div>
+
+            <Field label="Nomor Proyek">
+              <Input
+                value={form.projectNumber}
+                onChange={(e) => set("projectNumber", e.target.value)}
+                placeholder="Kosongkan untuk generate otomatis"
+              />
+            </Field>
 
             <Field label="Pelanggan *">
               <Select
@@ -264,6 +281,16 @@ export function ProjectForm() {
                 </div>
               </div>
             )}
+
+            <div className="sm:col-span-2">
+              <Separator />
+              <div className="pt-3">
+                <ProductPicker
+                  value={form.products}
+                  onChange={(products) => set("products", products)}
+                />
+              </div>
+            </div>
 
             <div className="sm:col-span-2">
               <Separator />

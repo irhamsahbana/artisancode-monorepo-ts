@@ -2,8 +2,14 @@ import type { PaginationMetadata, PaginationQuery } from './common'
 
 export type ProjectStatus = 'prospect' | 'in_progress' | 'won' | 'lost'
 
+export interface ProjectProductLine {
+  productId: string
+  quantity: number
+}
+
 export interface Project {
   id: string
+  projectNumber: string
   customerId: string
   contactId?: string
   name: string
@@ -17,12 +23,14 @@ export interface Project {
   spkNumber?: string
   lostReason?: string
   winnerCompetitor?: string
+  products?: ProjectProductLine[]
   notes?: string
   createdAt: string
   updatedAt: string
 }
 
 export interface CreateProjectReq {
+  projectNumber?: string
   customerId: string
   contactId?: string
   name: string
@@ -36,10 +44,12 @@ export interface CreateProjectReq {
   spkNumber?: string
   lostReason?: string
   winnerCompetitor?: string
+  products?: ProjectProductLine[]
   notes?: string
 }
 
 export interface UpdateProjectReq {
+  projectNumber?: string
   customerId?: string
   contactId?: string
   name?: string
@@ -53,6 +63,7 @@ export interface UpdateProjectReq {
   spkNumber?: string
   lostReason?: string
   winnerCompetitor?: string
+  products?: ProjectProductLine[]
   notes?: string
 }
 

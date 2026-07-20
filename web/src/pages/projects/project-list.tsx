@@ -44,6 +44,15 @@ export function ProjectList() {
 
   const columns: Column<Project>[] = [
     {
+      key: "projectNumber",
+      label: "Nomor Proyek",
+      render: (p) => (
+        <span className="font-mono text-xs text-muted-foreground">
+          {p.projectNumber}
+        </span>
+      ),
+    },
+    {
       key: "name",
       label: "Nama Proyek",
       render: (p) => <span className="font-medium">{p.name}</span>,
@@ -85,9 +94,10 @@ export function ProjectList() {
       <DataTable
         data={data?.items ?? []}
         columns={columns}
-        searchPlaceholder="Cari proyek / lokasi..."
+        searchPlaceholder="Cari nomor proyek / nama / lokasi..."
         searchFn={(p, q) =>
           p.name.toLowerCase().includes(q.toLowerCase()) ||
+          p.projectNumber.toLowerCase().includes(q.toLowerCase()) ||
           (p.location ?? "").toLowerCase().includes(q.toLowerCase())
         }
         filters={filters}

@@ -4,6 +4,7 @@ import type { Project, ProjectVisit } from "@artisancode/api-types";
 export const mockProjects: Project[] = [
   {
     id: "p1",
+    projectNumber: "PRJ-2024-001",
     customerId: "c1",
     contactId: "con1",
     name: "Pembangunan Gedung Perkantoran Lt. 8",
@@ -14,12 +15,14 @@ export const mockProjects: Project[] = [
     picName: "Hendra Wijaya",
     status: "in_progress",
     estimatedValue: 8500000000,
+    products: [{ productId: "prod1", quantity: 120 }],
     notes: "Negosiasi tahap akhir, menunggu approval dewan.",
     createdAt: "2024-02-10T00:00:00.000Z",
     updatedAt: "2024-06-15T00:00:00.000Z",
   },
   {
     id: "p2",
+    projectNumber: "PRJ-2024-002",
     customerId: "c9",
     contactId: "con9",
     name: "Suplai Beton Jembatan Layang",
@@ -31,12 +34,17 @@ export const mockProjects: Project[] = [
     status: "won",
     estimatedValue: 12500000000,
     spkNumber: "SPK/MK/2024/045",
+    products: [
+      { productId: "prod1", quantity: 300 },
+      { productId: "prod3", quantity: 500 },
+    ],
     notes: "Kontrak terbit, mobilisasi minggu depan.",
     createdAt: "2024-01-05T00:00:00.000Z",
     updatedAt: "2024-03-20T00:00:00.000Z",
   },
   {
     id: "p3",
+    projectNumber: "PRJ-2024-003",
     customerId: "c4",
     contactId: "con4",
     name: "Renovasi Plaza Mal",
@@ -51,6 +59,7 @@ export const mockProjects: Project[] = [
   },
   {
     id: "p4",
+    projectNumber: "PRJ-2023-001",
     customerId: "c2",
     contactId: "con3",
     name: "Paving Block Area Parkir",
@@ -59,6 +68,7 @@ export const mockProjects: Project[] = [
     picName: "Andi Saputra",
     status: "lost",
     estimatedValue: 1500000000,
+    products: [{ productId: "prod2", quantity: 800 }],
     lostReason: "Harga tidak kompetitif.",
     winnerCompetitor: "PT Beton Sejahtera",
     notes: "Kalah tender 12% di atas pesaing.",
@@ -67,6 +77,7 @@ export const mockProjects: Project[] = [
   },
   {
     id: "p5",
+    projectNumber: "PRJ-2024-004",
     customerId: "c6",
     contactId: "con6",
     name: "Pondasi Gedung Startup Hub",
@@ -81,6 +92,7 @@ export const mockProjects: Project[] = [
   },
   {
     id: "p6",
+    projectNumber: "PRJ-2024-005",
     customerId: "c5",
     contactId: "con5",
     name: "Beton Ready Mix Dinas Pendidikan",

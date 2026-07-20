@@ -42,6 +42,7 @@ export type {
 export type {
   Project,
   ProjectStatus,
+  ProjectProductLine,
   ProjectVisit,
   CreateProjectReq,
   UpdateProjectReq,

@@ -76,12 +76,23 @@ function mockGet(id: string): Promise<Project> {
     : Promise.reject(new Error("Project not found"));
 }
 
+// ponytail: PRJ-{year}-{seq}, seq counted per year off the in-memory list.
+function generateProjectNumber(): string {
+  const year = new Date().getFullYear();
+  const prefix = `PRJ-${year}-`;
+  const count = mockProjects.filter((p) =>
+    p.projectNumber.startsWith(prefix),
+  ).length;
+  return `${prefix}${String(count + 1).padStart(3, "0")}`;
+}
+
 function mockCreate(body: CreateProjectReq): Promise<Project> {
   const now = new Date().toISOString();
   const p: Project = {
     id: `p${crypto.randomUUID()}`,
     status: body.status ?? "prospect",
     ...body,
+    projectNumber: body.projectNumber || generateProjectNumber(),
     createdAt: now,
     updatedAt: now,
   };

@@ -16,7 +16,11 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useCreateProduct, useProducts, useUpdateProduct } from "@/hooks/use-products";
+import {
+  useCreateProduct,
+  useProducts,
+  useUpdateProduct,
+} from "@/hooks/use-products";
 
 import type { Product } from "@artisancode/api-types";
 
@@ -134,7 +138,9 @@ export function Products() {
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent className="sm:max-w-sm">
           <DialogHeader>
-            <DialogTitle>{editing ? "Edit Produk" : "Tambah Produk"}</DialogTitle>
+            <DialogTitle>
+              {editing ? "Edit Produk" : "Tambah Produk"}
+            </DialogTitle>
           </DialogHeader>
           <div className="grid gap-3 py-2">
             <div className="grid gap-1.5">
@@ -160,7 +166,9 @@ export function Products() {
             <Button variant="outline" onClick={() => setOpen(false)}>
               Batal
             </Button>
-            <Button onClick={handleSave}>{editing ? "Simpan" : "Tambah"}</Button>
+            <Button onClick={handleSave}>
+              {editing ? "Simpan" : "Tambah"}
+            </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
