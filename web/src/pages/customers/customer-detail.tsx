@@ -1,6 +1,6 @@
 import { ArrowLeft, Pencil, Phone, Mail, Star } from "lucide-react";
 import { useState } from "react";
-import { useParams, useNavigate, Link } from "react-router";
+import { useParams, useNavigate, Link, useSearchParams } from "react-router";
 
 import { EmptyState } from "@/components/shared/empty-state";
 import { Badge } from "@/components/ui/badge";
@@ -32,7 +32,10 @@ type Tab = (typeof TABS)[number];
 export function CustomerDetail() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const [activeTab, setActiveTab] = useState<Tab>("Info Umum");
+  const [searchParams] = useSearchParams();
+  const initialTab =
+    searchParams.get("tab") === "kontak" ? "Kontak" : "Info Umum";
+  const [activeTab, setActiveTab] = useState<Tab>(initialTab);
 
   const { data: customer, isLoading } = useCustomer(id ?? "");
   const { data: contactsData } = useContacts(id ?? "");

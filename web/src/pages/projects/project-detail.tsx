@@ -8,8 +8,24 @@ import { EmptyState } from "@/components/shared/empty-state";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+  DialogFooter,
+} from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { useContacts } from "@/hooks/use-contacts";
 import { useCustomers } from "@/hooks/use-customers";
 import { useProducts } from "@/hooks/use-products";
 import {
@@ -172,18 +188,26 @@ export function ProjectDetail() {
             </Card>
           )}
 
-          <VisitLog projectId={project.id} visits={visits ?? []} />
+          <VisitLog
+            projectId={project.id}
+            customerId={project.customerId}
+            visits={visits ?? []}
+          />
         </div>
       </div>
     </div>
   );
 }
 
+const EMPTY_FORM = { visitDate: "", metWith: "", topic: "", notes: "" };
+
 function VisitLog({
   projectId,
+  customerId,
   visits,
 }: {
   projectId: string;
+  customerId: string;
   visits: {
     id: string;
     visitDate: string;
@@ -193,12 +217,9 @@ function VisitLog({
   }[];
 }) {
   const { mutateAsync: addVisit, isPending } = useCreateProjectVisit(projectId);
-  const [form, setForm] = useState({
-    visitDate: "",
-    metWith: "",
-    topic: "",
-    notes: "",
-  });
+  const { data: contacts } = useContacts(customerId);
+  const [open, setOpen] = useState(false);
+  const [form, setForm] = useState(EMPTY_FORM);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -215,7 +236,8 @@ function VisitLog({
         notes: form.notes || undefined,
       });
       toast.success("Log kunjungan ditambahkan.");
-      setForm({ visitDate: "", metWith: "", topic: "", notes: "" });
+      setForm(EMPTY_FORM);
+      setOpen(false);
     } catch {
       toast.error("Gagal menambah log kunjungan.");
     }
@@ -225,21 +247,116 @@ function VisitLog({
     b.visitDate.localeCompare(a.visitDate),
   );
 
+  const contactItems = contacts?.items ?? [];
+
   return (
     <Card>
-      <CardHeader>
+      <CardHeader className="flex flex-row items-center justify-between">
         <CardTitle className="text-sm">Log Kunjungan / Follow-up</CardTitle>
+        <Dialog open={open} onOpenChange={setOpen}>
+          <DialogTrigger asChild>
+            <Button size="sm" variant="outline">
+              <Plus className="mr-1 h-4 w-4" />
+              Tambah Log
+            </Button>
+          </DialogTrigger>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Tambah Log Kunjungan</DialogTitle>
+            </DialogHeader>
+            <form
+              id="visit-form"
+              onSubmit={handleSubmit}
+              className="grid gap-4 sm:grid-cols-2"
+            >
+              <div className="grid gap-1.5">
+                <Label>Tanggal *</Label>
+                <Input
+                  type="date"
+                  value={form.visitDate}
+                  onChange={(e) =>
+                    setForm({ ...form, visitDate: e.target.value })
+                  }
+                />
+              </div>
+              <div className="grid gap-1.5">
+                <Label>Bertemu Dengan</Label>
+                {contactItems.length > 0 ? (
+                  <Select
+                    value={form.metWith}
+                    onValueChange={(v) => setForm({ ...form, metWith: v })}
+                  >
+                    <SelectTrigger className="w-full">
+                      <SelectValue placeholder="Pilih kontak..." />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {contactItems.map((c) => (
+                        <SelectItem key={c.id} value={c.name}>
+                          {c.name}
+                          {c.position ? ` — ${c.position}` : ""}
+                        </SelectItem>
+                      ))}
+                      <div className="border-t px-2 py-1.5">
+                        <Link
+                          to={`/customers/${customerId}?tab=kontak`}
+                          className="text-xs text-muted-foreground hover:text-foreground hover:underline"
+                        >
+                          + Tambah kontak baru
+                        </Link>
+                      </div>
+                    </SelectContent>
+                  </Select>
+                ) : (
+                  <>
+                    <Input
+                      value={form.metWith}
+                      onChange={(e) =>
+                        setForm({ ...form, metWith: e.target.value })
+                      }
+                      placeholder="Nama kontak..."
+                    />
+                    <Link
+                      to={`/customers/${customerId}?tab=kontak`}
+                      className="text-xs text-muted-foreground hover:underline"
+                    >
+                      + Tambah kontak di halaman pelanggan
+                    </Link>
+                  </>
+                )}
+              </div>
+              <div className="grid gap-1.5 sm:col-span-2">
+                <Label>Topik</Label>
+                <Input
+                  value={form.topic}
+                  onChange={(e) => setForm({ ...form, topic: e.target.value })}
+                />
+              </div>
+              <div className="grid gap-1.5 sm:col-span-2">
+                <Label>Catatan</Label>
+                <Input
+                  value={form.notes}
+                  onChange={(e) => setForm({ ...form, notes: e.target.value })}
+                />
+              </div>
+            </form>
+            <DialogFooter showCloseButton>
+              <Button type="submit" form="visit-form" disabled={isPending}>
+                {isPending ? "Menyimpan..." : "Simpan"}
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
       </CardHeader>
-      <CardContent className="space-y-4">
+      <CardContent>
         {sorted.length === 0 ? (
           <EmptyState
             title="Belum ada log kunjungan"
             description="Catat hasil follow-up sales di sini."
           />
         ) : (
-          <ul className="space-y-3">
+          <ul className="space-y-4">
             {sorted.map((v) => (
-              <li key={v.id} className="rounded-md border p-3">
+              <li key={v.id} className="rounded-md border px-4 py-3">
                 <div className="flex items-center justify-between">
                   <p className="text-sm font-medium">
                     {v.topic ?? "Kunjungan"}
@@ -262,48 +379,6 @@ function VisitLog({
             ))}
           </ul>
         )}
-
-        <form
-          onSubmit={handleSubmit}
-          className="grid gap-3 rounded-md border bg-muted/30 p-3 sm:grid-cols-2"
-        >
-          <p className="text-sm font-medium sm:col-span-2">Tambah Log</p>
-          <div className="grid gap-1.5">
-            <Label className="text-xs">Tanggal *</Label>
-            <Input
-              type="date"
-              value={form.visitDate}
-              onChange={(e) => setForm({ ...form, visitDate: e.target.value })}
-            />
-          </div>
-          <div className="grid gap-1.5">
-            <Label className="text-xs">Bertemu Dengan</Label>
-            <Input
-              value={form.metWith}
-              onChange={(e) => setForm({ ...form, metWith: e.target.value })}
-            />
-          </div>
-          <div className="grid gap-1.5 sm:col-span-2">
-            <Label className="text-xs">Topik</Label>
-            <Input
-              value={form.topic}
-              onChange={(e) => setForm({ ...form, topic: e.target.value })}
-            />
-          </div>
-          <div className="grid gap-1.5 sm:col-span-2">
-            <Label className="text-xs">Catatan</Label>
-            <Input
-              value={form.notes}
-              onChange={(e) => setForm({ ...form, notes: e.target.value })}
-            />
-          </div>
-          <div className="sm:col-span-2 flex justify-end">
-            <Button type="submit" size="sm" disabled={isPending}>
-              <Plus className="mr-1 h-4 w-4" />
-              {isPending ? "Menyimpan..." : "Tambah Log"}
-            </Button>
-          </div>
-        </form>
       </CardContent>
     </Card>
   );
