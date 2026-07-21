@@ -1,5 +1,6 @@
 import { Plus, X } from "lucide-react";
 import { useState } from "react";
+import { Link } from "react-router";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -130,15 +131,26 @@ export function ProductPicker({ value, onChange }: Props) {
               </div>
             </div>
           )}
+          <div className="mt-2 border-t px-2 py-1.5">
+            <Link
+              to="/master/products"
+              className="text-xs text-muted-foreground hover:text-foreground hover:underline"
+            >
+              + Kelola katalog produk
+            </Link>
+          </div>
         </PopoverContent>
       </Popover>
 
       {value.length > 0 && (
-        <div className="mt-1 space-y-1.5">
+        <div className="mt-3 space-y-3">
           {value.map((line) => {
             const product = products.find((p) => p.id === line.productId);
             return (
-              <div key={line.productId} className="flex items-center gap-2">
+              <div
+                key={line.productId}
+                className="flex items-center gap-2 rounded-md border px-3 py-2"
+              >
                 <span className="flex-1 truncate text-sm">
                   {product?.name ?? line.productId}
                 </span>
