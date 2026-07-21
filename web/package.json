@@ -4,7 +4,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "bunx tailwindcss -i src/index.css -o src/tailwind-out.css --watch & bun --hot src/index.ts",
+    "dev": "trap 'kill 0' EXIT; bunx tailwindcss -i src/index.css -o src/tailwind-out.css --watch & bun --hot src/index.ts",
     "build": "bunx tailwindcss -i src/index.css -o src/tailwind-out.css --minify && bun build ./src/index.html --outdir=dist --sourcemap --target=browser --minify --define:process.env.NODE_ENV='\"production\"' --env='BUN_PUBLIC_*'",
     "start": "NODE_ENV=production bun src/index.ts",
     "format": "prettier --write \"src/**/*.{ts,tsx,js,jsx,json}\"",
