@@ -1,6 +1,7 @@
 import { Users, UserCheck, Target, TrendingUp, UserX } from "lucide-react";
 import { Link } from "react-router";
 
+import { InstallButton } from "@/components/shared/install-button";
 import { PageHeader } from "@/components/shared/page-header";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -64,6 +65,7 @@ export function Dashboard() {
       <PageHeader
         title="Dashboard"
         description="Ringkasan data pelanggan Anda."
+        action={<InstallButton />}
       />
 
       <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-5">
