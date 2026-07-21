@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router";
 import { toast } from "sonner";
 
+import { InstallButton } from "@/components/shared/install-button";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -32,7 +33,7 @@ export function Login() {
   }
 
   return (
-    <div className="flex min-h-dvh items-center justify-center bg-muted/40 p-4">
+    <div className="flex min-h-dvh flex-col items-center justify-center gap-4 bg-muted/40 p-4">
       <Card className="w-full max-w-sm">
         <CardHeader className="text-center">
           <CardTitle className="text-2xl">CRM Wika</CardTitle>
@@ -68,6 +69,7 @@ export function Login() {
           </form>
         </CardContent>
       </Card>
+      <InstallButton />
     </div>
   );
 }
