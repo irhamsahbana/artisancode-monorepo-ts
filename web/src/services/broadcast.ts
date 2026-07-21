@@ -82,7 +82,7 @@ function mockSend(
       "failed",
       "pending",
     ];
-    const status = statuses[i % statuses.length];
+    const status = statuses[i % statuses.length] ?? "pending";
     recipientLogs.push({
       contactId: `c${i + 1}`,
       contactName: `Contact ${i + 1}`,
@@ -94,17 +94,27 @@ function mockSend(
     });
   }
 
+  const finalStatus = recipientLogs.some((l) => l.status === "failed")
+    ? "failed"
+    : "sent";
+
   const log: BroadcastLog = {
     id: `l${crypto.randomUUID()}`,
     templateId,
     sentAt: new Date().toISOString(),
     recipientCount,
-    status: recipientLogs.some((l) => l.status === "failed")
-      ? "failed"
-      : "sent",
+    status: finalStatus,
     recipientLogs,
   };
   mockBroadcastLogs.push(log);
+
+  // ponytail: lock the template once it has actually run, so it can't be edited afterwards.
+  const template = mockBroadcastTemplates.find((t) => t.id === templateId);
+  if (template) {
+    template.status = finalStatus;
+    template.sentAt = log.sentAt;
+  }
+
   return Promise.resolve(log);
 }
 

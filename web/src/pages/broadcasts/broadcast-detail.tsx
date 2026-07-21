@@ -51,8 +51,9 @@ export function BroadcastDetail() {
   const { data: broadcastLogs } = useBroadcastLogs(id);
 
   const broadcast = broadcasts?.items.find((b) => b.id === id);
-  const isEditable =
-    broadcast?.status === "draft" || broadcast?.status === "scheduled";
+  // ponytail: only drafts are editable — scheduled is "final" (locked in),
+  // sent/failed means it already ran, also locked.
+  const isEditable = broadcast?.status === "draft";
 
   const [form, setForm] = useState<FormState>({
     name: broadcast?.name ?? "",
