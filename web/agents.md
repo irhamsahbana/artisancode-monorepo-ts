@@ -19,6 +19,7 @@
 
 - [Layout & Viewport Strategy](docs/layout-strategy.md) — desktop/mobile split, AppLayout, Tailwind responsive class policy
 - [Naming Conventions](docs/naming-conventions.md) — kebab-case files, PascalCase exports
+- [Mobile & PWA Pitfalls](docs/mobile-pwa-pitfalls.md) — Bun dev-server/bundler quirks, iOS install & splash-screen requirements, pull-to-refresh gesture handling, a TS narrowing gotcha
 
 ## Implementation Plan
 
