@@ -26,7 +26,7 @@ function MobileLayout() {
   return (
     <div className="flex min-h-dvh flex-col">
       <MobileHeader />
-      <main className="flex-1 overflow-auto p-4 pb-28">
+      <main className="flex-1 overflow-auto p-4 pb-36">
         <Outlet />
       </main>
       <BottomNav />

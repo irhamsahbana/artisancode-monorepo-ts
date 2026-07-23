@@ -76,7 +76,7 @@ export function BottomNav() {
   return (
     <>
       <nav
-        style={{ bottom: "calc(1rem + env(safe-area-inset-bottom))" }}
+        style={{ bottom: "calc(2rem + env(safe-area-inset-bottom))" }}
         className="fixed inset-x-4 z-50 flex h-16 items-center justify-around rounded-full border bg-background shadow-lg"
       >
         <NavLink
