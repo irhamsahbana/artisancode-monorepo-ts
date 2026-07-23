@@ -1,4 +1,6 @@
-import { MessageCircle } from "lucide-react";
+import { Eye, MessageCircle } from "lucide-react";
+import { useState } from "react";
+import { useSearchParams } from "react-router";
 import { toast } from "sonner";
 
 import type { Column, FilterOption } from "@/components/shared/data-table";
@@ -6,6 +8,12 @@ import { DataTable } from "@/components/shared/data-table";
 import { PageHeader } from "@/components/shared/page-header";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import {
   Select,
   SelectContent,
@@ -18,7 +26,10 @@ import {
   useUpdateQuotationStatus,
 } from "@/hooks/use-quotations";
 
-import { quotationStatusLabel } from "./quotation-status";
+import {
+  quotationStatusLabel,
+  quotationStatusVariant,
+} from "./quotation-status";
 
 import type { QuotationRequest, QuotationStatus } from "@artisancode/api-types";
 
@@ -37,6 +48,11 @@ const filters: FilterOption[] = [
 export function QuotationList() {
   const { data } = useQuotations();
   const { mutateAsync: updateStatus, isPending } = useUpdateQuotationStatus();
+  const [searchParams] = useSearchParams();
+  const [selected, setSelected] = useState<QuotationRequest | null>(null);
+
+  const initialStatus = searchParams.get("status");
+  const initialFilters = initialStatus ? { status: initialStatus } : undefined;
 
   async function handleStatusChange(id: string, status: QuotationStatus) {
     try {
@@ -163,19 +179,64 @@ export function QuotationList() {
             ([key, val]) => q[key as keyof QuotationRequest] === val,
           )
         }
+        initialFilters={initialFilters}
         actions={(q) => (
-          <Button variant="outline" size="sm" asChild className="gap-1.5">
-            <a
-              href={formatWaLink(q.whatsapp, waMessage(q.requesterName))}
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              <MessageCircle className="h-3.5 w-3.5" />
-              Kirim WA
-            </a>
-          </Button>
+          <div className="flex items-center gap-1.5">
+            <Button variant="ghost" size="icon" onClick={() => setSelected(q)}>
+              <Eye className="h-4 w-4" />
+            </Button>
+            <Button variant="outline" size="sm" asChild className="gap-1.5">
+              <a
+                href={formatWaLink(q.whatsapp, waMessage(q.requesterName))}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <MessageCircle className="h-3.5 w-3.5" />
+                Kirim WA
+              </a>
+            </Button>
+          </div>
         )}
       />
+
+      <Dialog open={!!selected} onOpenChange={(v) => !v && setSelected(null)}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Detail Permintaan Penawaran</DialogTitle>
+          </DialogHeader>
+          {selected && (
+            <div className="grid gap-3 text-sm">
+              <DetailRow label="Nama Peminta" value={selected.requesterName} />
+              <DetailRow label="Perusahaan" value={selected.companyName} />
+              <DetailRow label="WhatsApp" value={selected.whatsapp} />
+              <DetailRow label="Email" value={selected.email} />
+              <DetailRow label="Produk" value={selected.productName} />
+              <DetailRow label="Spesifikasi" value={selected.specification} />
+              <DetailRow label="Jumlah" value={selected.quantity} />
+              <DetailRow label="Catatan" value={selected.notes} />
+              <DetailRow
+                label="Tanggal Masuk"
+                value={selected.createdAt.slice(0, 10)}
+              />
+              <div className="flex items-center justify-between">
+                <span className="text-muted-foreground">Status</span>
+                <Badge variant={quotationStatusVariant[selected.status]}>
+                  {quotationStatusLabel[selected.status]}
+                </Badge>
+              </div>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
+    </div>
+  );
+}
+
+function DetailRow({ label, value }: { label: string; value?: string }) {
+  return (
+    <div className="flex items-start justify-between gap-4">
+      <span className="shrink-0 text-muted-foreground">{label}</span>
+      <span className="text-right font-medium">{value || "-"}</span>
     </div>
   );
 }

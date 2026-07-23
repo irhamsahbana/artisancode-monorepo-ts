@@ -11,7 +11,7 @@ export function QuotationAlert() {
   if (newCount === 0) return null;
 
   return (
-    <Link to="/quotations" className="mt-8 block">
+    <Link to="/quotations?status=new" className="mt-8 block">
       <Card className="border-yellow-500/50 bg-yellow-500/5 transition-colors hover:bg-yellow-500/10">
         <CardContent className="flex items-center gap-3 py-4">
           <FileText className="h-5 w-5 shrink-0 text-yellow-600" />

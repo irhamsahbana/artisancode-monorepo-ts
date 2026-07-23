@@ -41,6 +41,7 @@ interface Props<T> {
   searchFn?: (row: T, query: string) => boolean;
   filters?: FilterOption[];
   filterFn?: (row: T, filters: Record<string, string>) => boolean;
+  initialFilters?: Record<string, string>;
   pageSize?: number;
   actions?: (row: T) => ReactNode;
   loading?: boolean;
@@ -53,13 +54,14 @@ export function DataTable<T>({
   searchFn,
   filters,
   filterFn,
+  initialFilters,
   pageSize = 10,
   actions,
   loading,
 }: Props<T>) {
   const [query, setQuery] = useState("");
   const [activeFilters, setActiveFilters] = useState<Record<string, string>>(
-    {},
+    initialFilters ?? {},
   );
   const [page, setPage] = useState(1);
 
