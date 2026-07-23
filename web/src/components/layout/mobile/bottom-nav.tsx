@@ -2,19 +2,22 @@ import {
   LayoutDashboard,
   Users,
   Briefcase,
-  Database,
-  User,
-} from "lucide-react";
-import {
+  Menu,
+  Star,
+  FileText,
+  Megaphone,
   PieChart,
   MapPin,
   Network,
   Package,
   Ruler,
   ArrowLeftRight,
+  Building2,
+  User,
+  LogOut,
 } from "lucide-react";
 import { useState } from "react";
-import { NavLink, useLocation } from "react-router";
+import { NavLink, useLocation, useNavigate } from "react-router";
 
 import {
   Sheet,
@@ -22,7 +25,14 @@ import {
   SheetHeader,
   SheetTitle,
 } from "@/components/ui/sheet";
+import { clearToken } from "@/hooks/use-auth";
 import { cn } from "@/lib/utils";
+
+const menuItems = [
+  { to: "/ratings", label: "Penilaian", icon: Star },
+  { to: "/quotations", label: "Penawaran", icon: FileText },
+  { to: "/broadcasts", label: "Broadcast", icon: Megaphone },
+];
 
 const masterItems = [
   { to: "/master/segmentation", label: "Segmentasi", icon: PieChart },
@@ -37,10 +47,31 @@ const masterItems = [
   },
 ];
 
+const settingsItems = [
+  { to: "/settings/profile", label: "Profil Bisnis", icon: Building2 },
+  { to: "/settings/account", label: "Akun", icon: User },
+];
+
+const moreActivePrefixes = [
+  "/ratings",
+  "/quotations",
+  "/broadcasts",
+  "/master",
+  "/settings",
+];
+
 export function BottomNav() {
   const location = useLocation();
-  const [masterOpen, setMasterOpen] = useState(false);
-  const masterActive = location.pathname.startsWith("/master");
+  const navigate = useNavigate();
+  const [moreOpen, setMoreOpen] = useState(false);
+  const moreActive = moreActivePrefixes.some((p) =>
+    location.pathname.startsWith(p),
+  );
+
+  function handleLogout() {
+    clearToken();
+    navigate("/login");
+  }
 
   return (
     <>
@@ -85,56 +116,83 @@ export function BottomNav() {
           Proyek
         </NavLink>
         <button
-          onClick={() => setMasterOpen(true)}
+          onClick={() => setMoreOpen(true)}
           className={cn(
             "flex flex-col items-center gap-0.5 text-xs",
-            masterActive ? "text-primary" : "text-muted-foreground",
+            moreActive ? "text-primary" : "text-muted-foreground",
           )}
         >
-          <Database className="h-5 w-5" />
-          Master
+          <Menu className="h-5 w-5" />
+          Lainnya
         </button>
-        <NavLink
-          to="/settings/account"
-          className={({ isActive }) =>
-            cn(
-              "flex flex-col items-center gap-0.5 text-xs",
-              isActive ? "text-primary" : "text-muted-foreground",
-            )
-          }
-        >
-          <User className="h-5 w-5" />
-          Akun
-        </NavLink>
       </nav>
 
-      <Sheet open={masterOpen} onOpenChange={setMasterOpen}>
-        <SheetContent side="bottom" className="h-auto pb-safe">
-          <SheetHeader className="mb-4">
-            <SheetTitle>Master Data</SheetTitle>
+      <Sheet open={moreOpen} onOpenChange={setMoreOpen}>
+        <SheetContent side="bottom" className="h-auto max-h-[80vh] pb-safe">
+          <SheetHeader className="mb-2">
+            <SheetTitle>Menu Lainnya</SheetTitle>
           </SheetHeader>
-          <div className="grid gap-2 pb-4">
-            {masterItems.map(({ to, label, icon: Icon }) => (
-              <NavLink
-                key={to}
-                to={to}
-                onClick={() => setMasterOpen(false)}
-                className={({ isActive }) =>
-                  cn(
-                    "flex items-center gap-3 rounded-md px-3 py-2.5 text-sm",
-                    isActive
-                      ? "bg-primary text-primary-foreground"
-                      : "hover:bg-muted",
-                  )
-                }
-              >
-                <Icon className="h-4 w-4" />
-                {label}
-              </NavLink>
-            ))}
+          <div className="space-y-4 overflow-y-auto pb-4">
+            <NavGroup items={menuItems} onNavigate={() => setMoreOpen(false)} />
+            <div>
+              <p className="mb-1.5 px-1 text-xs font-medium text-muted-foreground">
+                Master Data
+              </p>
+              <NavGroup
+                items={masterItems}
+                onNavigate={() => setMoreOpen(false)}
+              />
+            </div>
+            <div>
+              <p className="mb-1.5 px-1 text-xs font-medium text-muted-foreground">
+                Pengaturan
+              </p>
+              <NavGroup
+                items={settingsItems}
+                onNavigate={() => setMoreOpen(false)}
+              />
+            </div>
+            <button
+              onClick={handleLogout}
+              className="flex w-full items-center gap-3 rounded-md px-3 py-2.5 text-sm text-muted-foreground hover:bg-muted"
+            >
+              <LogOut className="h-4 w-4" />
+              Keluar
+            </button>
           </div>
         </SheetContent>
       </Sheet>
     </>
+  );
+}
+
+function NavGroup({
+  items,
+  onNavigate,
+}: {
+  items: { to: string; label: string; icon: typeof Star }[];
+  onNavigate: () => void;
+}) {
+  return (
+    <div className="grid gap-1">
+      {items.map(({ to, label, icon: Icon }) => (
+        <NavLink
+          key={to}
+          to={to}
+          onClick={onNavigate}
+          className={({ isActive }) =>
+            cn(
+              "flex items-center gap-3 rounded-md px-3 py-2.5 text-sm",
+              isActive
+                ? "bg-primary text-primary-foreground"
+                : "hover:bg-muted",
+            )
+          }
+        >
+          <Icon className="h-4 w-4" />
+          {label}
+        </NavLink>
+      ))}
+    </div>
   );
 }
