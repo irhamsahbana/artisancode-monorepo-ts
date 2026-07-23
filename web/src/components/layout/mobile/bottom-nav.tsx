@@ -44,7 +44,10 @@ export function BottomNav() {
 
   return (
     <>
-      <nav className="fixed bottom-0 left-0 right-0 z-50 flex h-16 items-center justify-around border-t bg-background">
+      <nav
+        style={{ bottom: "calc(1rem + env(safe-area-inset-bottom))" }}
+        className="fixed inset-x-4 z-50 flex h-16 items-center justify-around rounded-full border bg-background shadow-lg"
+      >
         <NavLink
           to="/dashboard"
           className={({ isActive }) =>
