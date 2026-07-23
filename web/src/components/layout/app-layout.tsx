@@ -40,7 +40,7 @@ function MobileLayout() {
   );
 
   return (
-    <div className="flex min-h-dvh flex-col">
+    <div className="flex h-dvh flex-col">
       <MobileHeader />
       <main
         ref={containerRef}

@@ -31,15 +31,29 @@ export function usePullToRefresh(
       startY.current = touch.clientY;
     };
 
+    const reset = () => {
+      startY.current = null;
+      currentPull.current = 0;
+      setPullDistance(0);
+    };
+
     const onTouchMove = (e: TouchEvent) => {
       const touch = e.touches[0];
       if (startY.current === null || !touch) return;
       const delta = touch.clientY - startY.current;
+
+      // Reversed back toward/past the start point — bail out entirely
+      // instead of just zeroing the distance, so a stale startY can't
+      // cause a jump if the finger drags down again without lifting.
       if (delta <= 0) {
-        currentPull.current = 0;
-        setPullDistance(0);
+        reset();
         return;
       }
+
+      // Small dead zone so a light touch-and-adjust at the top doesn't
+      // immediately hijack the scroll.
+      if (delta < 10) return;
+
       e.preventDefault();
       const next = Math.min(delta * RESISTANCE, MAX_PULL);
       currentPull.current = next;
@@ -48,14 +62,13 @@ export function usePullToRefresh(
 
     const onTouchEnd = async () => {
       if (startY.current === null) return;
-      startY.current = null;
 
       if (currentPull.current < PULL_THRESHOLD) {
-        currentPull.current = 0;
-        setPullDistance(0);
+        reset();
         return;
       }
 
+      startY.current = null;
       isRefreshing.current = true;
       setRefreshing(true);
       setPullDistance(PULL_THRESHOLD);
@@ -69,13 +82,20 @@ export function usePullToRefresh(
       }
     };
 
+    // iOS hands some gestures off mid-stream (native rubber-band, system
+    // gestures) and fires touchcancel instead of touchend when it does —
+    // without this the pull state never resets and the UI gets stuck.
+    const onTouchCancel = () => reset();
+
     el.addEventListener("touchstart", onTouchStart, { passive: true });
     el.addEventListener("touchmove", onTouchMove, { passive: false });
     el.addEventListener("touchend", onTouchEnd);
+    el.addEventListener("touchcancel", onTouchCancel);
     return () => {
       el.removeEventListener("touchstart", onTouchStart);
       el.removeEventListener("touchmove", onTouchMove);
       el.removeEventListener("touchend", onTouchEnd);
+      el.removeEventListener("touchcancel", onTouchCancel);
     };
   }, [containerRef, onRefresh]);
 
