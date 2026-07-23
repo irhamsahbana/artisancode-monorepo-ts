@@ -58,6 +58,13 @@ export function useProjectVisits(projectId: string) {
   });
 }
 
+export function useAllProjectVisits() {
+  return useQuery({
+    queryKey: queryKeys.projects.allVisits(),
+    queryFn: projectService.listAllVisits,
+  });
+}
+
 export function useCreateProjectVisit(projectId: string) {
   const qc = useQueryClient();
   return useMutation({

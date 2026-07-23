@@ -36,9 +36,7 @@ export function RecentCustomers() {
               >
                 <div>
                   <p className="text-sm font-medium">{c.name}</p>
-                  <p className="text-xs text-muted-foreground">
-                    {c.createdAt}
-                  </p>
+                  <p className="text-xs text-muted-foreground">{c.createdAt}</p>
                 </div>
                 <Badge variant={statusVariant[c.status]}>
                   {statusLabel[c.status]}

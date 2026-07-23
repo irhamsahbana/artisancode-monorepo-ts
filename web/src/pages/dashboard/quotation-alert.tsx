@@ -6,9 +6,7 @@ import { useQuotations } from "@/hooks/use-quotations";
 
 export function QuotationAlert() {
   const { data } = useQuotations();
-  const newCount = (data?.items ?? []).filter(
-    (q) => q.status === "new",
-  ).length;
+  const newCount = (data?.items ?? []).filter((q) => q.status === "new").length;
 
   if (newCount === 0) return null;
 
@@ -18,7 +16,9 @@ export function QuotationAlert() {
         <CardContent className="flex items-center gap-3 py-4">
           <FileText className="h-5 w-5 shrink-0 text-yellow-600" />
           <p className="text-sm">
-            <span className="font-semibold">{newCount} permintaan penawaran</span>{" "}
+            <span className="font-semibold">
+              {newCount} permintaan penawaran
+            </span>{" "}
             baru belum direspon.
           </p>
         </CardContent>

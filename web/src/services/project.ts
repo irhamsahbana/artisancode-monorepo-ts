@@ -63,6 +63,11 @@ export const projectService = {
         )
       : api.get<ProjectVisit[]>(`/projects/${projectId}/visits`),
 
+  listAllVisits: () =>
+    DEMO_MODE
+      ? Promise.resolve(mockProjectVisits)
+      : api.get<ProjectVisit[]>(`/projects/visits`),
+
   createVisit: (body: CreateProjectVisitReq) =>
     DEMO_MODE
       ? mockCreateVisit(body)
