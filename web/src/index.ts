@@ -11,6 +11,8 @@ const server = serve({
     "/service-worker.js": () =>
       new Response(Bun.file("./src/service-worker.js")),
     "/logo.svg": () => new Response(Bun.file("./src/logo.svg")),
+    "/apple-touch-startup.png": () =>
+      new Response(Bun.file("./src/apple-touch-startup.png")),
     "/*": index,
   },
 
