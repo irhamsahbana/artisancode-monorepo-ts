@@ -1,3 +1,4 @@
+import { Plus, X } from "lucide-react";
 import { useState } from "react";
 import { useNavigate } from "react-router";
 import { toast } from "sonner";
@@ -19,9 +20,6 @@ interface FormState {
   companyName: string;
   whatsapp: string;
   email: string;
-  productName: string;
-  specification: string;
-  quantity: string;
   notes: string;
 }
 
@@ -30,35 +28,45 @@ const empty: FormState = {
   companyName: "",
   whatsapp: "",
   email: "",
-  productName: "",
-  specification: "",
-  quantity: "",
   notes: "",
 };
+
+interface ProductLine {
+  id: string;
+  productName: string;
+  specification: string;
+  quantity: string;
+  unit: string;
+}
+
+function newLine(): ProductLine {
+  return {
+    id: crypto.randomUUID(),
+    productName: "",
+    specification: "",
+    quantity: "",
+    unit: "",
+  };
+}
 
 export function QuotationForm() {
   const navigate = useNavigate();
   const { mutateAsync, isPending } = useCreateQuotation();
   const [form, setForm] = useState<FormState>(empty);
-  const [unit, setUnit] = useState("");
-
-  const productQuery = useDebouncedValue(form.productName);
-  const { data: productsData, isLoading: productsLoading } =
-    useProducts(productQuery);
-  const unitQuery = useDebouncedValue(unit);
-  const { data: uomsData, isLoading: uomsLoading } = useUoms(unitQuery);
-
-  const productOptions = (productsData?.items ?? []).map((p) => ({
-    value: p.name,
-    hint: p.unit,
-  }));
-  const unitOptions = (uomsData?.items ?? []).map((u) => ({
-    value: u.symbol,
-    hint: u.name,
-  }));
+  const [productLines, setProductLines] = useState<ProductLine[]>([newLine()]);
 
   function set<K extends keyof FormState>(key: K, val: FormState[K]) {
     setForm((prev) => ({ ...prev, [key]: val }));
+  }
+
+  function updateLine(id: string, patch: Partial<ProductLine>) {
+    setProductLines((prev) =>
+      prev.map((l) => (l.id === id ? { ...l, ...patch } : l)),
+    );
+  }
+
+  function removeLine(id: string) {
+    setProductLines((prev) => prev.filter((l) => l.id !== id));
   }
 
   async function handleSubmit(e: React.FormEvent) {
@@ -68,19 +76,25 @@ export function QuotationForm() {
       return;
     }
     try {
+      const products = productLines
+        .filter((l) => l.productName.trim())
+        .map((l) => ({
+          productName: l.productName.trim(),
+          specification: l.specification || undefined,
+          quantity: [l.quantity, l.unit].filter(Boolean).join(" ") || undefined,
+        }));
+
       await mutateAsync({
         requesterName: form.requesterName,
         companyName: form.companyName || undefined,
         whatsapp: form.whatsapp,
         email: form.email || undefined,
-        productName: form.productName || undefined,
-        specification: form.specification || undefined,
-        quantity: [form.quantity, unit].filter(Boolean).join(" ") || undefined,
+        products: products.length ? products : undefined,
         notes: form.notes || undefined,
       });
       toast.success("Permintaan terkirim. Kami akan segera menghubungi Anda.");
       setForm(empty);
-      setUnit("");
+      setProductLines([newLine()]);
     } catch {
       toast.error("Gagal mengirim permintaan. Coba lagi.");
     }
@@ -140,64 +154,42 @@ export function QuotationForm() {
                     />
                   </Field>
                 </div>
-
-                <div className="sm:col-span-2">
-                  <Field label="Nama Produk (opsional)">
-                    <Combobox
-                      value={form.productName}
-                      onChange={(v) => set("productName", v)}
-                      options={productOptions}
-                      loading={productsLoading}
-                      placeholder="Pilih dari daftar atau ketik manual"
-                    />
-                  </Field>
-                </div>
-
-                <div className="sm:col-span-2">
-                  <Field label="Spesifikasi Teknis (opsional)">
-                    <Textarea
-                      value={form.specification}
-                      onChange={(e) => set("specification", e.target.value)}
-                      rows={2}
-                      placeholder="Kualitas beton, dimensi, standar SNI, dll."
-                    />
-                  </Field>
-                </div>
-
-                <div className="grid grid-cols-2 gap-3 sm:col-span-2">
-                  <Field label="Jumlah / Volume (opsional)">
-                    <Input
-                      type="text"
-                      inputMode="numeric"
-                      value={formatThousands(form.quantity)}
-                      onChange={(e) =>
-                        set("quantity", digitsOnly(e.target.value))
-                      }
-                      placeholder="Contoh: 500"
-                    />
-                  </Field>
-                  <Field label="Satuan (opsional)">
-                    <Combobox
-                      value={unit}
-                      onChange={setUnit}
-                      options={unitOptions}
-                      loading={uomsLoading}
-                      placeholder="Pilih dari daftar atau ketik manual"
-                    />
-                  </Field>
-                </div>
-
-                <div className="sm:col-span-2">
-                  <Field label="Catatan Tambahan (opsional)">
-                    <Textarea
-                      value={form.notes}
-                      onChange={(e) => set("notes", e.target.value)}
-                      rows={3}
-                      placeholder="Lokasi proyek, jadwal kebutuhan, akses truk, dll."
-                    />
-                  </Field>
-                </div>
               </div>
+
+              <div className="grid gap-3">
+                <Label>Produk yang Diminta</Label>
+                {productLines.map((line, i) => (
+                  <ProductLineFields
+                    key={line.id}
+                    index={i}
+                    line={line}
+                    onChange={(patch) => updateLine(line.id, patch)}
+                    onRemove={() => removeLine(line.id)}
+                    removable={productLines.length > 1}
+                  />
+                ))}
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  className="w-fit gap-1.5"
+                  onClick={() =>
+                    setProductLines((prev) => [...prev, newLine()])
+                  }
+                >
+                  <Plus className="h-3.5 w-3.5" />
+                  Tambah Produk Lain
+                </Button>
+              </div>
+
+              <Field label="Catatan Tambahan (opsional)">
+                <Textarea
+                  value={form.notes}
+                  onChange={(e) => set("notes", e.target.value)}
+                  rows={3}
+                  placeholder="Lokasi proyek, jadwal kebutuhan, akses truk, dll."
+                />
+              </Field>
 
               <div className="flex flex-col gap-3 sm:flex-row sm:justify-end">
                 <Button
@@ -228,6 +220,95 @@ export function QuotationForm() {
             </a>
           </p>
         </div>
+      </div>
+    </div>
+  );
+}
+
+function ProductLineFields({
+  index,
+  line,
+  onChange,
+  onRemove,
+  removable,
+}: {
+  index: number;
+  line: ProductLine;
+  onChange: (patch: Partial<ProductLine>) => void;
+  onRemove: () => void;
+  removable: boolean;
+}) {
+  const productQuery = useDebouncedValue(line.productName);
+  const { data: productsData, isLoading: productsLoading } =
+    useProducts(productQuery);
+  const unitQuery = useDebouncedValue(line.unit);
+  const { data: uomsData, isLoading: uomsLoading } = useUoms(unitQuery);
+
+  const productOptions = (productsData?.items ?? []).map((p) => ({
+    value: p.name,
+    hint: p.unit,
+  }));
+  const unitOptions = (uomsData?.items ?? []).map((u) => ({
+    value: u.symbol,
+    hint: u.name,
+  }));
+
+  return (
+    <div className="grid gap-3 rounded-md border p-3">
+      <div className="flex items-center justify-between">
+        <span className="text-xs font-medium text-muted-foreground">
+          Produk {index + 1}
+        </span>
+        {removable && (
+          <Button
+            type="button"
+            variant="ghost"
+            size="icon-sm"
+            onClick={onRemove}
+          >
+            <X className="h-3.5 w-3.5" />
+          </Button>
+        )}
+      </div>
+
+      <Field label="Nama Produk (opsional)">
+        <Combobox
+          value={line.productName}
+          onChange={(v) => onChange({ productName: v })}
+          options={productOptions}
+          loading={productsLoading}
+          placeholder="Pilih dari daftar atau ketik manual"
+        />
+      </Field>
+
+      <Field label="Spesifikasi Teknis (opsional)">
+        <Textarea
+          value={line.specification}
+          onChange={(e) => onChange({ specification: e.target.value })}
+          rows={2}
+          placeholder="Kualitas beton, dimensi, standar SNI, dll."
+        />
+      </Field>
+
+      <div className="grid grid-cols-2 gap-3">
+        <Field label="Jumlah / Volume (opsional)">
+          <Input
+            type="text"
+            inputMode="numeric"
+            value={formatThousands(line.quantity)}
+            onChange={(e) => onChange({ quantity: digitsOnly(e.target.value) })}
+            placeholder="Contoh: 500"
+          />
+        </Field>
+        <Field label="Satuan (opsional)">
+          <Combobox
+            value={line.unit}
+            onChange={(v) => onChange({ unit: v })}
+            options={unitOptions}
+            loading={uomsLoading}
+            placeholder="Pilih dari daftar atau ketik manual"
+          />
+        </Field>
       </div>
     </div>
   );

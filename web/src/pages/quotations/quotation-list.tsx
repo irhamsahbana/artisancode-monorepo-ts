@@ -53,6 +53,7 @@ export function QuotationList() {
 
   const initialStatus = searchParams.get("status");
   const initialFilters = initialStatus ? { status: initialStatus } : undefined;
+  const selectedProducts = selected?.products ?? [];
 
   async function handleStatusChange(id: string, status: QuotationStatus) {
     try {
@@ -105,23 +106,36 @@ export function QuotationList() {
       ),
     },
     {
-      key: "productName",
+      key: "products",
       label: "Produk",
-      render: (q) => (
-        <div>
-          <p className="text-sm">{q.productName ?? "-"}</p>
-          {q.specification && (
-            <p className="mt-0.5 line-clamp-2 text-xs text-muted-foreground">
-              {q.specification}
+      render: (q) => {
+        const [first, ...rest] = q.products ?? [];
+        if (!first)
+          return <span className="text-sm text-muted-foreground">-</span>;
+        return (
+          <div>
+            <p className="text-sm">
+              {first.productName}
+              {first.quantity && (
+                <span className="text-muted-foreground">
+                  {" "}
+                  · {first.quantity}
+                </span>
+              )}
             </p>
-          )}
-        </div>
-      ),
-    },
-    {
-      key: "quantity",
-      label: "Jumlah",
-      render: (q) => <span className="text-sm">{q.quantity ?? "-"}</span>,
+            {first.specification && (
+              <p className="mt-0.5 line-clamp-1 text-xs text-muted-foreground">
+                {first.specification}
+              </p>
+            )}
+            {rest.length > 0 && (
+              <p className="mt-0.5 text-xs text-muted-foreground">
+                +{rest.length} produk lainnya
+              </p>
+            )}
+          </div>
+        );
+      },
     },
     {
       key: "createdAt",
@@ -168,11 +182,16 @@ export function QuotationList() {
         data={data?.items ?? []}
         columns={columns}
         searchPlaceholder="Cari nama / perusahaan / produk..."
-        searchFn={(q, search) =>
-          q.requesterName.toLowerCase().includes(search.toLowerCase()) ||
-          (q.companyName ?? "").toLowerCase().includes(search.toLowerCase()) ||
-          (q.productName ?? "").toLowerCase().includes(search.toLowerCase())
-        }
+        searchFn={(q, search) => {
+          const s = search.toLowerCase();
+          return (
+            q.requesterName.toLowerCase().includes(s) ||
+            (q.companyName ?? "").toLowerCase().includes(s) ||
+            (q.products ?? []).some((p) =>
+              p.productName.toLowerCase().includes(s),
+            )
+          );
+        }}
         filters={filters}
         filterFn={(q, f) =>
           Object.entries(f).every(
@@ -210,9 +229,30 @@ export function QuotationList() {
               <DetailRow label="Perusahaan" value={selected.companyName} />
               <DetailRow label="WhatsApp" value={selected.whatsapp} />
               <DetailRow label="Email" value={selected.email} />
-              <DetailRow label="Produk" value={selected.productName} />
-              <DetailRow label="Spesifikasi" value={selected.specification} />
-              <DetailRow label="Jumlah" value={selected.quantity} />
+
+              <div className="grid gap-2">
+                <span className="text-muted-foreground">Produk Diminta</span>
+                {selectedProducts.length === 0 ? (
+                  <span className="text-right font-medium">-</span>
+                ) : (
+                  <div className="grid gap-2">
+                    {selectedProducts.map((p, i) => (
+                      <div key={i} className="rounded-md border p-2">
+                        <p className="font-medium">{p.productName}</p>
+                        {p.specification && (
+                          <p className="mt-0.5 text-xs text-muted-foreground">
+                            {p.specification}
+                          </p>
+                        )}
+                        {p.quantity && (
+                          <p className="mt-0.5 text-xs">{p.quantity}</p>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+
               <DetailRow label="Catatan" value={selected.notes} />
               <DetailRow
                 label="Tanggal Masuk"

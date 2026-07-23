@@ -29,6 +29,7 @@ export type {
 export type {
   QuotationRequest,
   QuotationStatus,
+  QuotationProductLine,
   CreateQuotationReq,
   QuotationList,
 } from './quotation'
