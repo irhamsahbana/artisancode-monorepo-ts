@@ -191,7 +191,7 @@ export function UnitConversions() {
           <CardTitle>Coba Konversi</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="grid gap-3 sm:grid-cols-3">
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
             <Field label="Jumlah">
               <Input
                 type="number"

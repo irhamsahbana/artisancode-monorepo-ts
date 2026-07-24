@@ -158,7 +158,10 @@ export function ProjectForm() {
 
       <Card>
         <CardContent className="pt-6">
-          <form onSubmit={handleSubmit} className="grid gap-5 sm:grid-cols-2">
+          <form
+            onSubmit={handleSubmit}
+            className="grid grid-cols-1 gap-5 sm:grid-cols-2"
+          >
             <div className="sm:col-span-2">
               <Field label="Nama Proyek *">
                 <Input
@@ -275,7 +278,7 @@ export function ProjectForm() {
                 <p className="pt-1 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
                   Detail Berhasil
                 </p>
-                <div className="mt-3 grid gap-5 sm:grid-cols-2">
+                <div className="mt-3 grid grid-cols-1 gap-5 sm:grid-cols-2">
                   <Field label="Nomor SPK">
                     <Input
                       value={form.spkNumber}
@@ -293,7 +296,7 @@ export function ProjectForm() {
                 <p className="pt-1 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
                   Detail Gagal
                 </p>
-                <div className="mt-3 grid gap-5 sm:grid-cols-2">
+                <div className="mt-3 grid grid-cols-1 gap-5 sm:grid-cols-2">
                   <Field label="Alasan Gagal">
                     <Input
                       value={form.lostReason}

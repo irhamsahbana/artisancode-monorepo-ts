@@ -38,7 +38,10 @@ export function AccountSettings() {
           <CardTitle className="text-base">Informasi Akun</CardTitle>
         </CardHeader>
         <CardContent>
-          <form onSubmit={handleProfile} className="grid gap-5 sm:grid-cols-2">
+          <form
+            onSubmit={handleProfile}
+            className="grid grid-cols-1 gap-5 sm:grid-cols-2"
+          >
             <div className="grid gap-1.5">
               <Label>Nama</Label>
               <Input value={name} onChange={(e) => setName(e.target.value)} />
@@ -63,7 +66,10 @@ export function AccountSettings() {
           <CardTitle className="text-base">Ubah Password</CardTitle>
         </CardHeader>
         <CardContent>
-          <form onSubmit={handlePassword} className="grid gap-5 sm:grid-cols-2">
+          <form
+            onSubmit={handlePassword}
+            className="grid grid-cols-1 gap-5 sm:grid-cols-2"
+          >
             <div className="grid gap-1.5">
               <Label>Password Baru</Label>
               <Input

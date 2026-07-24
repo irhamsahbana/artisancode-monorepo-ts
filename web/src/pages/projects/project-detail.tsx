@@ -95,13 +95,13 @@ export function ProjectDetail() {
         </Button>
       </div>
 
-      <div className="grid gap-6 lg:grid-cols-3">
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
         <div className="space-y-4 lg:col-span-2">
           <Card>
             <CardHeader>
               <CardTitle className="text-sm">Info Proyek</CardTitle>
             </CardHeader>
-            <CardContent className="grid gap-4 sm:grid-cols-2">
+            <CardContent className="grid grid-cols-1 gap-4 sm:grid-cols-2">
               <Info label="Pelanggan">
                 {customer ? (
                   <Link
@@ -267,7 +267,7 @@ function VisitLog({
             <form
               id="visit-form"
               onSubmit={handleSubmit}
-              className="grid gap-4 sm:grid-cols-2"
+              className="grid grid-cols-1 gap-4 sm:grid-cols-2"
             >
               <div className="grid gap-1.5">
                 <Label>Tanggal *</Label>

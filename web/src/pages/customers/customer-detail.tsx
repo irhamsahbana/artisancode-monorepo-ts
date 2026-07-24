@@ -105,7 +105,7 @@ export function CustomerDetail() {
             <CardHeader>
               <CardTitle className="text-sm">Umum</CardTitle>
             </CardHeader>
-            <CardContent className="grid gap-4 sm:grid-cols-2">
+            <CardContent className="grid grid-cols-1 gap-4 sm:grid-cols-2">
               <Info
                 label="Segmentasi"
                 value={
@@ -144,7 +144,7 @@ export function CustomerDetail() {
             <CardHeader>
               <CardTitle className="text-sm">Info Pribadi</CardTitle>
             </CardHeader>
-            <CardContent className="grid gap-4 sm:grid-cols-2">
+            <CardContent className="grid grid-cols-1 gap-4 sm:grid-cols-2">
               <Info
                 label="Jenis Kelamin"
                 value={
@@ -171,7 +171,7 @@ export function CustomerDetail() {
             <CardHeader>
               <CardTitle className="text-sm">Karakter & Hobi</CardTitle>
             </CardHeader>
-            <CardContent className="grid gap-4 sm:grid-cols-2">
+            <CardContent className="grid grid-cols-1 gap-4 sm:grid-cols-2">
               <Info label="Karakter" value={customer.character ?? "-"} />
               <Info label="Hobi" value={customer.hobby ?? "-"} />
             </CardContent>
@@ -181,7 +181,7 @@ export function CustomerDetail() {
             <CardHeader>
               <CardTitle className="text-sm">Info Keluarga</CardTitle>
             </CardHeader>
-            <CardContent className="grid gap-4 sm:grid-cols-2">
+            <CardContent className="grid grid-cols-1 gap-4 sm:grid-cols-2">
               <Info
                 label="Nama Suami/Istri"
                 value={customer.spouseName ?? "-"}
@@ -202,7 +202,7 @@ export function CustomerDetail() {
             <CardHeader>
               <CardTitle className="text-sm">Info Perusahaan</CardTitle>
             </CardHeader>
-            <CardContent className="grid gap-4 sm:grid-cols-2">
+            <CardContent className="grid grid-cols-1 gap-4 sm:grid-cols-2">
               <Info
                 label="Nama Perusahaan"
                 value={customer.companyName ?? "-"}

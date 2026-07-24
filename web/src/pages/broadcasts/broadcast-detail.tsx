@@ -288,7 +288,7 @@ export function BroadcastDetail() {
               <Textarea rows={4} value={form.message} disabled={!canEdit} />
             </Field>
 
-            <div className="grid gap-4 sm:grid-cols-2">
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
               <Field label="Dibuat">
                 <Input
                   value={new Date(broadcast.createdAt).toLocaleString("id-ID")}
@@ -327,7 +327,7 @@ export function BroadcastDetail() {
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
                 <Field label="Jenis Kelamin">
                   <Select
                     value={form.gender}
