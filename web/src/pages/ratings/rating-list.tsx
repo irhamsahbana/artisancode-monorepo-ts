@@ -104,7 +104,7 @@ export function RatingList() {
                     <div className="min-w-0">
                       <Link
                         to={`/customers/${c.id}`}
-                        className="truncate font-medium hover:underline"
+                        className="block truncate font-medium hover:underline"
                       >
                         {c.name}
                       </Link>
