@@ -48,7 +48,7 @@ export function Login() {
                 required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                placeholder="admin@wika.co.id"
+                placeholder="nama@email.com"
                 autoComplete="email"
               />
             </div>

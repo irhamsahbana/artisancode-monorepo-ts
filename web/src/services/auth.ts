@@ -6,22 +6,22 @@ import { DEMO_MODE } from "@/lib/demo-mode";
 import type { LoginReq, LoginRes, User } from "@artisancode/api-types";
 import type { RestResponse } from "@artisancode/types";
 
-// ponytail: demo session. Any credentials log in as the same Super Admin so
+// ponytail: demo session gated behind one fixed credential pair so
 // ProtectedRoute + useMe work without a backend. Flip DEMO_MODE to restore.
 const DEMO_USER: User = {
   id: "u1",
   name: "Super Admin",
   email: "admin@wikabeton.id",
 };
+const DEMO_PASSWORD = "wikabeton123";
 const DEMO_TOKEN = "demo-token";
 
 export async function login(req: LoginReq): Promise<LoginRes> {
   if (DEMO_MODE) {
-    // ponytail: accept any email/password; surface the typed email for realism.
-    return Promise.resolve({
-      token: DEMO_TOKEN,
-      user: { ...DEMO_USER, email: req.email || DEMO_USER.email },
-    });
+    if (req.email !== DEMO_USER.email || req.password !== DEMO_PASSWORD) {
+      return Promise.reject(new Error("Invalid credentials"));
+    }
+    return Promise.resolve({ token: DEMO_TOKEN, user: DEMO_USER });
   }
   const res = await httpClient<RestResponse>(
     env.API_BASE_URL,
