@@ -15,6 +15,7 @@ import {
   Building2,
   User,
   LogOut,
+  ShieldCheck,
 } from "lucide-react";
 import { useState } from "react";
 import { NavLink, useLocation, useNavigate } from "react-router";
@@ -50,6 +51,7 @@ const masterItems = [
 const settingsItems = [
   { to: "/settings/profile", label: "Profil Bisnis", icon: Building2 },
   { to: "/settings/account", label: "Akun", icon: User },
+  { to: "/settings/roles", label: "Roles & Hak Akses", icon: ShieldCheck },
 ];
 
 const moreActivePrefixes = [

@@ -34,6 +34,8 @@ import { ProjectList } from "@/pages/projects/project-list";
 import { QuotationForm } from "@/pages/public/quotation-form";
 import { QuotationList } from "@/pages/quotations/quotation-list";
 import { RatingList } from "@/pages/ratings/rating-list";
+import { RoleForm } from "@/pages/settings/roles/role-form";
+import { RoleList } from "@/pages/settings/roles/role-list";
 import { registerPwa } from "@/register-sw";
 import "./index.css";
 
@@ -81,6 +83,9 @@ const router = createBrowserRouter([
           { path: "master/unit-conversions", element: <UnitConversions /> },
           { path: "settings/profile", element: <BusinessProfile /> },
           { path: "settings/account", element: <AccountSettings /> },
+          { path: "settings/roles", element: <RoleList /> },
+          { path: "settings/roles/new", element: <RoleForm /> },
+          { path: "settings/roles/:id/edit", element: <RoleForm /> },
         ],
       },
     ],

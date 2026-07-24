@@ -82,3 +82,14 @@ export type {
   Area,
   RelationStatus,
 } from './master'
+export type {
+  Role,
+  CreateRoleReq,
+  UpdateRoleReq,
+  GetRoleReq,
+  RoleList,
+  Permission,
+  PermissionModule,
+  PermissionAction,
+} from './role'
+export { PERMISSIONS, PERMISSION_MODULES, PERMISSION_ACTIONS } from './role'

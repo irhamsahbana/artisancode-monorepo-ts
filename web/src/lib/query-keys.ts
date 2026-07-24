@@ -52,4 +52,9 @@ export const queryKeys = {
     all: ["unitConversions"] as const,
     list: () => ["unitConversions", "list"] as const,
   },
+  roles: {
+    all: ["roles"] as const,
+    list: (q?: string) => ["roles", "list", q] as const,
+    detail: (id: string) => ["roles", "detail", id] as const,
+  },
 } as const;

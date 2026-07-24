@@ -15,6 +15,7 @@ import {
   User,
   LogOut,
   ChevronDown,
+  ShieldCheck,
 } from "lucide-react";
 import { useState } from "react";
 import { NavLink, useNavigate } from "react-router";
@@ -62,6 +63,7 @@ const masterNav = [
 const settingsNav = [
   { to: "/settings/profile", label: "Profil Bisnis", icon: Building2 },
   { to: "/settings/account", label: "Akun", icon: User },
+  { to: "/settings/roles", label: "Roles & Hak Akses", icon: ShieldCheck },
 ];
 
 export function DesktopSidebar() {
