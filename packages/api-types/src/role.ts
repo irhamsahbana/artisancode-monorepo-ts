@@ -9,7 +9,12 @@ export const PERMISSION_MODULES = [
   { key: 'quotations', label: 'Penawaran' },
   { key: 'broadcasts', label: 'Broadcast' },
   { key: 'ratings', label: 'Penilaian' },
-  { key: 'master_data', label: 'Master Data' },
+  { key: 'master_segmentation', label: 'Master Data - Segmentasi' },
+  { key: 'master_areas', label: 'Master Data - Area' },
+  { key: 'master_relation_status', label: 'Master Data - Status Relasi' },
+  { key: 'master_products', label: 'Master Data - Produk' },
+  { key: 'master_uoms', label: 'Master Data - Satuan' },
+  { key: 'master_unit_conversions', label: 'Master Data - Konversi Satuan' },
   { key: 'roles', label: 'Roles & Hak Akses' },
   { key: 'settings', label: 'Pengaturan' },
 ] as const
