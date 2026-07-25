@@ -34,6 +34,15 @@ export function useSendBroadcast() {
   });
 }
 
+export function useDeleteBroadcast() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (id: string) => broadcastService.delete(id),
+    onSuccess: () =>
+      qc.invalidateQueries({ queryKey: queryKeys.broadcasts.all }),
+  });
+}
+
 export function useBroadcastLogs(templateId?: string) {
   return useQuery({
     queryKey: [...queryKeys.broadcasts.list(), templateId],

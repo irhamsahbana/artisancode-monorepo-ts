@@ -53,7 +53,16 @@ export const broadcastService = {
           templateId,
           recipientCount,
         }),
+
+  delete: (id: string) =>
+    DEMO_MODE ? mockDelete(id) : api.del(`/broadcasts/${id}`),
 };
+
+function mockDelete(id: string): Promise<void> {
+  const idx = mockBroadcastTemplates.findIndex((t) => t.id === id);
+  if (idx !== -1) mockBroadcastTemplates.splice(idx, 1);
+  return Promise.resolve();
+}
 
 function mockCreate(
   body: CreateBroadcastTemplateReq,
