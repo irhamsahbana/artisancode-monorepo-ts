@@ -12,7 +12,14 @@ import { Separator } from "@/components/ui/separator";
 import { useCreateRole, useRole, useUpdateRole } from "@/hooks/use-roles";
 import { cn } from "@/lib/utils";
 
-import type { Permission } from "@artisancode/api-types";
+import type { Permission, PermissionModule } from "@artisancode/api-types";
+
+const mainModules = PERMISSION_MODULES.filter(
+  (m) => !m.key.startsWith("master_"),
+);
+const masterDataModules = PERMISSION_MODULES.filter((m) =>
+  m.key.startsWith("master_"),
+);
 
 export function RoleForm() {
   const { id } = useParams<{ id: string }>();
@@ -131,67 +138,29 @@ export function RoleForm() {
             </p>
             <Separator className="mb-4" />
 
-            <div className="overflow-x-auto">
-              <table className="w-full min-w-[480px] text-sm">
-                <thead>
-                  <tr>
-                    <th className="pb-2 text-left font-medium text-muted-foreground">
-                      Modul
-                    </th>
-                    {PERMISSION_ACTIONS.map((a) => (
-                      <th
-                        key={a.key}
-                        className="pb-2 text-center font-medium text-muted-foreground"
-                      >
-                        {a.label}
-                      </th>
-                    ))}
-                  </tr>
-                </thead>
-                <tbody>
-                  {PERMISSION_MODULES.map((m) => {
-                    const modulePermissions = PERMISSION_ACTIONS.map(
-                      (a) => `${m.key}.${a.key}` as Permission,
-                    );
-                    const allChecked = modulePermissions.every((p) =>
-                      permissions.has(p),
-                    );
-                    return (
-                      <tr key={m.key} className="border-t">
-                        <td className="py-2">
-                          <label className="flex items-center gap-2 font-medium">
-                            <input
-                              type="checkbox"
-                              disabled={isSystem}
-                              checked={allChecked}
-                              onChange={(e) =>
-                                toggleModule(m.key, e.target.checked)
-                              }
-                              className="h-4 w-4 rounded border-input"
-                            />
-                            {m.label}
-                          </label>
-                        </td>
-                        {PERMISSION_ACTIONS.map((a) => {
-                          const p = `${m.key}.${a.key}` as Permission;
-                          return (
-                            <td key={a.key} className="py-2 text-center">
-                              <input
-                                type="checkbox"
-                                disabled={isSystem}
-                                checked={permissions.has(p)}
-                                onChange={() => togglePermission(p)}
-                                className={cn("h-4 w-4 rounded border-input")}
-                              />
-                            </td>
-                          );
-                        })}
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </table>
+            <PermissionTable
+              modules={mainModules}
+              permissions={permissions}
+              disabled={isSystem}
+              onToggleModule={toggleModule}
+              onTogglePermission={togglePermission}
+            />
+
+            <div className="my-6 flex items-center gap-3">
+              <Separator className="flex-1" />
+              <span className="text-xs font-semibold tracking-wide text-muted-foreground uppercase">
+                Master Data
+              </span>
+              <Separator className="flex-1" />
             </div>
+
+            <PermissionTable
+              modules={masterDataModules}
+              permissions={permissions}
+              disabled={isSystem}
+              onToggleModule={toggleModule}
+              onTogglePermission={togglePermission}
+            />
           </CardContent>
         </Card>
 
@@ -208,6 +177,82 @@ export function RoleForm() {
           </Button>
         </div>
       </form>
+    </div>
+  );
+}
+
+function PermissionTable({
+  modules,
+  permissions,
+  disabled,
+  onToggleModule,
+  onTogglePermission,
+}: {
+  modules: readonly { key: PermissionModule; label: string }[];
+  permissions: Set<Permission>;
+  disabled: boolean;
+  onToggleModule: (moduleKey: string, checked: boolean) => void;
+  onTogglePermission: (p: Permission) => void;
+}) {
+  return (
+    <div className="overflow-x-auto">
+      <table className="w-full min-w-[480px] text-sm">
+        <thead>
+          <tr>
+            <th className="pb-2 text-left font-medium text-muted-foreground">
+              Modul
+            </th>
+            {PERMISSION_ACTIONS.map((a) => (
+              <th
+                key={a.key}
+                className="pb-2 text-center font-medium text-muted-foreground"
+              >
+                {a.label}
+              </th>
+            ))}
+          </tr>
+        </thead>
+        <tbody>
+          {modules.map((m) => {
+            const modulePermissions = PERMISSION_ACTIONS.map(
+              (a) => `${m.key}.${a.key}` as Permission,
+            );
+            const allChecked = modulePermissions.every((p) =>
+              permissions.has(p),
+            );
+            return (
+              <tr key={m.key} className="border-t">
+                <td className="py-2">
+                  <label className="flex items-center gap-2 font-medium">
+                    <input
+                      type="checkbox"
+                      disabled={disabled}
+                      checked={allChecked}
+                      onChange={(e) => onToggleModule(m.key, e.target.checked)}
+                      className="h-4 w-4 rounded border-input"
+                    />
+                    {m.label}
+                  </label>
+                </td>
+                {PERMISSION_ACTIONS.map((a) => {
+                  const p = `${m.key}.${a.key}` as Permission;
+                  return (
+                    <td key={a.key} className="py-2 text-center">
+                      <input
+                        type="checkbox"
+                        disabled={disabled}
+                        checked={permissions.has(p)}
+                        onChange={() => onTogglePermission(p)}
+                        className={cn("h-4 w-4 rounded border-input")}
+                      />
+                    </td>
+                  );
+                })}
+              </tr>
+            );
+          })}
+        </tbody>
+      </table>
     </div>
   );
 }
