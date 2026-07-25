@@ -13,7 +13,7 @@ interface Props {
 export function LocationView({
   latitude,
   longitude,
-  radiusMeters = 15,
+  radiusMeters = 25,
 }: Props) {
   return (
     <div className="h-56 overflow-hidden rounded-md border">

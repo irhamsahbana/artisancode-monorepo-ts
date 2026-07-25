@@ -95,7 +95,7 @@ function FlyToPoint({
   const map = useMap();
   useEffect(() => {
     if (latitude != null && longitude != null) {
-      map.flyTo([latitude, longitude], Math.max(map.getZoom(), 13));
+      map.flyTo([latitude, longitude], Math.max(map.getZoom(), 17));
     }
   }, [latitude, longitude, map]);
   return null;
@@ -207,7 +207,7 @@ export function LocationPicker({
               ? [latitude, longitude]
               : INDONESIA_CENTER
           }
-          zoom={hasPoint ? 14 : 5}
+          zoom={hasPoint ? 17 : 5}
           className="h-full w-full"
           scrollWheelZoom={false}
         >
