@@ -95,115 +95,113 @@ export function ProjectDetail() {
         </Button>
       </div>
 
-      <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
-        <div className="space-y-4 lg:col-span-2">
+      <div className="space-y-4">
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-sm">Info Proyek</CardTitle>
+          </CardHeader>
+          <CardContent className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+            <Info label="Pelanggan">
+              {customer ? (
+                <Link
+                  to={`/customers/${customer.id}`}
+                  className="hover:underline"
+                >
+                  {customer.name}
+                </Link>
+              ) : (
+                "-"
+              )}
+            </Info>
+            <Info label="Sumber Dana">{project.sourceOfFunds ?? "-"}</Info>
+            <Info label="PIC (Sales)">{project.picName ?? "-"}</Info>
+            <Info label="Nilai Estimasi">
+              {formatRupiah(project.estimatedValue)}
+            </Info>
+            {project.status === "won" && (
+              <Info label="Nomor SPK">{project.spkNumber ?? "-"}</Info>
+            )}
+            {project.status === "lost" && (
+              <>
+                <Info label="Alasan Gagal">{project.lostReason ?? "-"}</Info>
+                <Info label="Pesaing Pemenang">
+                  {project.winnerCompetitor ?? "-"}
+                </Info>
+              </>
+            )}
+            {project.notes && (
+              <div className="sm:col-span-2">
+                <Info label="Catatan">{project.notes}</Info>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+
+        {project.latitude != null && project.longitude != null && (
           <Card>
             <CardHeader>
-              <CardTitle className="text-sm">Info Proyek</CardTitle>
+              <CardTitle className="text-sm">Lokasi</CardTitle>
             </CardHeader>
-            <CardContent className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-              <Info label="Pelanggan">
-                {customer ? (
-                  <Link
-                    to={`/customers/${customer.id}`}
-                    className="hover:underline"
-                  >
-                    {customer.name}
-                  </Link>
-                ) : (
-                  "-"
-                )}
-              </Info>
-              <Info label="Sumber Dana">{project.sourceOfFunds ?? "-"}</Info>
-              <Info label="PIC (Sales)">{project.picName ?? "-"}</Info>
-              <Info label="Nilai Estimasi">
-                {formatRupiah(project.estimatedValue)}
-              </Info>
-              {project.status === "won" && (
-                <Info label="Nomor SPK">{project.spkNumber ?? "-"}</Info>
-              )}
-              {project.status === "lost" && (
-                <>
-                  <Info label="Alasan Gagal">{project.lostReason ?? "-"}</Info>
-                  <Info label="Pesaing Pemenang">
-                    {project.winnerCompetitor ?? "-"}
-                  </Info>
-                </>
-              )}
-              {project.notes && (
-                <div className="sm:col-span-2">
-                  <Info label="Catatan">{project.notes}</Info>
-                </div>
-              )}
+            <CardContent>
+              <LocationView
+                latitude={project.latitude}
+                longitude={project.longitude}
+              />
+              <div className="mt-2 flex gap-3">
+                <a
+                  href={`https://www.openstreetmap.org/?mlat=${project.latitude}&mlon=${project.longitude}#map=16/${project.latitude}/${project.longitude}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-xs text-primary hover:underline"
+                >
+                  Buka di OpenStreetMap
+                </a>
+                <a
+                  href={`https://www.google.com/maps/search/?api=1&query=${project.latitude},${project.longitude}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-xs text-primary hover:underline"
+                >
+                  Buka di Google Maps
+                </a>
+              </div>
             </CardContent>
           </Card>
+        )}
 
-          {project.latitude != null && project.longitude != null && (
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-sm">Lokasi</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <LocationView
-                  latitude={project.latitude}
-                  longitude={project.longitude}
-                />
-                <div className="mt-2 flex gap-3">
-                  <a
-                    href={`https://www.openstreetmap.org/?mlat=${project.latitude}&mlon=${project.longitude}#map=16/${project.latitude}/${project.longitude}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-xs text-primary hover:underline"
-                  >
-                    Buka di OpenStreetMap
-                  </a>
-                  <a
-                    href={`https://www.google.com/maps/search/?api=1&query=${project.latitude},${project.longitude}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-xs text-primary hover:underline"
-                  >
-                    Buka di Google Maps
-                  </a>
-                </div>
-              </CardContent>
-            </Card>
-          )}
+        {project.products && project.products.length > 0 && (
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-sm">Produk</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <ul className="divide-y">
+                {project.products.map((line) => {
+                  const product = productsData?.items.find(
+                    (p) => p.id === line.productId,
+                  );
+                  return (
+                    <li
+                      key={line.productId}
+                      className="flex items-center justify-between py-2 text-sm"
+                    >
+                      <span>{product?.name ?? line.productId}</span>
+                      <span className="text-muted-foreground">
+                        {line.quantity} {product?.unit ?? ""}
+                      </span>
+                    </li>
+                  );
+                })}
+              </ul>
+            </CardContent>
+          </Card>
+        )}
 
-          {project.products && project.products.length > 0 && (
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-sm">Produk</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <ul className="divide-y">
-                  {project.products.map((line) => {
-                    const product = productsData?.items.find(
-                      (p) => p.id === line.productId,
-                    );
-                    return (
-                      <li
-                        key={line.productId}
-                        className="flex items-center justify-between py-2 text-sm"
-                      >
-                        <span>{product?.name ?? line.productId}</span>
-                        <span className="text-muted-foreground">
-                          {line.quantity} {product?.unit ?? ""}
-                        </span>
-                      </li>
-                    );
-                  })}
-                </ul>
-              </CardContent>
-            </Card>
-          )}
-
-          <VisitLog
-            projectId={project.id}
-            customerId={project.customerId}
-            visits={visits ?? []}
-          />
-        </div>
+        <VisitLog
+          projectId={project.id}
+          customerId={project.customerId}
+          visits={visits ?? []}
+        />
       </div>
     </div>
   );
