@@ -1,10 +1,11 @@
-import { ArrowLeft, Pencil, MapPin, Plus } from "lucide-react";
+import { ArrowLeft, Pencil, MapPin, Plus, ExternalLink } from "lucide-react";
 import { useState } from "react";
 import { Link, useParams, useNavigate } from "react-router";
 import { toast } from "sonner";
 
 import { LocationView } from "@/components/projects/location-view";
 import { EmptyState } from "@/components/shared/empty-state";
+import { StarRating } from "@/components/shared/star-rating";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -25,6 +26,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Separator } from "@/components/ui/separator";
 import { useContacts } from "@/hooks/use-contacts";
 import { useCustomers } from "@/hooks/use-customers";
 import { useProducts } from "@/hooks/use-products";
@@ -33,6 +35,7 @@ import {
   useProjectVisits,
   useCreateProjectVisit,
 } from "@/hooks/use-projects";
+import { useCreateRating } from "@/hooks/use-ratings";
 
 import {
   formatRupiah,
@@ -147,23 +150,27 @@ export function ProjectDetail() {
                 latitude={project.latitude}
                 longitude={project.longitude}
               />
-              <div className="mt-2 flex gap-3">
-                <a
-                  href={`https://www.openstreetmap.org/?mlat=${project.latitude}&mlon=${project.longitude}#map=16/${project.latitude}/${project.longitude}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-xs text-primary hover:underline"
-                >
-                  Buka di OpenStreetMap
-                </a>
-                <a
-                  href={`https://www.google.com/maps/search/?api=1&query=${project.latitude},${project.longitude}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-xs text-primary hover:underline"
-                >
-                  Buka di Google Maps
-                </a>
+              <div className="mt-3 flex gap-2">
+                <Button size="sm" variant="outline" asChild>
+                  <a
+                    href={`https://www.openstreetmap.org/?mlat=${project.latitude}&mlon=${project.longitude}#map=16/${project.latitude}/${project.longitude}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    <ExternalLink className="mr-1 h-4 w-4" />
+                    Buka di OpenStreetMap
+                  </a>
+                </Button>
+                <Button size="sm" variant="outline" asChild>
+                  <a
+                    href={`https://www.google.com/maps/search/?api=1&query=${project.latitude},${project.longitude}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    <ExternalLink className="mr-1 h-4 w-4" />
+                    Buka di Google Maps
+                  </a>
+                </Button>
               </div>
             </CardContent>
           </Card>
@@ -207,7 +214,14 @@ export function ProjectDetail() {
   );
 }
 
-const EMPTY_FORM = { visitDate: "", metWith: "", topic: "", notes: "" };
+const EMPTY_FORM = {
+  visitDate: "",
+  metWith: "",
+  topic: "",
+  notes: "",
+  paymentScore: 0,
+  relationshipScore: 0,
+};
 
 function VisitLog({
   projectId,
@@ -225,6 +239,7 @@ function VisitLog({
   }[];
 }) {
   const { mutateAsync: addVisit, isPending } = useCreateProjectVisit(projectId);
+  const { mutateAsync: addRating } = useCreateRating();
   const { data: contacts } = useContacts(customerId);
   const [open, setOpen] = useState(false);
   const [form, setForm] = useState(EMPTY_FORM);
@@ -243,6 +258,16 @@ function VisitLog({
         topic: form.topic || undefined,
         notes: form.notes || undefined,
       });
+      if (form.paymentScore > 0 && form.relationshipScore > 0) {
+        await addRating({
+          customerId,
+          ratingDate: form.visitDate,
+          paymentScore: form.paymentScore,
+          relationshipScore: form.relationshipScore,
+          riskLevel: "low",
+          notes: form.notes || undefined,
+        });
+      }
       toast.success("Log kunjungan ditambahkan.");
       setForm(EMPTY_FORM);
       setOpen(false);
@@ -344,6 +369,28 @@ function VisitLog({
                 <Input
                   value={form.notes}
                   onChange={(e) => setForm({ ...form, notes: e.target.value })}
+                />
+              </div>
+
+              <div className="sm:col-span-2">
+                <Separator />
+                <p className="pt-3 text-xs font-semibold tracking-wide text-muted-foreground uppercase">
+                  Penilaian Pelanggan (opsional)
+                </p>
+              </div>
+
+              <div className="grid gap-1.5">
+                <Label>Skor Pembayaran</Label>
+                <StarRating
+                  value={form.paymentScore}
+                  onChange={(v) => setForm({ ...form, paymentScore: v })}
+                />
+              </div>
+              <div className="grid gap-1.5">
+                <Label>Skor Hubungan</Label>
+                <StarRating
+                  value={form.relationshipScore}
+                  onChange={(v) => setForm({ ...form, relationshipScore: v })}
                 />
               </div>
             </form>
