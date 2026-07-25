@@ -148,14 +148,24 @@ export function ProjectDetail() {
                   latitude={project.latitude}
                   longitude={project.longitude}
                 />
-                <a
-                  href={`https://www.openstreetmap.org/?mlat=${project.latitude}&mlon=${project.longitude}#map=16/${project.latitude}/${project.longitude}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="mt-2 inline-block text-xs text-primary hover:underline"
-                >
-                  Buka di OpenStreetMap
-                </a>
+                <div className="mt-2 flex gap-3">
+                  <a
+                    href={`https://www.openstreetmap.org/?mlat=${project.latitude}&mlon=${project.longitude}#map=16/${project.latitude}/${project.longitude}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-xs text-primary hover:underline"
+                  >
+                    Buka di OpenStreetMap
+                  </a>
+                  <a
+                    href={`https://www.google.com/maps/search/?api=1&query=${project.latitude},${project.longitude}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-xs text-primary hover:underline"
+                  >
+                    Buka di Google Maps
+                  </a>
+                </div>
               </CardContent>
             </Card>
           )}

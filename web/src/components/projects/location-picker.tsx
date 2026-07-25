@@ -3,6 +3,7 @@ import "leaflet/dist/leaflet.css";
 import { Crosshair, X } from "lucide-react";
 import { useEffect, useState } from "react";
 import {
+  Circle,
   MapContainer,
   Marker,
   TileLayer,
@@ -217,16 +218,19 @@ export function LocationPicker({
           <ClickToPlace onChange={onChange} />
           <FlyToPoint latitude={latitude} longitude={longitude} />
           {latitude != null && longitude != null && (
-            <Marker
-              position={[latitude, longitude]}
-              draggable
-              eventHandlers={{
-                dragend: (e) => {
-                  const pos = (e.target as L.Marker).getLatLng();
-                  onChange(pos.lat, pos.lng);
-                },
-              }}
-            />
+            <>
+              <Marker
+                position={[latitude, longitude]}
+                draggable
+                eventHandlers={{
+                  dragend: (e) => {
+                    const pos = (e.target as L.Marker).getLatLng();
+                    onChange(pos.lat, pos.lng);
+                  },
+                }}
+              />
+              <Circle center={[latitude, longitude]} radius={25} />
+            </>
           )}
         </MapContainer>
       </div>
