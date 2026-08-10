@@ -10,6 +10,8 @@ export interface QuotationProductLine {
 
 export interface QuotationRequest {
   id: string
+  projectId?: string
+  topic?: string
   requesterName: string
   companyName?: string
   whatsapp: string
@@ -21,6 +23,8 @@ export interface QuotationRequest {
 }
 
 export interface CreateQuotationReq {
+  projectId?: string
+  topic?: string
   requesterName: string
   companyName?: string
   whatsapp: string

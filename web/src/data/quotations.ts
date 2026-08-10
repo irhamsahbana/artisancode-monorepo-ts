@@ -4,6 +4,8 @@ import type { QuotationRequest } from "@artisancode/api-types";
 export const mockQuotations: QuotationRequest[] = [
   {
     id: "q1",
+    projectId: "p13",
+    topic: "rfq",
     requesterName: "Budi Santoso",
     companyName: "PT Bangun Jaya",
     whatsapp: "6281234567890",
@@ -26,6 +28,8 @@ export const mockQuotations: QuotationRequest[] = [
   },
   {
     id: "q2",
+    projectId: "p8",
+    topic: "permintaan penawaran",
     requesterName: "Siti Aminah",
     companyName: "CV Konstruksi Mandiri",
     whatsapp: "6282345678901",
@@ -41,6 +45,7 @@ export const mockQuotations: QuotationRequest[] = [
   },
   {
     id: "q3",
+    topic: "Penawaran harga beton untuk pribadi",
     requesterName: "Ahmad Fauzi",
     whatsapp: "6283456789012",
     email: "ahmad.fauzi@gmail.com",

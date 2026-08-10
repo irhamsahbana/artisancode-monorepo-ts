@@ -1,6 +1,6 @@
 import { Plus, X } from "lucide-react";
 import { useState } from "react";
-import { useNavigate } from "react-router";
+import { useLocation, useNavigate } from "react-router";
 import { toast } from "sonner";
 
 import { Combobox } from "@/components/shared/combobox";
@@ -11,11 +11,14 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { useDebouncedValue } from "@/hooks/use-debounced-value";
 import { useProducts } from "@/hooks/use-products";
+import { useProjects } from "@/hooks/use-projects";
 import { useCreateQuotation } from "@/hooks/use-quotations";
 import { useUoms } from "@/hooks/use-uoms";
 import { digitsOnly, formatThousands } from "@/lib/utils";
 
 interface FormState {
+  topic: string;
+  projectId: string;
   requesterName: string;
   companyName: string;
   whatsapp: string;
@@ -24,6 +27,8 @@ interface FormState {
 }
 
 const empty: FormState = {
+  topic: "",
+  projectId: "",
   requesterName: "",
   companyName: "",
   whatsapp: "",
@@ -33,7 +38,7 @@ const empty: FormState = {
 
 interface ProductLine {
   id: string;
-  productName: string;
+  productId: string;
   specification: string;
   quantity: string;
   unit: string;
@@ -42,7 +47,7 @@ interface ProductLine {
 function newLine(): ProductLine {
   return {
     id: crypto.randomUUID(),
-    productName: "",
+    productId: "",
     specification: "",
     quantity: "",
     unit: "",
@@ -51,7 +56,12 @@ function newLine(): ProductLine {
 
 export function QuotationForm() {
   const navigate = useNavigate();
+  const location = useLocation();
+  const isInternal = location.pathname.startsWith("/quotations");
+
   const { mutateAsync, isPending } = useCreateQuotation();
+  const { data: projectsData } = useProjects();
+  const { data: productsData } = useProducts();
   const [form, setForm] = useState<FormState>(empty);
   const [productLines, setProductLines] = useState<ProductLine[]>([newLine()]);
 
@@ -77,14 +87,20 @@ export function QuotationForm() {
     }
     try {
       const products = productLines
-        .filter((l) => l.productName.trim())
-        .map((l) => ({
-          productName: l.productName.trim(),
-          specification: l.specification || undefined,
-          quantity: [l.quantity, l.unit].filter(Boolean).join(" ") || undefined,
-        }));
+        .filter((l) => l.productId)
+        .map((l) => {
+          const product = productsData?.items.find((p) => p.id === l.productId);
+          return {
+            productName: product ? product.name : l.productId,
+            specification: l.specification || undefined,
+            quantity:
+              [l.quantity, l.unit].filter(Boolean).join(" ") || undefined,
+          };
+        });
 
       await mutateAsync({
+        topic: form.topic || undefined,
+        projectId: form.projectId || undefined,
         requesterName: form.requesterName,
         companyName: form.companyName || undefined,
         whatsapp: form.whatsapp,
@@ -92,9 +108,17 @@ export function QuotationForm() {
         products: products.length ? products : undefined,
         notes: form.notes || undefined,
       });
-      toast.success("Permintaan terkirim. Kami akan segera menghubungi Anda.");
-      setForm(empty);
-      setProductLines([newLine()]);
+
+      if (isInternal) {
+        toast.success("Penawaran berhasil dibuat.");
+        navigate("/quotations");
+      } else {
+        toast.success(
+          "Permintaan terkirim. Kami akan segera menghubungi Anda.",
+        );
+        setForm(empty);
+        setProductLines([newLine()]);
+      }
     } catch {
       toast.error("Gagal mengirim permintaan. Coba lagi.");
     }
@@ -115,6 +139,36 @@ export function QuotationForm() {
           <CardContent className="pt-6">
             <form onSubmit={handleSubmit} className="grid gap-5">
               <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
+                <div className="sm:col-span-2">
+                  <Field label="Topik Permintaan">
+                    <Combobox
+                      value={form.topic}
+                      onChange={(v) => set("topic", v)}
+                      options={[
+                        { value: "Permintaan Penawaran" },
+                        { value: "Request for Quotation (RFQ)" },
+                        { value: "Tender/Lelang" },
+                      ]}
+                      placeholder="Pilih atau ketik topik..."
+                    />
+                  </Field>
+                </div>
+
+                <div className="sm:col-span-2">
+                  <Field label="Proyek Terkait (opsional)">
+                    <Combobox
+                      value={form.projectId}
+                      onChange={(v) => set("projectId", v)}
+                      options={(projectsData?.items ?? []).map((p) => ({
+                        value: p.id,
+                        label: `${p.name} — ${p.location}`,
+                      }))}
+                      placeholder="Pilih proyek yang sedang berjalan..."
+                      enforceOptions
+                    />
+                  </Field>
+                </div>
+
                 <div className="sm:col-span-2">
                   <Field label="Nama Lengkap" required>
                     <Input
@@ -195,12 +249,16 @@ export function QuotationForm() {
                 <Button
                   type="button"
                   variant="outline"
-                  onClick={() => navigate("/")}
+                  onClick={() => navigate(isInternal ? "/quotations" : "/")}
                 >
                   Batal
                 </Button>
                 <Button type="submit" disabled={isPending}>
-                  {isPending ? "Mengirim..." : "Kirim Permintaan"}
+                  {isPending
+                    ? "Menyimpan..."
+                    : isInternal
+                      ? "Buat Penawaran"
+                      : "Kirim Permintaan"}
                 </Button>
               </div>
             </form>
@@ -238,14 +296,13 @@ function ProductLineFields({
   onRemove: () => void;
   removable: boolean;
 }) {
-  const productQuery = useDebouncedValue(line.productName);
-  const { data: productsData, isLoading: productsLoading } =
-    useProducts(productQuery);
+  const { data: productsData, isLoading: productsLoading } = useProducts();
   const unitQuery = useDebouncedValue(line.unit);
   const { data: uomsData, isLoading: uomsLoading } = useUoms(unitQuery);
 
   const productOptions = (productsData?.items ?? []).map((p) => ({
-    value: p.name,
+    value: p.id,
+    label: p.name,
     hint: p.unit,
   }));
   const unitOptions = (uomsData?.items ?? []).map((u) => ({
@@ -273,11 +330,12 @@ function ProductLineFields({
 
       <Field label="Nama Produk (opsional)">
         <Combobox
-          value={line.productName}
-          onChange={(v) => onChange({ productName: v })}
+          value={line.productId}
+          onChange={(v) => onChange({ productId: v })}
           options={productOptions}
           loading={productsLoading}
-          placeholder="Pilih dari daftar atau ketik manual"
+          placeholder="Ketik untuk mencari produk..."
+          enforceOptions
         />
       </Field>
 

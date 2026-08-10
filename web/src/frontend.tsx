@@ -78,6 +78,7 @@ const router = createBrowserRouter([
           { path: "projects/:id/edit", element: <ProjectForm /> },
           { path: "ratings", element: <RatingList /> },
           { path: "quotations", element: <QuotationList /> },
+          { path: "quotations/new", element: <QuotationForm /> },
           { path: "broadcasts", element: <BroadcastList /> },
           { path: "broadcasts/new", element: <BroadcastForm /> },
           { path: "broadcasts/:id", element: <BroadcastDetail /> },

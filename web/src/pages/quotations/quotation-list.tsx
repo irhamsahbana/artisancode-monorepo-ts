@@ -1,6 +1,6 @@
-import { Eye, MessageCircle } from "lucide-react";
+import { Eye, MessageCircle, Plus } from "lucide-react";
 import { useState } from "react";
-import { useSearchParams } from "react-router";
+import { useNavigate, useSearchParams } from "react-router";
 import { toast } from "sonner";
 
 import type { Column, FilterOption } from "@/components/shared/data-table";
@@ -21,10 +21,15 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { useProjects } from "@/hooks/use-projects";
 import {
   useQuotations,
   useUpdateQuotationStatus,
 } from "@/hooks/use-quotations";
+import {
+  projectStatusLabel,
+  projectStatusVariant,
+} from "@/pages/projects/project-status";
 
 import {
   quotationStatusLabel,
@@ -36,17 +41,19 @@ import type { QuotationRequest, QuotationStatus } from "@artisancode/api-types";
 const filters: FilterOption[] = [
   {
     key: "status",
-    label: "Status",
+    label: "Status Penawaran",
     options: [
-      { label: "Baru", value: "new" },
+      { label: "Baru Masuk", value: "new" },
       { label: "Dalam Tinjauan", value: "in_review" },
-      { label: "Direspons", value: "responded" },
+      { label: "Sudah Dikirim", value: "responded" },
     ],
   },
 ];
 
 export function QuotationList() {
+  const navigate = useNavigate();
   const { data } = useQuotations();
+  const { data: projectsData } = useProjects();
   const { mutateAsync: updateStatus, isPending } = useUpdateQuotationStatus();
   const [searchParams] = useSearchParams();
   const [selected, setSelected] = useState<QuotationRequest | null>(null);
@@ -106,6 +113,39 @@ export function QuotationList() {
       ),
     },
     {
+      key: "project",
+      label: "Proyek & Topik",
+      render: (q) => {
+        const project = projectsData?.items.find((p) => p.id === q.projectId);
+        return (
+          <div className="max-w-[200px]">
+            {project ? (
+              <div className="flex flex-col gap-1">
+                <span className="truncate font-medium">{project.name}</span>
+                <div className="flex items-center gap-1.5">
+                  <Badge
+                    variant={projectStatusVariant[project.status]}
+                    className="h-4 text-[10px] px-1.5 py-0"
+                  >
+                    {projectStatusLabel[project.status]}
+                  </Badge>
+                  {q.topic && (
+                    <span className="truncate text-xs text-muted-foreground">
+                      · {q.topic}
+                    </span>
+                  )}
+                </div>
+              </div>
+            ) : (
+              <span className="text-sm text-muted-foreground">
+                {q.topic || "-"}
+              </span>
+            )}
+          </div>
+        );
+      },
+    },
+    {
       key: "products",
       label: "Produk",
       render: (q) => {
@@ -148,7 +188,7 @@ export function QuotationList() {
     },
     {
       key: "status",
-      label: "Status",
+      label: "Status Penawaran",
       render: (q) => {
         if (isPending) return <Badge>{quotationStatusLabel[q.status]}</Badge>;
         return (
@@ -162,9 +202,9 @@ export function QuotationList() {
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="new">Baru</SelectItem>
+              <SelectItem value="new">Baru Masuk</SelectItem>
               <SelectItem value="in_review">Dalam Tinjauan</SelectItem>
-              <SelectItem value="responded">Direspons</SelectItem>
+              <SelectItem value="responded">Sudah Dikirim</SelectItem>
             </SelectContent>
           </Select>
         );
@@ -176,7 +216,13 @@ export function QuotationList() {
     <div>
       <PageHeader
         title="Permintaan Penawaran"
-        description="Daftar RFQ masuk dari form publik."
+        description="Daftar RFQ masuk dari form publik dan internal."
+        action={
+          <Button size="sm" onClick={() => navigate("/quotations/new")}>
+            <Plus className="mr-1 h-4 w-4" />
+            Buat Penawaran
+          </Button>
+        }
       />
       <DataTable
         data={data?.items ?? []}

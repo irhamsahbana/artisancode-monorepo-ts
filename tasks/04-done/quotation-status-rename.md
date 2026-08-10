@@ -1,6 +1,6 @@
 # Rename quotation status labels
 
-**Status:** Backlog
+**Status:** Done
 **Raised by:** Mas Fari (meeting 2026-08-09) — see [meeting-summary-2026-08-09.md](../../prd/meeting-summary-2026-08-09.md) §2
 
 ## Problem
@@ -12,8 +12,8 @@ Quotation status today: `new` / `in_review` / `responded`. Once quotations also 
 
 ## Scope
 
-- [ ] Decide enum change vs label-only change. Minimal: keep enum values, swap the Bahasa Indonesia display labels in [web/src/pages/quotations/](../../web/src/pages/quotations/) to `Baru masuk` / `Dalam tinjauan` / `Sudah dikirim penawaran`.
-- [ ] Add a column header note or rename column from "Status" → "Status Penawaran" so it doesn't collide with "Status Proyek".
+- [x] Decide enum change vs label-only change. Minimal: keep enum values, swap the Bahasa Indonesia display labels in [web/src/pages/quotations/](../../web/src/pages/quotations/) to `Baru masuk` / `Dalam tinjauan` / `Sudah dikirim penawaran`.
+- [x] Add a column header note or rename column from "Status" → "Status Penawaran" so it doesn't collide with "Status Proyek".
 
 ## Notes
 

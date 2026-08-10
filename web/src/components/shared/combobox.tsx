@@ -16,10 +16,11 @@ export interface ComboboxOption {
 interface Props {
   value: string;
   onChange: (value: string) => void;
-  options: ComboboxOption[];
+  options: (ComboboxOption & { label?: string })[];
   placeholder?: string;
   loading?: boolean;
   emptyText?: string;
+  enforceOptions?: boolean;
 }
 
 // ponytail: free-text input + dropdown of server-driven suggestions. The
@@ -38,8 +39,11 @@ export function Combobox({
   placeholder,
   loading,
   emptyText = "Tidak ditemukan, bisa diisi manual.",
+  enforceOptions,
 }: Props) {
   const [open, setOpen] = useState(false);
+
+  const displayValue = options.find((o) => o.value === value)?.label || value;
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
@@ -47,10 +51,15 @@ export function Combobox({
         <div className="relative">
           <Input
             type="text"
-            value={value}
+            value={enforceOptions && !open ? displayValue : value}
             onChange={(e) => {
               onChange(e.target.value);
               setOpen(true);
+            }}
+            onBlur={() => {
+              if (enforceOptions && !options.find((o) => o.value === value)) {
+                onChange("");
+              }
             }}
             onFocus={() => setOpen(true)}
             onClick={() => setOpen(true)}
@@ -88,13 +97,17 @@ export function Combobox({
               <button
                 key={o.value}
                 type="button"
+                onMouseDown={(e) => {
+                  // prevent input blur before click registers
+                  e.preventDefault();
+                }}
                 onClick={() => {
                   onChange(o.value);
                   setOpen(false);
                 }}
                 className="flex w-full items-center justify-between rounded-sm px-2 py-1.5 text-left text-sm hover:bg-accent"
               >
-                <span>{o.value}</span>
+                <span>{o.label || o.value}</span>
                 {o.hint && (
                   <span className="text-xs text-muted-foreground">
                     {o.hint}

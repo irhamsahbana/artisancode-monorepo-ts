@@ -1,6 +1,6 @@
 # Quotation ↔ Project sync
 
-**Status:** Backlog
+**Status:** Done
 **Raised by:** Mas Fari (meeting 2026-08-09) — see [meeting-summary-2026-08-09.md](../../prd/meeting-summary-2026-08-09.md) §1–3
 
 ## Problem
@@ -11,12 +11,12 @@ Also: topic on the quotation form should not be a free dropdown — it needs a d
 
 ## Scope
 
-- [ ] Add `projectId?: string` + `topic?: string` to `QuotationRequest` in [packages/api-types/src/quotation.ts](../../packages/api-types/src/quotation.ts).
-- [ ] Quotation form: topic field = two-mode (select existing topic OR type new). When topic = "permintaan penawaran", surface a "Buat Penawaran" button that routes into the quotation monitoring flow.
-- [ ] Quotation form: link to project via dropdown sourced from `mockProjects` (dedup-aware — see client case "Apartemen Tanjung Bunga" vs "Pembangunan Apartemen Makassar").
-- [ ] `productName` on quotation lines: change from free string to select from `mockProducts` (master), no free typing.
-- [ ] Quotation list/detail: show **Nama Proyek** + **Status Proyek** columns, derived from the linked `Project` (synced, not stored). Rename existing `status` column to avoid collision with project status — see [quotation-status-rename.md](quotation-status-rename.md).
-- [ ] Internal sales can also fill the quotation form (not only external/public submit).
+- [x] Add `projectId?: string` + `topic?: string` to `QuotationRequest` in [packages/api-types/src/quotation.ts](../../packages/api-types/src/quotation.ts).
+- [x] Quotation form: topic field = two-mode (select existing topic OR type new). When topic = "permintaan penawaran", surface a "Buat Penawaran" button that routes into the quotation monitoring flow.
+- [x] Quotation form: link to project via dropdown sourced from `mockProjects` (dedup-aware — see client case "Apartemen Tanjung Bunga" vs "Pembangunan Apartemen Makassar").
+- [x] `productName` on quotation lines: change from free string to select from `mockProducts` (master), no free typing.
+- [x] Quotation list/detail: show **Nama Proyek** + **Status Proyek** columns, derived from the linked `Project` (synced, not stored). Rename existing `status` column to avoid collision with project status — see [quotation-status-rename.md](quotation-status-rename.md).
+- [x] Internal sales can also fill the quotation form (not only external/public submit).
 
 ## Notes
 

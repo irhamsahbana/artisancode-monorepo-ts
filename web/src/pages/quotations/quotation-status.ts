@@ -1,9 +1,9 @@
 import type { QuotationStatus } from "@artisancode/api-types";
 
 export const quotationStatusLabel: Record<QuotationStatus, string> = {
-  new: "Baru",
+  new: "Baru Masuk",
   in_review: "Dalam Tinjauan",
-  responded: "Direspons",
+  responded: "Sudah Dikirim",
 };
 
 export const quotationStatusVariant: Record<
