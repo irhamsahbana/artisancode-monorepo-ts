@@ -6,7 +6,6 @@ import { useContactSearch } from "./use-contacts";
 import { useProjectFollowUps } from "./use-dashboard";
 import { useQuotations } from "./use-quotations";
 
-
 export interface AppNotification {
   id: string;
   type: "quotation" | "project" | "birthday" | "holiday";
