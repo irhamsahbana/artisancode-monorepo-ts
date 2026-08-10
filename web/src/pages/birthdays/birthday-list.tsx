@@ -24,11 +24,12 @@ import { useContactSearch } from "@/hooks/use-contacts";
 
 // ponytail: Template is local state for demo purposes.
 const DEFAULT_TEMPLATE =
-  "Selamat Ulang Tahun {{Nama}}! 🎉\n\nSemoga selalu diberikan kesehatan, kebahagiaan, dan kesuksesan. Terima kasih atas kepercayaan Anda bersama CRM Wika.";
+  "Selamat Ulang Tahun {{Sapaan}} {{Nama}}! 🎉\n\nSemoga selalu diberikan kesehatan, kebahagiaan, dan kesuksesan. Terima kasih atas kepercayaan Anda bersama CRM Wika.";
 
 interface UpcomingBirthday {
   contactId: string;
   contactName: string;
+  gender?: "male" | "female";
   customerName: string;
   position: string;
   dateOfBirth: string;
@@ -90,6 +91,7 @@ export function BirthdayList() {
       items.push({
         contactId: contact.id,
         contactName: contact.name,
+        gender: contact.gender,
         customerName: customer.name,
         position: contact.position ?? "-",
         dateOfBirth: contact.dateOfBirth,
@@ -105,17 +107,20 @@ export function BirthdayList() {
     {
       key: "contact",
       label: "Key Person",
-      render: (u) => (
-        <div className="flex flex-col gap-0.5">
-          <Link
-            to={`/contacts/${u.contactId}`}
-            className="font-medium hover:underline"
-          >
-            {u.contactName}
-          </Link>
-          <span className="text-xs text-muted-foreground">{u.position}</span>
-        </div>
-      ),
+      render: (u) => {
+        const sapaan = u.gender === "female" ? "Ibu" : "Bapak";
+        return (
+          <div className="flex flex-col gap-0.5">
+            <Link
+              to={`/contacts/${u.contactId}`}
+              className="font-medium hover:underline"
+            >
+              {sapaan} {u.contactName}
+            </Link>
+            <span className="text-xs text-muted-foreground">{u.position}</span>
+          </div>
+        );
+      },
     },
     {
       key: "company",
@@ -215,8 +220,8 @@ export function BirthdayList() {
             {template}
           </div>
           <p className="mt-3 text-xs text-muted-foreground">
-            Gunakan <b>{`{{Nama}}`}</b> untuk menyebutkan nama Key Person secara
-            dinamis.
+            Gunakan <b>{`{{Sapaan}}`}</b> untuk otomatis menjadi Bapak/Ibu
+            (berdasarkan gender Key Person), dan <b>{`{{Nama}}`}</b> untuk nama.
           </p>
         </CardContent>
       </Card>
@@ -251,8 +256,8 @@ export function BirthdayList() {
                 onChange={(e) => setEditTemplate(e.target.value)}
               />
               <p className="text-xs text-muted-foreground">
-                Gunakan <b>{`{{Nama}}`}</b> untuk menyisipkan nama secara
-                dinamis.
+                Gunakan <b>{`{{Sapaan}}`}</b> untuk Bapak/Ibu berdasarkan
+                gender, dan <b>{`{{Nama}}`}</b> untuk nama.
               </p>
             </div>
           </div>
