@@ -97,7 +97,7 @@ export function DesktopSidebar() {
                     : location.pathname.startsWith(to);
                 return (
                   <SidebarMenuItem key={to}>
-                    <SidebarMenuButton asChild>
+                    <SidebarMenuButton asChild isActive={isActive}>
                       <NavLink
                         to={to}
                         className={cn(
@@ -134,24 +134,25 @@ export function DesktopSidebar() {
               <SidebarMenu>
                 <SidebarMenuItem>
                   <SidebarMenuSub>
-                    {masterNav.map(({ to, label, icon: Icon }) => (
-                      <SidebarMenuSubItem key={to}>
-                        <SidebarMenuSubButton asChild>
-                          <NavLink
-                            to={to}
-                            className={({ isActive }) =>
-                              cn(
+                    {masterNav.map(({ to, label, icon: Icon }) => {
+                      const isActive = location.pathname.startsWith(to);
+                      return (
+                        <SidebarMenuSubItem key={to}>
+                          <SidebarMenuSubButton asChild isActive={isActive}>
+                            <NavLink
+                              to={to}
+                              className={cn(
                                 "flex items-center gap-2",
                                 isActive && "font-medium text-primary",
-                              )
-                            }
-                          >
-                            <Icon className="h-3.5 w-3.5" />
-                            {label}
-                          </NavLink>
-                        </SidebarMenuSubButton>
-                      </SidebarMenuSubItem>
-                    ))}
+                              )}
+                            >
+                              <Icon className="h-3.5 w-3.5" />
+                              {label}
+                            </NavLink>
+                          </SidebarMenuSubButton>
+                        </SidebarMenuSubItem>
+                      );
+                    })}
                   </SidebarMenuSub>
                 </SidebarMenuItem>
               </SidebarMenu>
@@ -163,24 +164,25 @@ export function DesktopSidebar() {
           <SidebarGroupLabel>Pengaturan</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
-              {settingsNav.map(({ to, label, icon: Icon }) => (
-                <SidebarMenuItem key={to}>
-                  <SidebarMenuButton asChild>
-                    <NavLink
-                      to={to}
-                      className={({ isActive }) =>
-                        cn(
+              {settingsNav.map(({ to, label, icon: Icon }) => {
+                const isActive = location.pathname.startsWith(to);
+                return (
+                  <SidebarMenuItem key={to}>
+                    <SidebarMenuButton asChild isActive={isActive}>
+                      <NavLink
+                        to={to}
+                        className={cn(
                           "flex items-center gap-2",
                           isActive && "font-medium text-primary",
-                        )
-                      }
-                    >
-                      <Icon className="h-4 w-4" />
-                      {label}
-                    </NavLink>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              ))}
+                        )}
+                      >
+                        <Icon className="h-4 w-4" />
+                        {label}
+                      </NavLink>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                );
+              })}
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>

@@ -88,8 +88,10 @@ export function BottomNav() {
           to="/dashboard"
           className={({ isActive }) =>
             cn(
-              "flex flex-col items-center gap-0.5 text-xs",
-              isActive ? "text-primary" : "text-muted-foreground",
+              "flex flex-col items-center gap-1 rounded-xl px-4 py-2 text-[10px] font-medium transition-colors",
+              isActive
+                ? "bg-muted text-foreground"
+                : "text-muted-foreground hover:bg-muted",
             )
           }
         >
@@ -100,8 +102,10 @@ export function BottomNav() {
           to="/customers"
           className={({ isActive }) =>
             cn(
-              "flex flex-col items-center gap-0.5 text-xs",
-              isActive ? "text-primary" : "text-muted-foreground",
+              "flex flex-col items-center gap-1 rounded-xl px-4 py-2 text-[10px] font-medium transition-colors",
+              isActive
+                ? "bg-muted text-foreground"
+                : "text-muted-foreground hover:bg-muted",
             )
           }
         >
@@ -111,12 +115,12 @@ export function BottomNav() {
         <NavLink
           to="/projects"
           className={cn(
-            "flex flex-col items-center gap-0.5 text-xs",
+            "flex flex-col items-center gap-1 rounded-xl px-4 py-2 text-[10px] font-medium transition-colors",
             location.pathname === "/projects" ||
               (location.pathname.startsWith("/projects/") &&
                 location.pathname !== "/projects/map")
-              ? "text-primary"
-              : "text-muted-foreground",
+              ? "bg-muted text-foreground"
+              : "text-muted-foreground hover:bg-muted",
           )}
         >
           <Briefcase className="h-5 w-5" />
@@ -125,8 +129,10 @@ export function BottomNav() {
         <button
           onClick={() => setMoreOpen(true)}
           className={cn(
-            "flex flex-col items-center gap-0.5 text-xs",
-            moreActive ? "text-primary" : "text-muted-foreground",
+            "flex flex-col items-center gap-1 rounded-xl px-4 py-2 text-[10px] font-medium transition-colors",
+            moreActive
+              ? "bg-muted text-foreground"
+              : "text-muted-foreground hover:bg-muted",
           )}
         >
           <Menu className="h-5 w-5" />
