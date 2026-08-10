@@ -10,6 +10,7 @@ export interface QuotationProductLine {
 
 export interface QuotationRequest {
   id: string
+  title?: string
   projectId?: string
   topic?: string
   requesterName: string
@@ -23,6 +24,7 @@ export interface QuotationRequest {
 }
 
 export interface CreateQuotationReq {
+  title?: string
   projectId?: string
   topic?: string
   requesterName: string

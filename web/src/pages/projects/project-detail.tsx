@@ -36,7 +36,12 @@ import {
   useProjectVisits,
   useCreateProjectVisit,
 } from "@/hooks/use-projects";
+import { useQuotations } from "@/hooks/use-quotations";
 import { useCreateRating } from "@/hooks/use-ratings";
+import {
+  quotationStatusLabel,
+  quotationStatusVariant,
+} from "@/pages/quotations/quotation-status";
 
 import {
   formatRupiah,
@@ -53,6 +58,11 @@ export function ProjectDetail() {
   const { data: contact } = useContact(project?.contactId ?? "");
   const { data: visits } = useProjectVisits(id ?? "");
   const { data: productsData } = useProducts();
+  const { data: quotationsData } = useQuotations();
+
+  const projectQuotations = (quotationsData?.items ?? [])
+    .filter((q) => q.projectId === project?.id)
+    .sort((a, b) => b.createdAt.localeCompare(a.createdAt));
 
   const customer = customersData?.items.find(
     (c) => c.id === project?.customerId,
@@ -223,6 +233,38 @@ export function ProjectDetail() {
           customerId={project.customerId}
           visits={visits ?? []}
         />
+
+        {projectQuotations.length > 0 && (
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-sm">Daftar Penawaran</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <ul className="space-y-3">
+                {projectQuotations.map((q) => (
+                  <li key={q.id} className="rounded-md border p-3">
+                    <div className="mb-2 flex items-start justify-between gap-4">
+                      <div>
+                        <p className="font-medium text-sm">
+                          {q.title || "Penawaran Tanpa Judul"}
+                        </p>
+                        <p className="text-xs text-muted-foreground mt-0.5">
+                          {q.createdAt.slice(0, 10)} &middot; {q.topic || "-"}
+                        </p>
+                      </div>
+                      <Badge
+                        variant={quotationStatusVariant[q.status]}
+                        className="shrink-0 text-[10px] px-1.5 py-0 h-4"
+                      >
+                        {quotationStatusLabel[q.status]}
+                      </Badge>
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            </CardContent>
+          </Card>
+        )}
       </div>
     </div>
   );

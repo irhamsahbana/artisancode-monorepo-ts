@@ -17,6 +17,7 @@ import { useUoms } from "@/hooks/use-uoms";
 import { digitsOnly, formatThousands } from "@/lib/utils";
 
 interface FormState {
+  title: string;
   topic: string;
   projectId: string;
   requesterName: string;
@@ -27,6 +28,7 @@ interface FormState {
 }
 
 const empty: FormState = {
+  title: "",
   topic: "",
   projectId: "",
   requesterName: "",
@@ -99,6 +101,7 @@ export function QuotationForm() {
         });
 
       await mutateAsync({
+        title: form.title || undefined,
         topic: form.topic || undefined,
         projectId: form.projectId || undefined,
         requesterName: form.requesterName,
@@ -139,6 +142,17 @@ export function QuotationForm() {
           <CardContent className="pt-6">
             <form onSubmit={handleSubmit} className="grid gap-5">
               <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
+                <div className="sm:col-span-2">
+                  <Field label="Judul Penawaran" required>
+                    <Input
+                      required
+                      value={form.title}
+                      onChange={(e) => set("title", e.target.value)}
+                      placeholder="Contoh: Penawaran Harga Tiang Pancang"
+                    />
+                  </Field>
+                </div>
+
                 <div className="sm:col-span-2">
                   <Field label="Topik Permintaan">
                     <Combobox

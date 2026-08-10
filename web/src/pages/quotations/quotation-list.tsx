@@ -81,14 +81,15 @@ export function QuotationList() {
 
   const columns: Column<QuotationRequest>[] = [
     {
-      key: "requesterName",
-      label: "Nama Peminta",
+      key: "title",
+      label: "Judul Penawaran",
       render: (q) => (
         <div>
-          <p className="font-medium">{q.requesterName}</p>
-          {q.companyName && (
-            <p className="text-xs text-muted-foreground">{q.companyName}</p>
-          )}
+          <p className="font-medium">{q.title || "Penawaran Tanpa Judul"}</p>
+          <div className="mt-0.5 flex flex-col text-xs text-muted-foreground">
+            <span>Peminta: {q.requesterName}</span>
+            {q.companyName && <span>Perusahaan: {q.companyName}</span>}
+          </div>
         </div>
       ),
     },
