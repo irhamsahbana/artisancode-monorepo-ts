@@ -186,3 +186,21 @@ const onTouchStart = () => {
 
 Prefer `const fn = () => {}` over `function fn() {}` for event handlers
 declared inside an effect that close over a narrowed outer variable.
+
+## 9. shadcn dropdown/popover content invisible inside a Dialog
+
+`Dialog` overlay + content are `z-1100` (`src/components/ui/dialog.tsx`).
+shadcn's default `SelectContent` / `PopoverContent` ship at `z-50` —
+**lower** than the dialog. Open one of these pickers inside a `Dialog` and
+the dropdown mounts (via Portal) but renders **behind** the dialog content,
+so it looks like nothing happened when you click the trigger.
+
+**Symptom:** `<Select>` or the shared `Combobox` inside a `DialogContent`
+shows the trigger, but clicking it does nothing visible — options are
+rendered off-screen behind the modal, not actually missing.
+
+**Fix:** bump the picker's content `z-*` above `z-1100`, e.g. `z-1200`, on
+both `src/components/ui/select.tsx` (`SelectContent`) and
+`src/components/shared/combobox.tsx` (`PopoverContent`). Check any other
+Portal-based shadcn primitive (`DropdownMenu`, custom `Popover` usages) the
+same way before using it inside a `Dialog`.
