@@ -82,13 +82,13 @@ export function BottomNav() {
     <>
       <nav
         style={{ bottom: "calc(2rem + env(safe-area-inset-bottom))" }}
-        className="fixed inset-x-4 z-50 flex h-16 items-center justify-around rounded-full border bg-background shadow-lg"
+        className="fixed inset-x-4 z-50 flex h-16 items-center justify-around rounded-full border bg-background px-2 shadow-lg"
       >
         <NavLink
           to="/dashboard"
           className={({ isActive }) =>
             cn(
-              "flex flex-col items-center gap-1 rounded-xl px-4 py-2 text-[10px] font-medium transition-colors",
+              "flex flex-col items-center justify-center gap-1 rounded-full px-4 py-2.5 text-[10px] font-medium transition-colors",
               isActive
                 ? "bg-muted text-foreground"
                 : "text-muted-foreground hover:bg-muted",
@@ -102,7 +102,7 @@ export function BottomNav() {
           to="/customers"
           className={({ isActive }) =>
             cn(
-              "flex flex-col items-center gap-1 rounded-xl px-4 py-2 text-[10px] font-medium transition-colors",
+              "flex flex-col items-center justify-center gap-1 rounded-full px-4 py-2.5 text-[10px] font-medium transition-colors",
               isActive
                 ? "bg-muted text-foreground"
                 : "text-muted-foreground hover:bg-muted",
@@ -115,7 +115,7 @@ export function BottomNav() {
         <NavLink
           to="/projects"
           className={cn(
-            "flex flex-col items-center gap-1 rounded-xl px-4 py-2 text-[10px] font-medium transition-colors",
+            "flex flex-col items-center justify-center gap-1 rounded-full px-4 py-2.5 text-[10px] font-medium transition-colors",
             location.pathname === "/projects" ||
               (location.pathname.startsWith("/projects/") &&
                 location.pathname !== "/projects/map")
@@ -129,7 +129,7 @@ export function BottomNav() {
         <button
           onClick={() => setMoreOpen(true)}
           className={cn(
-            "flex flex-col items-center gap-1 rounded-xl px-4 py-2 text-[10px] font-medium transition-colors",
+            "flex flex-col items-center justify-center gap-1 rounded-full px-4 py-2.5 text-[10px] font-medium transition-colors",
             moreActive
               ? "bg-muted text-foreground"
               : "text-muted-foreground hover:bg-muted",
