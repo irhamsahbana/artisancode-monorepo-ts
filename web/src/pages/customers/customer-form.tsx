@@ -15,6 +15,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
+import { Textarea } from "@/components/ui/textarea";
 import { useCategoryList } from "@/hooks/use-categories";
 import {
   useCreateCustomer,
@@ -28,25 +29,14 @@ interface FormState {
   name: string;
   segmentationId: string;
   areaId: string;
+  companyType: Customer["companyType"] | "";
   status: Customer["status"];
   potential: Customer["potential"];
-  gender: string;
   address: string;
-  birthPlace: string;
-  dateOfBirth: string;
-  religion: string;
-  education: string;
-  email: string;
-  spouseName: string;
-  spouseOccupation: string;
-  childrenNames: string;
-  childrenOccupation: string;
-  character: string;
-  hobby: string;
-  companyName: string;
-  position: string;
-  companyAddress: string;
-  whatsapp: string;
+  npwp: string;
+  skt: string;
+  companyEmail: string;
+  website: string;
   notes: string;
 }
 
@@ -54,25 +44,14 @@ const empty: FormState = {
   name: "",
   segmentationId: "",
   areaId: "",
+  companyType: "",
   status: "prospect",
   potential: "medium",
-  gender: "",
   address: "",
-  birthPlace: "",
-  dateOfBirth: "",
-  religion: "",
-  education: "",
-  email: "",
-  spouseName: "",
-  spouseOccupation: "",
-  childrenNames: "",
-  childrenOccupation: "",
-  character: "",
-  hobby: "",
-  companyName: "",
-  position: "",
-  companyAddress: "",
-  whatsapp: "",
+  npwp: "",
+  skt: "",
+  companyEmail: "",
+  website: "",
   notes: "",
 };
 
@@ -98,25 +77,14 @@ export function CustomerForm() {
         name: existing.name,
         segmentationId: existing.segmentationId ?? "",
         areaId: existing.areaId ?? "",
+        companyType: existing.companyType ?? "",
         status: existing.status,
         potential: existing.potential,
-        gender: existing.gender ?? "",
         address: existing.address ?? "",
-        birthPlace: existing.birthPlace ?? "",
-        dateOfBirth: existing.dateOfBirth ?? "",
-        religion: existing.religion ?? "",
-        education: existing.education ?? "",
-        email: existing.email ?? "",
-        spouseName: existing.spouseName ?? "",
-        spouseOccupation: existing.spouseOccupation ?? "",
-        childrenNames: existing.childrenNames ?? "",
-        childrenOccupation: existing.childrenOccupation ?? "",
-        character: existing.character ?? "",
-        hobby: existing.hobby ?? "",
-        companyName: existing.companyName ?? "",
-        position: existing.position ?? "",
-        companyAddress: existing.companyAddress ?? "",
-        whatsapp: existing.whatsapp ?? "",
+        npwp: existing.npwp ?? "",
+        skt: existing.skt ?? "",
+        companyEmail: existing.companyEmail ?? "",
+        website: existing.website ?? "",
         notes: existing.notes ?? "",
       });
     }
@@ -132,25 +100,14 @@ export function CustomerForm() {
       name: form.name,
       segmentationId: form.segmentationId || undefined,
       areaId: form.areaId || undefined,
+      companyType: (form.companyType as Customer["companyType"]) || undefined,
       status: form.status,
       potential: form.potential,
-      gender: (form.gender as Customer["gender"]) || undefined,
       address: form.address || undefined,
-      birthPlace: form.birthPlace || undefined,
-      dateOfBirth: form.dateOfBirth || undefined,
-      religion: form.religion || undefined,
-      education: form.education || undefined,
-      email: form.email || undefined,
-      spouseName: form.spouseName || undefined,
-      spouseOccupation: form.spouseOccupation || undefined,
-      childrenNames: form.childrenNames || undefined,
-      childrenOccupation: form.childrenOccupation || undefined,
-      character: form.character || undefined,
-      hobby: form.hobby || undefined,
-      companyName: form.companyName || undefined,
-      position: form.position || undefined,
-      companyAddress: form.companyAddress || undefined,
-      whatsapp: form.whatsapp || undefined,
+      npwp: form.npwp || undefined,
+      skt: form.skt || undefined,
+      companyEmail: form.companyEmail || undefined,
+      website: form.website || undefined,
       notes: form.notes || undefined,
     };
     try {
@@ -271,179 +228,73 @@ export function CustomerForm() {
               </Select>
             </Field>
 
-            <div className="sm:col-span-2">
-              <Field label="WhatsApp">
-                <Input
-                  value={form.whatsapp}
-                  onChange={(e) => set("whatsapp", e.target.value)}
-                  placeholder="628xxxxxxxxxx"
-                />
-              </Field>
-            </div>
-
-            <div className="sm:col-span-2">
-              <Field label="Email">
-                <Input
-                  type="email"
-                  value={form.email}
-                  onChange={(e) => set("email", e.target.value)}
-                  placeholder="email@contoh.com"
-                />
-              </Field>
-            </div>
-
-            <div className="sm:col-span-2">
-              <Separator />
-              <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide pt-1">
-                Info Pribadi
-              </p>
-            </div>
-
-            <Field label="Jenis Kelamin">
+            <Field label="Tipe Perusahaan">
               <Select
-                value={form.gender}
-                onValueChange={(v) => set("gender", v)}
+                value={form.companyType}
+                onValueChange={(v) =>
+                  set("companyType", v as FormState["companyType"])
+                }
               >
                 <SelectTrigger className="w-full">
-                  <SelectValue placeholder="Pilih jenis kelamin" />
+                  <SelectValue placeholder="Pilih tipe perusahaan" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="male">Laki-laki</SelectItem>
-                  <SelectItem value="female">Perempuan</SelectItem>
+                  <SelectItem value="bumn">BUMN</SelectItem>
+                  <SelectItem value="swasta_nasional">
+                    Swasta Nasional
+                  </SelectItem>
+                  <SelectItem value="swasta_asing">Swasta Asing</SelectItem>
                 </SelectContent>
               </Select>
             </Field>
 
-            <Field label="Tempat Lahir">
+            <div className="sm:col-span-2">
+              <Separator />
+              <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide pt-1">
+                Info Umum Perusahaan
+              </p>
+            </div>
+
+            <Field label="NPWP">
               <Input
-                value={form.birthPlace}
-                onChange={(e) => set("birthPlace", e.target.value)}
-                placeholder="Makassar"
+                value={form.npwp}
+                onChange={(e) => set("npwp", e.target.value)}
+                placeholder="00.000.000.0-000.000"
               />
             </Field>
 
-            <Field label="Tanggal Lahir">
+            <Field label="SKT">
               <Input
-                type="date"
-                value={form.dateOfBirth}
-                onChange={(e) => set("dateOfBirth", e.target.value)}
+                value={form.skt}
+                onChange={(e) => set("skt", e.target.value)}
+                placeholder="Nomor Surat Keterangan Terdaftar"
               />
             </Field>
 
-            <Field label="Agama">
+            <Field label="Email Kantor">
               <Input
-                value={form.religion}
-                onChange={(e) => set("religion", e.target.value)}
-                placeholder="Islam"
+                type="email"
+                value={form.companyEmail}
+                onChange={(e) => set("companyEmail", e.target.value)}
+                placeholder="info@perusahaan.co.id"
               />
             </Field>
 
-            <Field label="Pendidikan Terakhir">
+            <Field label="Website">
               <Input
-                value={form.education}
-                onChange={(e) => set("education", e.target.value)}
-                placeholder="Sarjana S-1"
+                value={form.website}
+                onChange={(e) => set("website", e.target.value)}
+                placeholder="https://perusahaan.co.id"
               />
             </Field>
 
             <div className="sm:col-span-2">
               <Field label="Alamat">
-                <textarea
+                <Textarea
                   value={form.address}
                   onChange={(e) => set("address", e.target.value)}
-                  placeholder="Alamat lengkap sesuai KTP/domisili"
+                  placeholder="Alamat lengkap perusahaan"
                   rows={2}
-                  className="flex w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring resize-none"
-                />
-              </Field>
-            </div>
-
-            <div className="sm:col-span-2">
-              <Separator />
-              <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide pt-1">
-                Karakter & Hobi
-              </p>
-            </div>
-
-            <Field label="Karakter Pelanggan">
-              <Input
-                value={form.character}
-                onChange={(e) => set("character", e.target.value)}
-                placeholder="Suka nego, dll."
-              />
-            </Field>
-
-            <Field label="Hobi">
-              <Input
-                value={form.hobby}
-                onChange={(e) => set("hobby", e.target.value)}
-                placeholder="Olahraga, golf, dll."
-              />
-            </Field>
-
-            <div className="sm:col-span-2">
-              <Separator />
-              <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide pt-1">
-                Info Keluarga
-              </p>
-            </div>
-
-            <Field label="Nama Suami/Istri">
-              <Input
-                value={form.spouseName}
-                onChange={(e) => set("spouseName", e.target.value)}
-              />
-            </Field>
-
-            <Field label="Pekerjaan Suami/Istri">
-              <Input
-                value={form.spouseOccupation}
-                onChange={(e) => set("spouseOccupation", e.target.value)}
-              />
-            </Field>
-
-            <Field label="Nama Anak Kandung">
-              <Input
-                value={form.childrenNames}
-                onChange={(e) => set("childrenNames", e.target.value)}
-              />
-            </Field>
-
-            <Field label="Pekerjaan Anak">
-              <Input
-                value={form.childrenOccupation}
-                onChange={(e) => set("childrenOccupation", e.target.value)}
-              />
-            </Field>
-
-            <div className="sm:col-span-2">
-              <Separator />
-              <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide pt-1">
-                Info Perusahaan
-              </p>
-            </div>
-
-            <Field label="Nama Perusahaan">
-              <Input
-                value={form.companyName}
-                onChange={(e) => set("companyName", e.target.value)}
-              />
-            </Field>
-
-            <Field label="Jabatan">
-              <Input
-                value={form.position}
-                onChange={(e) => set("position", e.target.value)}
-              />
-            </Field>
-
-            <div className="sm:col-span-2">
-              <Field label="Alamat Perusahaan">
-                <textarea
-                  value={form.companyAddress}
-                  onChange={(e) => set("companyAddress", e.target.value)}
-                  rows={2}
-                  className="flex w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring resize-none"
                 />
               </Field>
             </div>
@@ -454,12 +305,11 @@ export function CustomerForm() {
 
             <div className="sm:col-span-2">
               <Field label="Catatan">
-                <textarea
+                <Textarea
                   value={form.notes}
                   onChange={(e) => set("notes", e.target.value)}
                   placeholder="Catatan tambahan..."
                   rows={3}
-                  className="flex w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring resize-none"
                 />
               </Field>
             </div>

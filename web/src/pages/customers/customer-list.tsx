@@ -208,12 +208,15 @@ function PersonView() {
       key: "contactName",
       label: "Nama",
       render: (r) => (
-        <div>
+        <Link
+          to={`/contacts/${r.contact.id}`}
+          className="block hover:underline"
+        >
           <p className="text-sm font-medium">{r.contact.name}</p>
           <p className="text-xs text-muted-foreground">
             {r.contact.position ?? "-"}
           </p>
-        </div>
+        </Link>
       ),
     },
     {

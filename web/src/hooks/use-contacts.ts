@@ -16,6 +16,14 @@ export function useContacts(customerId: string) {
   });
 }
 
+export function useContact(id: string) {
+  return useQuery({
+    queryKey: queryKeys.contacts.detail(id),
+    queryFn: () => contactService.get(id),
+    enabled: !!id,
+  });
+}
+
 export function useContactSearch(q: string) {
   return useQuery({
     queryKey: queryKeys.contacts.search(q),

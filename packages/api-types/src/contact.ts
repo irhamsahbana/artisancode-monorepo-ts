@@ -8,9 +8,20 @@ export interface Contact {
   whatsapp?: string
   email?: string
   gender?: 'male' | 'female'
+  birthPlace?: string
+  dateOfBirth?: string
   religion?: string
+  education?: string
+  address?: string
+  // family
+  spouseName?: string
+  spouseOccupation?: string
+  childrenNames?: string
+  childrenOccupation?: string
   notes?: string
   isPrimary: boolean
+  // manual free-text, sales-authored (see key-person-profile-view task)
+  profiling?: string
   createdAt: string
   updatedAt: string
 }
@@ -22,9 +33,18 @@ export interface CreateContactReq {
   whatsapp?: string
   email?: string
   gender?: 'male' | 'female'
+  birthPlace?: string
+  dateOfBirth?: string
   religion?: string
+  education?: string
+  address?: string
+  spouseName?: string
+  spouseOccupation?: string
+  childrenNames?: string
+  childrenOccupation?: string
   notes?: string
   isPrimary?: boolean
+  profiling?: string
 }
 
 export interface UpdateContactReq {
@@ -33,9 +53,18 @@ export interface UpdateContactReq {
   whatsapp?: string
   email?: string
   gender?: 'male' | 'female'
+  birthPlace?: string
+  dateOfBirth?: string
   religion?: string
+  education?: string
+  address?: string
+  spouseName?: string
+  spouseOccupation?: string
+  childrenNames?: string
+  childrenOccupation?: string
   notes?: string
   isPrimary?: boolean
+  profiling?: string
 }
 
 // ponytail: demo search-by-person. One row per (contact, customer) occurrence

@@ -22,6 +22,13 @@ export interface ContactList {
   };
 }
 
+function mockGet(id: string): Promise<Contact> {
+  const c = mockContacts.find((x) => x.id === id);
+  return c
+    ? Promise.resolve(c)
+    : Promise.reject(new Error("Contact not found"));
+}
+
 function mockList(customerId: string): ContactList {
   const items = mockContacts.filter((c) => c.customerId === customerId);
   return {
@@ -60,6 +67,9 @@ export const contactService = {
           per_page: 100,
         }),
 
+  get: (id: string) =>
+    DEMO_MODE ? mockGet(id) : api.get<Contact>(`/contacts/${id}`),
+
   create: (body: CreateContactReq) =>
     DEMO_MODE
       ? mockCreate(body)
@@ -82,13 +92,8 @@ export const contactService = {
 function mockCreate(body: CreateContactReq): Promise<Contact> {
   const now = new Date().toISOString();
   const c: Contact = {
+    ...body,
     id: `con${crypto.randomUUID()}`,
-    customerId: body.customerId,
-    name: body.name,
-    position: body.position,
-    whatsapp: body.whatsapp,
-    email: body.email,
-    notes: body.notes,
     isPrimary: body.isPrimary ?? false,
     createdAt: now,
     updatedAt: now,

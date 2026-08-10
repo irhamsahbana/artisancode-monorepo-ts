@@ -1,6 +1,6 @@
 # Key person profile view
 
-**Status:** Backlog
+**Status:** Done
 **Raised by:** Mas Fari (meeting 2026-08-09) — see [meeting-summary-2026-08-09.md](../../prd/meeting-summary-2026-08-09.md) §5
 
 ## Problem
@@ -11,10 +11,11 @@ Also clarifies a scoring split: **skor hubungan** lives on person; **skor pembay
 
 ## Scope
 
-- [ ] New page `web/src/pages/contacts/contact-profile.tsx` (or `key-person-profile.tsx`) — route `/contacts/:id`.
-- [ ] Sections: data pribadi (name, position, WhatsApp, email), profiling (free-text hobi/karakter — sales-authored), daftar perusahaan terkait (many-to-many, see demo-ui-only-plan Fase 1), historis penilaian (relationship scores over time).
-- [ ] Make contacts reachable from more places than just customer detail — search-by-person result should land here.
-- [ ] Add `profiling?: string` (or structured fields) to `Contact` in [packages/api-types/src/contact.ts](../../packages/api-types/src/contact.ts).
+- [x] New page `web/src/pages/contacts/contact-profile.tsx` — route `/contacts/:id`.
+- [x] Sections: data pribadi (name, position, WhatsApp, email, gender, birth place/date, religion, education, address, family), profiling (free-text — sales-authored), daftar perusahaan terkait (many-to-many via `contactService.search`), historis penilaian (relationship scores over time, filtered by `contactId`).
+- [x] Reachable from customer detail (Kontak tab card click) and customer-list Key Person view (name link).
+- [x] Added `profiling?: string` plus structured personal/family fields to `Contact` in [packages/api-types/src/contact.ts](../../packages/api-types/src/contact.ts).
+- [x] Edit form `web/src/pages/contacts/contact-form.tsx` — route `/contacts/:id/edit`, wired to `useUpdateContact`.
 
 ## Notes
 

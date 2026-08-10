@@ -5,6 +5,7 @@ export const mockRatings: CustomerRating[] = [
   {
     id: "r1",
     customerId: "c1",
+    contactId: "con1",
     ratingDate: "2026-05-10",
     paymentScore: 5,
     relationshipScore: 4,
@@ -17,6 +18,7 @@ export const mockRatings: CustomerRating[] = [
   {
     id: "r2",
     customerId: "c1",
+    contactId: "con1",
     ratingDate: "2026-02-15",
     paymentScore: 4,
     relationshipScore: 4,

@@ -25,6 +25,11 @@ const potentialLabel: Record<string, string> = {
   medium: "Sedang",
   low: "Rendah",
 };
+const companyTypeLabel: Record<string, string> = {
+  bumn: "BUMN",
+  swasta_nasional: "Swasta Nasional",
+  swasta_asing: "Swasta Asing",
+};
 
 const TABS = ["Info Umum", "Kontak", "Riwayat Kontrak"] as const;
 type Tab = (typeof TABS)[number];
@@ -113,8 +118,14 @@ export function CustomerDetail() {
                     ?.name ?? "-"
                 }
               />
-              <Info label="WhatsApp" value={customer.whatsapp ?? "-"} />
-              <Info label="Email" value={customer.email ?? "-"} />
+              <Info
+                label="Tipe Perusahaan"
+                value={
+                  (customer.companyType &&
+                    companyTypeLabel[customer.companyType]) ||
+                  "-"
+                }
+              />
               <Info label="Tanggal Daftar" value={customer.createdAt} />
               {customer.hasContractHistory && (
                 <>
@@ -142,78 +153,16 @@ export function CustomerDetail() {
 
           <Card>
             <CardHeader>
-              <CardTitle className="text-sm">Info Pribadi</CardTitle>
+              <CardTitle className="text-sm">Info Umum Perusahaan</CardTitle>
             </CardHeader>
             <CardContent className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-              <Info
-                label="Jenis Kelamin"
-                value={
-                  customer.gender === "male"
-                    ? "Laki-laki"
-                    : customer.gender === "female"
-                      ? "Perempuan"
-                      : "-"
-                }
-              />
-              <Info label="Tempat Lahir" value={customer.birthPlace ?? "-"} />
-              <Info label="Tanggal Lahir" value={customer.dateOfBirth ?? "-"} />
-              <Info label="Agama" value={customer.religion ?? "-"} />
-              <Info label="Pendidikan" value={customer.education ?? "-"} />
+              <Info label="NPWP" value={customer.npwp ?? "-"} />
+              <Info label="SKT" value={customer.skt ?? "-"} />
+              <Info label="Email Kantor" value={customer.companyEmail ?? "-"} />
+              <Info label="Website" value={customer.website ?? "-"} />
               {customer.address && (
                 <div className="sm:col-span-2">
                   <Info label="Alamat" value={customer.address} />
-                </div>
-              )}
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-sm">Karakter & Hobi</CardTitle>
-            </CardHeader>
-            <CardContent className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-              <Info label="Karakter" value={customer.character ?? "-"} />
-              <Info label="Hobi" value={customer.hobby ?? "-"} />
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-sm">Info Keluarga</CardTitle>
-            </CardHeader>
-            <CardContent className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-              <Info
-                label="Nama Suami/Istri"
-                value={customer.spouseName ?? "-"}
-              />
-              <Info
-                label="Pekerjaan Suami/Istri"
-                value={customer.spouseOccupation ?? "-"}
-              />
-              <Info label="Nama Anak" value={customer.childrenNames ?? "-"} />
-              <Info
-                label="Pekerjaan Anak"
-                value={customer.childrenOccupation ?? "-"}
-              />
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-sm">Info Perusahaan</CardTitle>
-            </CardHeader>
-            <CardContent className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-              <Info
-                label="Nama Perusahaan"
-                value={customer.companyName ?? "-"}
-              />
-              <Info label="Jabatan" value={customer.position ?? "-"} />
-              {customer.companyAddress && (
-                <div className="sm:col-span-2">
-                  <Info
-                    label="Alamat Perusahaan"
-                    value={customer.companyAddress}
-                  />
                 </div>
               )}
             </CardContent>
@@ -230,7 +179,11 @@ export function CustomerDetail() {
             />
           ) : (
             customerContacts.map((con) => (
-              <Card key={con.id}>
+              <Card
+                key={con.id}
+                className="cursor-pointer transition-colors hover:bg-muted/40"
+                onClick={() => navigate(`/contacts/${con.id}`)}
+              >
                 <CardHeader className="pb-2">
                   <CardTitle className="flex items-center gap-2 text-base">
                     {con.name}

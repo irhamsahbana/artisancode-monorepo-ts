@@ -5,6 +5,7 @@ export type RiskLevel = 'low' | 'medium' | 'high'
 export interface CustomerRating {
   id: string
   customerId: string
+  contactId?: string // key person the relationshipScore is about
   ratingDate: string
   paymentScore: number // 1-5 (cara bayar)
   relationshipScore: number // 1-5
@@ -17,6 +18,7 @@ export interface CustomerRating {
 
 export interface CreateCustomerRatingReq {
   customerId: string
+  contactId?: string
   ratingDate: string
   paymentScore: number
   relationshipScore: number
@@ -27,6 +29,7 @@ export interface CreateCustomerRatingReq {
 
 export interface GetCustomerRatingReq {
   customerId?: string
+  contactId?: string
 }
 
 export interface CustomerRatingList {

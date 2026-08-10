@@ -2,39 +2,29 @@ import type { PaginationMetadata, PaginationQuery } from './common'
 
 export type CustomerStatus = 'prospect' | 'active' | 'inactive'
 export type CustomerPotential = 'high' | 'medium' | 'low'
+// BUMN / swasta nasional / swasta asing (client taxonomy) — replaces the
+// generic UMKM/Korporat/Enterprise segmentation master values.
+export type CompanyType = 'bumn' | 'swasta_nasional' | 'swasta_asing'
 
+// Company-level data only. Personal data (gender, birth date, hobby, family,
+// profiling) lives on Contact (the key person), not here.
 export interface Customer {
   id: string
   name: string
   segmentationId: string
   areaId: string
+  companyType?: CompanyType
   status: CustomerStatus
   potential: CustomerPotential
   hasContractHistory: boolean
   lastRevenue?: number
   lastContractYear?: number
   primaryContactId?: string
-  // personal
-  gender?: 'male' | 'female'
   address?: string
-  birthPlace?: string
-  dateOfBirth?: string
-  religion?: string
-  education?: string
-  email?: string
-  // family
-  spouseName?: string
-  spouseOccupation?: string
-  childrenNames?: string
-  childrenOccupation?: string
-  // traits
-  character?: string
-  hobby?: string
-  // company
-  companyName?: string
-  position?: string
-  companyAddress?: string
-  whatsapp?: string
+  npwp?: string
+  skt?: string
+  companyEmail?: string
+  website?: string
   notes?: string
   createdAt: string
   updatedAt: string
@@ -44,28 +34,17 @@ export interface CreateCustomerReq {
   name: string
   segmentationId: string
   areaId: string
+  companyType?: CompanyType
   status?: CustomerStatus
   potential?: CustomerPotential
   hasContractHistory?: boolean
   lastRevenue?: number
   lastContractYear?: number
-  gender?: 'male' | 'female'
   address?: string
-  birthPlace?: string
-  dateOfBirth?: string
-  religion?: string
-  education?: string
-  email?: string
-  spouseName?: string
-  spouseOccupation?: string
-  childrenNames?: string
-  childrenOccupation?: string
-  character?: string
-  hobby?: string
-  companyName?: string
-  position?: string
-  companyAddress?: string
-  whatsapp?: string
+  npwp?: string
+  skt?: string
+  companyEmail?: string
+  website?: string
   notes?: string
 }
 
@@ -73,28 +52,17 @@ export interface UpdateCustomerReq {
   name?: string
   segmentationId?: string
   areaId?: string
+  companyType?: CompanyType
   status?: CustomerStatus
   potential?: CustomerPotential
   hasContractHistory?: boolean
   lastRevenue?: number
   lastContractYear?: number
-  gender?: 'male' | 'female'
   address?: string
-  birthPlace?: string
-  dateOfBirth?: string
-  religion?: string
-  education?: string
-  email?: string
-  spouseName?: string
-  spouseOccupation?: string
-  childrenNames?: string
-  childrenOccupation?: string
-  character?: string
-  hobby?: string
-  companyName?: string
-  position?: string
-  companyAddress?: string
-  whatsapp?: string
+  npwp?: string
+  skt?: string
+  companyEmail?: string
+  website?: string
   notes?: string
 }
 

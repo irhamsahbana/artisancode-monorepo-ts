@@ -13,6 +13,8 @@ function mockList(params?: GetCustomerRatingReq): CustomerRatingList {
   let items = mockRatings;
   if (params?.customerId)
     items = items.filter((r) => r.customerId === params.customerId);
+  if (params?.contactId)
+    items = items.filter((r) => r.contactId === params.contactId);
   // ponytail: newest first, in-place sort fine for demo dataset
   items = [...items].sort((a, b) => b.ratingDate.localeCompare(a.ratingDate));
   return {

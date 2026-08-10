@@ -13,6 +13,7 @@ export type {
   Customer,
   CustomerStatus,
   CustomerPotential,
+  CompanyType,
   CreateCustomerReq,
   UpdateCustomerReq,
   GetCustomerReq,
