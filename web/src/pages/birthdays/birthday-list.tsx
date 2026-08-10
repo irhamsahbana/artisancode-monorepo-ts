@@ -166,7 +166,7 @@ export function BirthdayList() {
             return (
               <Badge
                 variant="default"
-                className="bg-green-600 hover:bg-green-700"
+                className="bg-green-600 text-white hover:bg-green-700"
               >
                 Terkirim ({sendTime})
               </Badge>
