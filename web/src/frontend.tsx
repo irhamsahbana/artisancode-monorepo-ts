@@ -33,6 +33,7 @@ import { Uoms } from "@/pages/master/uoms";
 import { ProjectDetail } from "@/pages/projects/project-detail";
 import { ProjectForm } from "@/pages/projects/project-form";
 import { ProjectList } from "@/pages/projects/project-list";
+import { ProjectMap } from "@/pages/projects/project-map";
 import { QuotationForm } from "@/pages/public/quotation-form";
 import { QuotationList } from "@/pages/quotations/quotation-list";
 import { RatingList } from "@/pages/ratings/rating-list";
@@ -72,6 +73,7 @@ const router = createBrowserRouter([
           { path: "contacts/:id/edit", element: <ContactForm /> },
           { path: "projects", element: <ProjectList /> },
           { path: "projects/new", element: <ProjectForm /> },
+          { path: "projects/map", element: <ProjectMap /> },
           { path: "projects/:id", element: <ProjectDetail /> },
           { path: "projects/:id/edit", element: <ProjectForm /> },
           { path: "ratings", element: <RatingList /> },

@@ -7,6 +7,7 @@ import {
   Megaphone,
   PieChart,
   MapPin,
+  Map,
   Network,
   Package,
   Ruler,
@@ -18,7 +19,7 @@ import {
   ShieldCheck,
 } from "lucide-react";
 import { useState } from "react";
-import { NavLink, useNavigate } from "react-router";
+import { NavLink, useLocation, useNavigate } from "react-router";
 
 import {
   Sidebar,
@@ -42,6 +43,7 @@ const mainNav = [
   { to: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
   { to: "/customers", label: "Pelanggan", icon: Users },
   { to: "/projects", label: "Proyek", icon: Briefcase },
+  { to: "/projects/map", label: "Peta Proyek", icon: Map },
   { to: "/ratings", label: "Penilaian", icon: Star },
   { to: "/quotations", label: "Penawaran", icon: FileText },
   { to: "/broadcasts", label: "Broadcast", icon: Megaphone },
@@ -69,6 +71,7 @@ const settingsNav = [
 export function DesktopSidebar() {
   const [masterOpen, setMasterOpen] = useState(true);
   const navigate = useNavigate();
+  const location = useLocation();
 
   function handleLogout() {
     clearToken();
@@ -85,24 +88,30 @@ export function DesktopSidebar() {
         <SidebarGroup>
           <SidebarGroupContent>
             <SidebarMenu>
-              {mainNav.map(({ to, label, icon: Icon }) => (
-                <SidebarMenuItem key={to}>
-                  <SidebarMenuButton asChild>
-                    <NavLink
-                      to={to}
-                      className={({ isActive }) =>
-                        cn(
+              {mainNav.map(({ to, label, icon: Icon }) => {
+                const isActive =
+                  to === "/projects"
+                    ? location.pathname === "/projects" ||
+                      (location.pathname.startsWith("/projects/") &&
+                        location.pathname !== "/projects/map")
+                    : location.pathname.startsWith(to);
+                return (
+                  <SidebarMenuItem key={to}>
+                    <SidebarMenuButton asChild>
+                      <NavLink
+                        to={to}
+                        className={cn(
                           "flex items-center gap-2",
                           isActive && "font-medium text-primary",
-                        )
-                      }
-                    >
-                      <Icon className="h-4 w-4" />
-                      {label}
-                    </NavLink>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              ))}
+                        )}
+                      >
+                        <Icon className="h-4 w-4" />
+                        {label}
+                      </NavLink>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                );
+              })}
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>

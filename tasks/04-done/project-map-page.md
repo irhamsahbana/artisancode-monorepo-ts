@@ -1,6 +1,6 @@
 # Project map page
 
-**Status:** Backlog
+**Status:** Done
 **Raised by:** Mas Fari (meeting 2026-08-09) — see [meeting-summary-2026-08-09.md](../../prd/meeting-summary-2026-08-09.md) §9
 
 ## Problem
@@ -9,11 +9,11 @@ Client wants a dedicated **"Peta Proyek"** menu (not on the dashboard — concer
 
 ## Scope
 
-- [ ] New page `web/src/pages/projects/project-map.tsx`, route `/projects/map`, nav entry under the projects section.
-- [ ] Render all `mockProjects` that have `latitude`/`longitude` as markers via the existing leaflet/react-leaflet setup.
-- [ ] Color markers by `ProjectStatus` (e.g. `won` = green, `in_progress` = blue, `prospect` = amber, `lost` = grey).
-- [ ] Click marker → popup/popup-card with project name + status + link to detail.
-- [ ] Make sure mock projects have realistic lat/lng (Makassar area) so the map isn't empty.
+- [x] New page `web/src/pages/projects/project-map.tsx`, route `/projects/map`, nav entry under the projects section (desktop sidebar main nav; mobile bottom-nav "Lainnya" sheet).
+- [x] Render all `mockProjects` that have `latitude`/`longitude` as markers via the existing leaflet/react-leaflet setup (`CircleMarker`, no new deps).
+- [x] Color markers by `ProjectStatus` (`won` = green, `in_progress` = blue, `prospect` = amber, `lost` = grey) — plus a legend below the map.
+- [x] Click marker → popup with project name, status badge, location, estimated value, and a "Lihat detail" link to `/projects/:id`.
+- [x] Filled in realistic lat/lng for the 4 mock projects that lacked coordinates (p3 Jakarta Selatan, p4 & p6 Bandung, p5 Yogyakarta), matching each project's existing `location` string rather than forcing Makassar coords onto non-Makassar projects.
 
 ## Notes
 

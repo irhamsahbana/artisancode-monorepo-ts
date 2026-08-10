@@ -8,6 +8,7 @@ import {
   Megaphone,
   PieChart,
   MapPin,
+  Map,
   Network,
   Package,
   Ruler,
@@ -30,6 +31,7 @@ import { clearToken } from "@/hooks/use-auth";
 import { cn } from "@/lib/utils";
 
 const menuItems = [
+  { to: "/projects/map", label: "Peta Proyek", icon: Map },
   { to: "/ratings", label: "Penilaian", icon: Star },
   { to: "/quotations", label: "Penawaran", icon: FileText },
   { to: "/broadcasts", label: "Broadcast", icon: Megaphone },
@@ -55,6 +57,7 @@ const settingsItems = [
 ];
 
 const moreActivePrefixes = [
+  "/projects/map",
   "/ratings",
   "/quotations",
   "/broadcasts",
@@ -107,12 +110,14 @@ export function BottomNav() {
         </NavLink>
         <NavLink
           to="/projects"
-          className={({ isActive }) =>
-            cn(
-              "flex flex-col items-center gap-0.5 text-xs",
-              isActive ? "text-primary" : "text-muted-foreground",
-            )
-          }
+          className={cn(
+            "flex flex-col items-center gap-0.5 text-xs",
+            location.pathname === "/projects" ||
+              (location.pathname.startsWith("/projects/") &&
+                location.pathname !== "/projects/map")
+              ? "text-primary"
+              : "text-muted-foreground",
+          )}
         >
           <Briefcase className="h-5 w-5" />
           Proyek
