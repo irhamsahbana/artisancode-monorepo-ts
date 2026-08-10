@@ -26,6 +26,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useCustomers } from "@/hooks/use-customers";
+import { useProjects } from "@/hooks/use-projects";
 import { useCreateRating, useRatings } from "@/hooks/use-ratings";
 import { summarizeRatings } from "@/services/rating";
 
@@ -56,12 +57,16 @@ const emptyForm: FormState = {
 export function RatingList() {
   const { data: customersData } = useCustomers({ per_page: 100 });
   const { data } = useRatings();
+  const { data: wonProjectsData } = useProjects({ status: "won" });
 
-  // Only customers with contract history are eligible for rating.
-  const eligible = useMemo(
-    () => (customersData?.items ?? []).filter((c) => c.hasContractHistory),
-    [customersData],
-  );
+  // Only customers with at least one won project are eligible for rating
+  // (riwayat kontrak = won projects, see contract-history-from-projects.md).
+  const eligible = useMemo(() => {
+    const withWonProject = new Set(
+      (wonProjectsData?.items ?? []).map((p) => p.customerId),
+    );
+    return (customersData?.items ?? []).filter((c) => withWonProject.has(c.id));
+  }, [customersData, wonProjectsData]);
 
   const summary = useMemo(() => summarizeRatings(data?.items ?? []), [data]);
 

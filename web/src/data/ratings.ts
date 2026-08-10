@@ -1,6 +1,7 @@
 import type { CustomerRating } from "@artisancode/api-types";
 
-// ponytail: static demo ratings; ratings only exist for hasContractHistory customers (c1,c2,c5,c6,c9,c10).
+// ponytail: static demo ratings; ratings only exist for customers with a won
+// project (c1,c2,c5,c6,c9,c10 — see contract-history-from-projects.md).
 export const mockRatings: CustomerRating[] = [
   {
     id: "r1",

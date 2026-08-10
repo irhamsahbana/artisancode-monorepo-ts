@@ -9,6 +9,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useCategoryList } from "@/hooks/use-categories";
 import { useContacts } from "@/hooks/use-contacts";
 import { useCustomer } from "@/hooks/use-customers";
+import { useProjects } from "@/hooks/use-projects";
+import { formatRupiah } from "@/pages/projects/project-status";
 
 const statusLabel: Record<string, string> = {
   active: "Aktif",
@@ -45,8 +47,13 @@ export function CustomerDetail() {
   const { data: customer, isLoading } = useCustomer(id ?? "");
   const { data: contactsData } = useContacts(id ?? "");
   const { data: segmentationsData } = useCategoryList("segmentation");
+  const { data: wonProjectsData } = useProjects({
+    customerId: id ?? "",
+    status: "won",
+  });
 
   const segmentations = segmentationsData?.items ?? [];
+  const wonProjects = wonProjectsData?.items ?? [];
 
   if (isLoading)
     return <p className="text-sm text-muted-foreground">Memuat...</p>;
@@ -58,6 +65,8 @@ export function CustomerDetail() {
     );
 
   const customerContacts = contactsData?.items ?? [];
+  const contactName = (contactId?: string) =>
+    customerContacts.find((c) => c.id === contactId)?.name ?? "-";
 
   return (
     <div>
@@ -127,22 +136,6 @@ export function CustomerDetail() {
                 }
               />
               <Info label="Tanggal Daftar" value={customer.createdAt} />
-              {customer.hasContractHistory && (
-                <>
-                  <Info
-                    label="Pendapatan Terakhir"
-                    value={
-                      customer.lastRevenue
-                        ? `Rp ${Number(customer.lastRevenue).toLocaleString("id-ID")}`
-                        : "-"
-                    }
-                  />
-                  <Info
-                    label="Tahun Kontrak Terakhir"
-                    value={customer.lastContractYear?.toString() ?? "-"}
-                  />
-                </>
-              )}
               {customer.notes && (
                 <div className="sm:col-span-2">
                   <Info label="Catatan" value={customer.notes} />
@@ -218,10 +211,46 @@ export function CustomerDetail() {
       )}
 
       {activeTab === "Riwayat Kontrak" && (
-        <EmptyState
-          title="Belum ada riwayat kontrak"
-          description="Riwayat kontrak akan muncul di sini."
-        />
+        <div className="space-y-3">
+          {wonProjects.length === 0 ? (
+            <EmptyState
+              title="Belum ada riwayat kontrak"
+              description="Riwayat kontrak muncul dari proyek berstatus 'Berhasil'."
+            />
+          ) : (
+            wonProjects.map((p) => (
+              <Card
+                key={p.id}
+                className="cursor-pointer transition-colors hover:bg-muted/40"
+                onClick={() => navigate(`/projects/${p.id}`)}
+              >
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-base">{p.name}</CardTitle>
+                </CardHeader>
+                <CardContent className="flex flex-wrap gap-x-6 gap-y-1 text-sm text-muted-foreground">
+                  <span>
+                    Omset:{" "}
+                    <b className="text-foreground">
+                      {formatRupiah(p.estimatedValue)}
+                    </b>
+                  </span>
+                  <span>
+                    Tahun:{" "}
+                    <b className="text-foreground">
+                      {new Date(p.createdAt).getFullYear()}
+                    </b>
+                  </span>
+                  <span>
+                    PIC:{" "}
+                    <b className="text-foreground">
+                      {contactName(p.contactId)}
+                    </b>
+                  </span>
+                </CardContent>
+              </Card>
+            ))
+          )}
+        </div>
       )}
     </div>
   );

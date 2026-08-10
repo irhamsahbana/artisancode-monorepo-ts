@@ -85,7 +85,6 @@ function mockCreate(body: CreateCustomerReq): Promise<Customer> {
     ...body,
     status: body.status ?? "prospect",
     potential: body.potential ?? "medium",
-    hasContractHistory: body.hasContractHistory ?? false,
     id: `c${crypto.randomUUID()}`,
     createdAt: now,
     updatedAt: now,

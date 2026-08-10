@@ -1,5 +1,6 @@
 import { mockCustomers } from "@/data/customers";
 import { mockMasterData } from "@/data/master";
+import { mockProjects } from "@/data/projects";
 import { api } from "@/lib/api";
 import { DEMO_MODE } from "@/lib/demo-mode";
 
@@ -33,7 +34,10 @@ function mockStats(): DashboardMetrics {
     totalProspects: count((c) => c.status === "prospect"),
     totalActive: count((c) => c.status === "active"),
     totalInactive: count((c) => c.status === "inactive"),
-    withContractHistory: count((c) => c.hasContractHistory),
+    // riwayat kontrak = has at least one won project (see contract-history-from-projects.md)
+    withContractHistory: new Set(
+      mockProjects.filter((p) => p.status === "won").map((p) => p.customerId),
+    ).size,
     highPotential: count((c) => c.potential === "high"),
     byStatus: tally("status").map(({ key, count: c }) => ({
       status: key,

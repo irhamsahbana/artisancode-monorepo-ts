@@ -16,9 +16,6 @@ export interface Customer {
   companyType?: CompanyType
   status: CustomerStatus
   potential: CustomerPotential
-  hasContractHistory: boolean
-  lastRevenue?: number
-  lastContractYear?: number
   primaryContactId?: string
   address?: string
   npwp?: string
@@ -37,9 +34,6 @@ export interface CreateCustomerReq {
   companyType?: CompanyType
   status?: CustomerStatus
   potential?: CustomerPotential
-  hasContractHistory?: boolean
-  lastRevenue?: number
-  lastContractYear?: number
   address?: string
   npwp?: string
   skt?: string
@@ -55,9 +49,6 @@ export interface UpdateCustomerReq {
   companyType?: CompanyType
   status?: CustomerStatus
   potential?: CustomerPotential
-  hasContractHistory?: boolean
-  lastRevenue?: number
-  lastContractYear?: number
   address?: string
   npwp?: string
   skt?: string
@@ -72,7 +63,6 @@ export interface GetCustomerReq {
   potential?: CustomerPotential
   segmentationId?: string
   areaId?: string
-  hasContractHistory?: boolean
   pagination?: PaginationQuery
 }
 
