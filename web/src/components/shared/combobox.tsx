@@ -80,7 +80,7 @@ export function Combobox({
         </div>
       </PopoverAnchor>
       <PopoverContent
-        className="w-[--radix-popper-anchor-width] p-1"
+        className="z-1200 w-[--radix-popper-anchor-width] p-1"
         onOpenAutoFocus={(e) => e.preventDefault()}
       >
         <div className="max-h-48 overflow-y-auto">

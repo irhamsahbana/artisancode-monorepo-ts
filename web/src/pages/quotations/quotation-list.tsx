@@ -69,6 +69,15 @@ export function QuotationList() {
   const initialFilters = initialStatus ? { status: initialStatus } : undefined;
   const selectedProducts = selected?.products ?? [];
 
+  const assignedProjectIds = new Set(
+    (data?.items ?? [])
+      .filter((q) => q.projectId && q.id !== assigningQuotation?.id)
+      .map((q) => q.projectId),
+  );
+  const assignableProjects = (projectsData?.items ?? []).filter(
+    (p) => !assignedProjectIds.has(p.id),
+  );
+
   async function handleStatusChange(id: string, status: QuotationStatus) {
     try {
       await updateStatus({ id, status });
@@ -365,11 +374,12 @@ export function QuotationList() {
               <Combobox
                 value={selectedProjectId}
                 onChange={setSelectedProjectId}
-                options={(projectsData?.items ?? []).map((p) => ({
+                options={assignableProjects.map((p) => ({
                   value: p.id,
                   label: `${p.name} — ${p.location}`,
                 }))}
                 placeholder="Pilih proyek yang ada..."
+                emptyText="Semua proyek sudah punya penawaran."
                 enforceOptions
               />
             </div>
