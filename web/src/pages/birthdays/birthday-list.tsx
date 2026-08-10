@@ -1,6 +1,7 @@
 import { Clock, Gift, Pencil } from "lucide-react";
 import { useMemo, useState } from "react";
 import { Link } from "react-router";
+import { toast } from "sonner";
 
 import type { Column } from "@/components/shared/data-table";
 import { DataTable } from "@/components/shared/data-table";
@@ -8,6 +9,17 @@ import { PageHeader } from "@/components/shared/page-header";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 import { useContactSearch } from "@/hooks/use-contacts";
 
 // ponytail: Template is local state for demo purposes.
@@ -26,14 +38,30 @@ interface UpcomingBirthday {
 
 export function BirthdayList() {
   const { data: contactsData } = useContactSearch("");
-  const [template] = useState(DEFAULT_TEMPLATE);
-  const [sendTime] = useState("09:00");
+  const [template, setTemplate] = useState(DEFAULT_TEMPLATE);
+  const [sendTime, setSendTime] = useState("09:00");
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [editTemplate, setEditTemplate] = useState(template);
+  const [editTime, setEditTime] = useState(sendTime);
 
   // Real-time ticking just for status recalculation
   const [currentTime] = useState(() => {
     const now = new Date();
     return `${String(now.getHours()).padStart(2, "0")}:${String(now.getMinutes()).padStart(2, "0")}`;
   });
+
+  function handleOpenDialog() {
+    setEditTemplate(template);
+    setEditTime(sendTime);
+    setIsDialogOpen(true);
+  }
+
+  function handleSave() {
+    setTemplate(editTemplate);
+    setSendTime(editTime);
+    setIsDialogOpen(false);
+    toast.success("Pengaturan automasi berhasil disimpan.");
+  }
 
   const upcomingList = useMemo(() => {
     const items: UpcomingBirthday[] = [];
@@ -177,11 +205,7 @@ export function BirthdayList() {
               </div>
             </div>
           </div>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => alert("Mock: Edit dialog goes here")}
-          >
+          <Button variant="outline" size="sm" onClick={handleOpenDialog}>
             <Pencil className="mr-1 h-4 w-4" />
             Pengaturan
           </Button>
@@ -201,6 +225,45 @@ export function BirthdayList() {
         Daftar Ulang Tahun Mendatang
       </h2>
       <DataTable data={upcomingList} columns={columns} />
+
+      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Pengaturan Automasi Ulang Tahun</DialogTitle>
+            <DialogDescription>
+              Ubah jam pengiriman dan isi pesan template yang akan dikirim.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="grid gap-4 py-4">
+            <div className="grid gap-2">
+              <Label>Waktu Pengiriman</Label>
+              <Input
+                type="time"
+                value={editTime}
+                onChange={(e) => setEditTime(e.target.value)}
+              />
+            </div>
+            <div className="grid gap-2">
+              <Label>Pesan Template</Label>
+              <Textarea
+                rows={5}
+                value={editTemplate}
+                onChange={(e) => setEditTemplate(e.target.value)}
+              />
+              <p className="text-xs text-muted-foreground">
+                Gunakan <b>{`{{Nama}}`}</b> untuk menyisipkan nama secara
+                dinamis.
+              </p>
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setIsDialogOpen(false)}>
+              Batal
+            </Button>
+            <Button onClick={handleSave}>Simpan Pengaturan</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
