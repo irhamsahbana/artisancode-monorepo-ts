@@ -4,8 +4,8 @@ import { Link, useParams, useNavigate } from "react-router";
 import { toast } from "sonner";
 
 import { LocationView } from "@/components/projects/location-view";
+import { Combobox } from "@/components/shared/combobox";
 import { EmptyState } from "@/components/shared/empty-state";
-import { StarRating } from "@/components/shared/star-rating";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -26,7 +26,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Separator } from "@/components/ui/separator";
+import { Textarea } from "@/components/ui/textarea";
 import { useContacts } from "@/hooks/use-contacts";
 import { useContact } from "@/hooks/use-contacts";
 import { useCustomers } from "@/hooks/use-customers";
@@ -37,7 +37,6 @@ import {
   useCreateProjectVisit,
 } from "@/hooks/use-projects";
 import { useQuotations } from "@/hooks/use-quotations";
-import { useCreateRating } from "@/hooks/use-ratings";
 import {
   quotationStatusLabel,
   quotationStatusVariant,
@@ -275,8 +274,6 @@ const EMPTY_FORM = {
   metWith: "",
   topic: "",
   notes: "",
-  paymentScore: 0,
-  relationshipScore: 0,
 };
 
 function VisitLog({
@@ -295,7 +292,6 @@ function VisitLog({
   }[];
 }) {
   const { mutateAsync: addVisit, isPending } = useCreateProjectVisit(projectId);
-  const { mutateAsync: addRating } = useCreateRating();
   const { data: contacts } = useContacts(customerId);
   const [open, setOpen] = useState(false);
   const [form, setForm] = useState(EMPTY_FORM);
@@ -314,16 +310,6 @@ function VisitLog({
         topic: form.topic || undefined,
         notes: form.notes || undefined,
       });
-      if (form.paymentScore > 0 && form.relationshipScore > 0) {
-        await addRating({
-          customerId,
-          ratingDate: form.visitDate,
-          paymentScore: form.paymentScore,
-          relationshipScore: form.relationshipScore,
-          riskLevel: "low",
-          notes: form.notes || undefined,
-        });
-      }
       toast.success("Log kunjungan ditambahkan.");
       setForm(EMPTY_FORM);
       setOpen(false);
@@ -415,38 +401,25 @@ function VisitLog({
               </div>
               <div className="grid gap-1.5 sm:col-span-2">
                 <Label>Topik</Label>
-                <Input
+                <Combobox
                   value={form.topic}
-                  onChange={(e) => setForm({ ...form, topic: e.target.value })}
+                  onChange={(v) => setForm({ ...form, topic: v })}
+                  options={[
+                    { value: "Follow up" },
+                    { value: "Presentasi" },
+                    { value: "Penjajakan Kebutuhan" },
+                    { value: "Negosiasi Harga" },
+                    { value: "Kunjungan Lapangan" },
+                  ]}
+                  placeholder="Pilih atau ketik topik..."
                 />
               </div>
               <div className="grid gap-1.5 sm:col-span-2">
                 <Label>Catatan</Label>
-                <Input
+                <Textarea
                   value={form.notes}
                   onChange={(e) => setForm({ ...form, notes: e.target.value })}
-                />
-              </div>
-
-              <div className="sm:col-span-2">
-                <Separator />
-                <p className="pt-3 text-xs font-semibold tracking-wide text-muted-foreground uppercase">
-                  Penilaian Pelanggan (opsional)
-                </p>
-              </div>
-
-              <div className="grid gap-1.5">
-                <Label>Skor Pembayaran</Label>
-                <StarRating
-                  value={form.paymentScore}
-                  onChange={(v) => setForm({ ...form, paymentScore: v })}
-                />
-              </div>
-              <div className="grid gap-1.5">
-                <Label>Skor Hubungan</Label>
-                <StarRating
-                  value={form.relationshipScore}
-                  onChange={(v) => setForm({ ...form, relationshipScore: v })}
+                  rows={3}
                 />
               </div>
             </form>

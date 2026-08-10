@@ -147,36 +147,30 @@ export function QuotationList() {
     },
     {
       key: "project",
-      label: "Proyek & Topik",
+      label: "Proyek",
       render: (q) => {
         const project = projectsData?.items.find((p) => p.id === q.projectId);
+        if (!project)
+          return <span className="text-sm text-muted-foreground">-</span>;
         return (
-          <div className="max-w-[200px]">
-            {project ? (
-              <div className="flex flex-col gap-1">
-                <span className="truncate font-medium">{project.name}</span>
-                <div className="flex items-center gap-1.5">
-                  <Badge
-                    variant={projectStatusVariant[project.status]}
-                    className="h-4 text-[10px] px-1.5 py-0"
-                  >
-                    {projectStatusLabel[project.status]}
-                  </Badge>
-                  {q.topic && (
-                    <span className="truncate text-xs text-muted-foreground">
-                      · {q.topic}
-                    </span>
-                  )}
-                </div>
-              </div>
-            ) : (
-              <span className="text-sm text-muted-foreground">
-                {q.topic || "-"}
-              </span>
-            )}
+          <div className="flex flex-col gap-1 max-w-[200px]">
+            <span className="truncate font-medium">{project.name}</span>
+            <Badge
+              variant={projectStatusVariant[project.status]}
+              className="h-4 w-fit text-[10px] px-1.5 py-0"
+            >
+              {projectStatusLabel[project.status]}
+            </Badge>
           </div>
         );
       },
+    },
+    {
+      key: "topic",
+      label: "Topik",
+      render: (q) => (
+        <span className="text-sm text-muted-foreground">{q.topic || "-"}</span>
+      ),
     },
     {
       key: "products",
