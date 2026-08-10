@@ -7,10 +7,10 @@ export const mockQuotations: QuotationRequest[] = [
     title: "Penawaran Pembangunan Gedung 5 Lantai",
     projectId: "p13",
     topic: "rfq",
-    requesterName: "Budi Santoso",
-    companyName: "PT Bangun Jaya",
+    requesterName: "Hendra Kusuma",
+    companyName: "PT Waskita Karya",
     whatsapp: "6281234567890",
-    email: "budi@bangunjaya.co.id",
+    email: "hendra@waskita.co.id",
     products: [
       {
         productName: "Ready Mix Concrete K-300",
@@ -32,8 +32,8 @@ export const mockQuotations: QuotationRequest[] = [
     title: "Penawaran Saluran U-Ditch",
     projectId: "p8",
     topic: "permintaan penawaran",
-    requesterName: "Siti Aminah",
-    companyName: "CV Konstruksi Mandiri",
+    requesterName: "Arif Rachman",
+    companyName: "PT Adhi Karya",
     whatsapp: "6282345678901",
     products: [
       {

@@ -1,8 +1,9 @@
-import { Eye, MessageCircle, Plus } from "lucide-react";
+import { Eye, MessageCircle, Plus, Link as LinkIcon } from "lucide-react";
 import { useState } from "react";
 import { useNavigate, useSearchParams } from "react-router";
 import { toast } from "sonner";
 
+import { Combobox } from "@/components/shared/combobox";
 import type { Column, FilterOption } from "@/components/shared/data-table";
 import { DataTable } from "@/components/shared/data-table";
 import { PageHeader } from "@/components/shared/page-header";
@@ -25,6 +26,7 @@ import { useProjects } from "@/hooks/use-projects";
 import {
   useQuotations,
   useUpdateQuotationStatus,
+  useAssignQuotation,
 } from "@/hooks/use-quotations";
 import {
   projectStatusLabel,
@@ -55,8 +57,13 @@ export function QuotationList() {
   const { data } = useQuotations();
   const { data: projectsData } = useProjects();
   const { mutateAsync: updateStatus, isPending } = useUpdateQuotationStatus();
+  const { mutateAsync: assignProject, isPending: isAssigning } =
+    useAssignQuotation();
   const [searchParams] = useSearchParams();
   const [selected, setSelected] = useState<QuotationRequest | null>(null);
+  const [assigningQuotation, setAssigningQuotation] =
+    useState<QuotationRequest | null>(null);
+  const [selectedProjectId, setSelectedProjectId] = useState<string>("");
 
   const initialStatus = searchParams.get("status");
   const initialFilters = initialStatus ? { status: initialStatus } : undefined;
@@ -68,6 +75,22 @@ export function QuotationList() {
       toast.success("Status diperbarui.");
     } catch {
       toast.error("Gagal memperbarui status.");
+    }
+  }
+
+  async function handleAssign(e: React.FormEvent) {
+    e.preventDefault();
+    if (!assigningQuotation || !selectedProjectId) return;
+    try {
+      await assignProject({
+        id: assigningQuotation.id,
+        body: { projectId: selectedProjectId },
+      });
+      toast.success("Penawaran berhasil di-assign ke proyek.");
+      setAssigningQuotation(null);
+      setSelectedProjectId("");
+    } catch {
+      toast.error("Gagal melakukan assign.");
     }
   }
 
@@ -251,6 +274,16 @@ export function QuotationList() {
             <Button variant="ghost" size="icon" onClick={() => setSelected(q)}>
               <Eye className="h-4 w-4" />
             </Button>
+            {!q.projectId && (
+              <Button
+                variant="ghost"
+                size="icon"
+                title="Assign ke Proyek"
+                onClick={() => setAssigningQuotation(q)}
+              >
+                <LinkIcon className="h-4 w-4" />
+              </Button>
+            )}
             <Button variant="outline" size="sm" asChild className="gap-1.5">
               <a
                 href={formatWaLink(q.whatsapp, waMessage(q.requesterName))}
@@ -268,10 +301,12 @@ export function QuotationList() {
       <Dialog open={!!selected} onOpenChange={(v) => !v && setSelected(null)}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Detail Permintaan Penawaran</DialogTitle>
+            <DialogTitle>Detail Penawaran</DialogTitle>
           </DialogHeader>
           {selected && (
             <div className="grid gap-3 text-sm">
+              <DetailRow label="Judul" value={selected.title} />
+              <DetailRow label="Topik" value={selected.topic} />
               <DetailRow label="Nama Peminta" value={selected.requesterName} />
               <DetailRow label="Perusahaan" value={selected.companyName} />
               <DetailRow label="WhatsApp" value={selected.whatsapp} />
@@ -313,6 +348,47 @@ export function QuotationList() {
               </div>
             </div>
           )}
+        </DialogContent>
+      </Dialog>
+
+      <Dialog
+        open={!!assigningQuotation}
+        onOpenChange={(v) => !v && setAssigningQuotation(null)}
+      >
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Assign Penawaran ke Proyek</DialogTitle>
+          </DialogHeader>
+          <form onSubmit={handleAssign} className="grid gap-4 py-4">
+            <div className="grid gap-2">
+              <label className="text-sm font-medium">Pilih Proyek</label>
+              <Combobox
+                value={selectedProjectId}
+                onChange={setSelectedProjectId}
+                options={(projectsData?.items ?? []).map((p) => ({
+                  value: p.id,
+                  label: `${p.name} — ${p.location}`,
+                }))}
+                placeholder="Pilih proyek yang ada..."
+                enforceOptions
+              />
+            </div>
+            <div className="flex justify-end gap-2">
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => setAssigningQuotation(null)}
+              >
+                Batal
+              </Button>
+              <Button
+                type="submit"
+                disabled={!selectedProjectId || isAssigning}
+              >
+                {isAssigning ? "Menyimpan..." : "Assign"}
+              </Button>
+            </div>
+          </form>
         </DialogContent>
       </Dialog>
     </div>

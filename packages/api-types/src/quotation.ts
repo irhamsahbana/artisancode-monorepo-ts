@@ -35,6 +35,10 @@ export interface CreateQuotationReq {
   notes?: string
 }
 
+export interface AssignQuotationReq {
+  projectId: string
+}
+
 export interface QuotationList {
   items: QuotationRequest[]
   pagination: PaginationMetadata

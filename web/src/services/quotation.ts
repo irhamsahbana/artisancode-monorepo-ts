@@ -4,6 +4,7 @@ import { DEMO_MODE } from "@/lib/demo-mode";
 
 import type {
   CreateQuotationReq,
+  AssignQuotationReq,
   QuotationList,
   QuotationRequest,
   QuotationStatus,
@@ -34,7 +35,12 @@ export const quotationService = {
   updateStatus: (id: string, status: QuotationStatus) =>
     DEMO_MODE
       ? mockUpdateStatus(id, status)
-      : api.put<QuotationRequest>(`/quotations/${id}`, { status }),
+      : api.put<QuotationRequest>(`/quotations/${id}/status`, { status }),
+
+  assign: (id: string, body: AssignQuotationReq) =>
+    DEMO_MODE
+      ? mockAssign(id, body)
+      : api.put<QuotationRequest>(`/quotations/${id}/assign`, body),
 };
 
 function mockCreate(body: CreateQuotationReq): Promise<QuotationRequest> {
@@ -58,6 +64,19 @@ function mockUpdateStatus(
   if (idx === -1 || !existing)
     return Promise.reject(new Error("Quotation not found"));
   const updated = { ...existing, status };
+  mockQuotations[idx] = updated;
+  return Promise.resolve(updated);
+}
+
+function mockAssign(
+  id: string,
+  body: AssignQuotationReq,
+): Promise<QuotationRequest> {
+  const idx = mockQuotations.findIndex((x) => x.id === id);
+  const existing = mockQuotations[idx];
+  if (idx === -1 || !existing)
+    return Promise.reject(new Error("Quotation not found"));
+  const updated = { ...existing, ...body };
   mockQuotations[idx] = updated;
   return Promise.resolve(updated);
 }
