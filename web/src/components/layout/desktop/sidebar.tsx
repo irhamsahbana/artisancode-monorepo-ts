@@ -5,6 +5,7 @@ import {
   Star,
   FileText,
   Megaphone,
+  Gift,
   PieChart,
   MapPin,
   Map,
@@ -47,6 +48,7 @@ const mainNav = [
   { to: "/ratings", label: "Penilaian", icon: Star },
   { to: "/quotations", label: "Penawaran", icon: FileText },
   { to: "/broadcasts", label: "Broadcast", icon: Megaphone },
+  { to: "/birthdays", label: "Ulang Tahun", icon: Gift },
 ];
 
 const masterNav = [

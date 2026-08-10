@@ -6,6 +6,7 @@ import {
   Star,
   FileText,
   Megaphone,
+  Gift,
   PieChart,
   MapPin,
   Map,
@@ -35,6 +36,7 @@ const menuItems = [
   { to: "/ratings", label: "Penilaian", icon: Star },
   { to: "/quotations", label: "Penawaran", icon: FileText },
   { to: "/broadcasts", label: "Broadcast", icon: Megaphone },
+  { to: "/birthdays", label: "Ulang Tahun", icon: Gift },
 ];
 
 const masterItems = [
@@ -61,6 +63,7 @@ const moreActivePrefixes = [
   "/ratings",
   "/quotations",
   "/broadcasts",
+  "/birthdays",
   "/master",
   "/settings",
 ];

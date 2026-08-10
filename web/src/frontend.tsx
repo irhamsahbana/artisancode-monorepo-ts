@@ -13,6 +13,7 @@ import { ErrorBoundary } from "@/components/shared/error-boundary";
 import { Toaster } from "@/components/ui/sonner";
 import { persister } from "@/lib/query-persister";
 import { AccountSettings } from "@/pages/account-settings";
+import { BirthdayList } from "@/pages/birthdays/birthday-list";
 import { BroadcastDetail } from "@/pages/broadcasts/broadcast-detail";
 import { BroadcastForm } from "@/pages/broadcasts/broadcast-form";
 import { BroadcastList } from "@/pages/broadcasts/broadcast-list";
@@ -83,6 +84,7 @@ const router = createBrowserRouter([
           { path: "broadcasts", element: <BroadcastList /> },
           { path: "broadcasts/new", element: <BroadcastForm /> },
           { path: "broadcasts/:id", element: <BroadcastDetail /> },
+          { path: "birthdays", element: <BirthdayList /> },
           { path: "master/segmentation", element: <Segmentation /> },
           { path: "master/areas", element: <Areas /> },
           { path: "master/relation-status", element: <RelationStatus /> },
