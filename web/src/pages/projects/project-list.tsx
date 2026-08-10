@@ -7,8 +7,14 @@ import { DataTable } from "@/components/shared/data-table";
 import { PageHeader } from "@/components/shared/page-header";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { useContactSearch } from "@/hooks/use-contacts";
 import { useCustomers } from "@/hooks/use-customers";
 import { useProjects } from "@/hooks/use-projects";
+import { useQuotations } from "@/hooks/use-quotations";
+import {
+  quotationStatusLabel,
+  quotationStatusVariant,
+} from "@/pages/quotations/quotation-status";
 
 import {
   formatRupiah,
@@ -16,7 +22,7 @@ import {
   projectStatusVariant,
 } from "./project-status";
 
-import type { Project } from "@artisancode/api-types";
+import type { Project, QuotationRequest } from "@artisancode/api-types";
 
 const filters: FilterOption[] = [
   {
@@ -35,12 +41,28 @@ export function ProjectList() {
   const navigate = useNavigate();
   const { data } = useProjects();
   const { data: customersData } = useCustomers({ per_page: 100 });
+  const { data: contactResults } = useContactSearch("");
+  const { data: quotationsData } = useQuotations();
 
   const customerName = useMemo(() => {
     const map = new Map<string, string>();
     for (const c of customersData?.items ?? []) map.set(c.id, c.name);
     return map;
   }, [customersData]);
+
+  const contactName = useMemo(() => {
+    const map = new Map<string, string>();
+    for (const r of contactResults ?? []) map.set(r.contact.id, r.contact.name);
+    return map;
+  }, [contactResults]);
+
+  const quotationByProject = useMemo(() => {
+    const map = new Map<string, QuotationRequest>();
+    for (const q of quotationsData?.items ?? []) {
+      if (q.projectId) map.set(q.projectId, q);
+    }
+    return map;
+  }, [quotationsData]);
 
   const columns: Column<Project>[] = [
     {
@@ -62,6 +84,12 @@ export function ProjectList() {
       label: "Pelanggan",
       render: (p) => customerName.get(p.customerId) ?? "-",
     },
+    {
+      key: "contact",
+      label: "PIC Pelanggan",
+      render: (p) =>
+        p.contactId ? (contactName.get(p.contactId) ?? "-") : "-",
+    },
     { key: "location", label: "Lokasi", render: (p) => p.location ?? "-" },
     {
       key: "status",
@@ -71,6 +99,25 @@ export function ProjectList() {
           {projectStatusLabel[p.status]}
         </Badge>
       ),
+    },
+    {
+      key: "quotation",
+      label: "Penawaran",
+      render: (p) => {
+        const q = quotationByProject.get(p.id);
+        if (!q) return <span className="text-sm text-muted-foreground">-</span>;
+        return (
+          <div className="flex flex-col gap-1">
+            <span className="text-sm">{q.title || "-"}</span>
+            <Badge
+              variant={quotationStatusVariant[q.status]}
+              className="h-4 w-fit px-1.5 py-0 text-[10px]"
+            >
+              {quotationStatusLabel[q.status]}
+            </Badge>
+          </div>
+        );
+      },
     },
     {
       key: "value",
