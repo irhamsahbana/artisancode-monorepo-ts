@@ -28,6 +28,7 @@ import {
 } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
 import { useContacts } from "@/hooks/use-contacts";
+import { useContact } from "@/hooks/use-contacts";
 import { useCustomers } from "@/hooks/use-customers";
 import { useProducts } from "@/hooks/use-products";
 import {
@@ -49,6 +50,7 @@ export function ProjectDetail() {
 
   const { data: project, isLoading } = useProject(id ?? "");
   const { data: customersData } = useCustomers({ per_page: 100 });
+  const { data: contact } = useContact(project?.contactId ?? "");
   const { data: visits } = useProjectVisits(id ?? "");
   const { data: productsData } = useProducts();
 
@@ -118,6 +120,18 @@ export function ProjectDetail() {
             </Info>
             <Info label="Sumber Dana">{project.sourceOfFunds ?? "-"}</Info>
             <Info label="PIC (Sales)">{project.picName ?? "-"}</Info>
+            <Info label="PIC (Pelanggan)">
+              {contact ? (
+                <Link
+                  to={`/contacts/${contact.id}`}
+                  className="hover:underline"
+                >
+                  {contact.name}
+                </Link>
+              ) : (
+                "-"
+              )}
+            </Info>
             <Info label="Nilai Estimasi">
               {formatRupiah(project.estimatedValue)}
             </Info>

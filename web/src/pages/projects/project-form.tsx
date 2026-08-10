@@ -17,6 +17,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
+import { useContacts } from "@/hooks/use-contacts";
 import { useCustomers } from "@/hooks/use-customers";
 import {
   useCreateProject,
@@ -31,6 +32,7 @@ interface FormState {
   projectNumber: string;
   name: string;
   customerId: string;
+  contactId: string;
   location: string;
   latitude?: number;
   longitude?: number;
@@ -49,6 +51,7 @@ const empty: FormState = {
   projectNumber: "",
   name: "",
   customerId: "",
+  contactId: "",
   location: "",
   sourceOfFunds: "",
   picName: "",
@@ -83,6 +86,7 @@ export function ProjectForm() {
         projectNumber: existing.projectNumber,
         name: existing.name,
         customerId: existing.customerId,
+        contactId: existing.contactId ?? "",
         location: existing.location ?? "",
         latitude: existing.latitude,
         longitude: existing.longitude,
@@ -109,6 +113,7 @@ export function ProjectForm() {
       projectNumber: form.projectNumber || undefined,
       name: form.name,
       customerId: form.customerId,
+      contactId: form.contactId || undefined,
       location: form.location || undefined,
       latitude: form.latitude,
       longitude: form.longitude,
@@ -142,7 +147,9 @@ export function ProjectForm() {
     }
   }
 
+  const { data: contactsData } = useContacts(form.customerId);
   const customers = customersData?.items ?? [];
+  const contacts = contactsData?.items ?? [];
   const isPending = creating || updating;
 
   return (
@@ -184,7 +191,10 @@ export function ProjectForm() {
             <Field label="Pelanggan *">
               <Select
                 value={form.customerId}
-                onValueChange={(v) => set("customerId", v)}
+                onValueChange={(v) => {
+                  set("customerId", v);
+                  if (form.customerId !== v) set("contactId", "");
+                }}
                 required
               >
                 <SelectTrigger className="w-full">
@@ -192,6 +202,29 @@ export function ProjectForm() {
                 </SelectTrigger>
                 <SelectContent>
                   {customers.map((c) => (
+                    <SelectItem key={c.id} value={c.id}>
+                      {c.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </Field>
+
+            <Field label="PIC Pelanggan (Key Person)">
+              <Select
+                value={form.contactId}
+                onValueChange={(v) => set("contactId", v)}
+                disabled={!form.customerId}
+              >
+                <SelectTrigger className="w-full">
+                  <SelectValue
+                    placeholder={
+                      form.customerId ? "Pilih kontak" : "Pilih pelanggan dulu"
+                    }
+                  />
+                </SelectTrigger>
+                <SelectContent>
+                  {contacts.map((c) => (
                     <SelectItem key={c.id} value={c.id}>
                       {c.name}
                     </SelectItem>
