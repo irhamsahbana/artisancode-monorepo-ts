@@ -1,6 +1,6 @@
 import { ArrowLeft } from "lucide-react";
 import { useEffect, useState } from "react";
-import { useParams, useNavigate } from "react-router";
+import { useParams, useNavigate, useSearchParams } from "react-router";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
@@ -16,7 +16,11 @@ import {
 } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
 import { Textarea } from "@/components/ui/textarea";
-import { useContact, useUpdateContact } from "@/hooks/use-contacts";
+import {
+  useContact,
+  useCreateContact,
+  useUpdateContact,
+} from "@/hooks/use-contacts";
 
 interface FormState {
   name: string;
@@ -59,11 +63,17 @@ const empty: FormState = {
 export function ContactForm() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const isEdit = !!id;
+  const customerIdParam = searchParams.get("customerId") ?? "";
 
   const { data: existing } = useContact(id ?? "");
-  const { mutateAsync: updateContact, isPending } = useUpdateContact(
-    existing?.customerId ?? "",
-  );
+  const customerId = isEdit ? (existing?.customerId ?? "") : customerIdParam;
+  const { mutateAsync: updateContact, isPending: updating } =
+    useUpdateContact(customerId);
+  const { mutateAsync: createContact, isPending: creating } =
+    useCreateContact(customerId);
+  const isPending = isEdit ? updating : creating;
 
   const [form, setForm] = useState<FormState>(empty);
 
@@ -97,29 +107,36 @@ export function ContactForm() {
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    if (!id) return;
+    const body = {
+      name: form.name,
+      position: form.position || undefined,
+      whatsapp: form.whatsapp || undefined,
+      email: form.email || undefined,
+      gender: form.gender || undefined,
+      birthPlace: form.birthPlace || undefined,
+      dateOfBirth: form.dateOfBirth || undefined,
+      religion: form.religion || undefined,
+      education: form.education || undefined,
+      address: form.address || undefined,
+      spouseName: form.spouseName || undefined,
+      spouseOccupation: form.spouseOccupation || undefined,
+      childrenNames: form.childrenNames || undefined,
+      childrenOccupation: form.childrenOccupation || undefined,
+      profiling: form.profiling || undefined,
+      notes: form.notes || undefined,
+    };
     try {
-      await updateContact({
-        id,
-        name: form.name,
-        position: form.position || undefined,
-        whatsapp: form.whatsapp || undefined,
-        email: form.email || undefined,
-        gender: form.gender || undefined,
-        birthPlace: form.birthPlace || undefined,
-        dateOfBirth: form.dateOfBirth || undefined,
-        religion: form.religion || undefined,
-        education: form.education || undefined,
-        address: form.address || undefined,
-        spouseName: form.spouseName || undefined,
-        spouseOccupation: form.spouseOccupation || undefined,
-        childrenNames: form.childrenNames || undefined,
-        childrenOccupation: form.childrenOccupation || undefined,
-        profiling: form.profiling || undefined,
-        notes: form.notes || undefined,
-      });
-      toast.success("Key person berhasil diperbarui.");
-      navigate(`/contacts/${id}`);
+      if (isEdit) {
+        if (!id) return;
+        await updateContact({ id, ...body });
+        toast.success("Key person berhasil diperbarui.");
+        navigate(`/contacts/${id}`);
+      } else {
+        if (!customerId) return;
+        const created = await createContact({ customerId, ...body });
+        toast.success("Key person berhasil ditambahkan.");
+        navigate(`/contacts/${created.id}`);
+      }
     } catch {
       toast.error("Gagal menyimpan data key person.");
     }
@@ -131,7 +148,9 @@ export function ContactForm() {
         <Button variant="ghost" size="icon" onClick={() => navigate(-1)}>
           <ArrowLeft className="h-4 w-4" />
         </Button>
-        <h1 className="text-xl font-semibold">Edit Key Person</h1>
+        <h1 className="text-xl font-semibold">
+          {isEdit ? "Edit Key Person" : "Tambah Key Person"}
+        </h1>
       </div>
 
       <Card>
