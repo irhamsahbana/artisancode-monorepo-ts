@@ -1,4 +1,4 @@
-import { Gift, Pencil } from "lucide-react";
+import { Clock, Gift, Pencil } from "lucide-react";
 import { useMemo, useState } from "react";
 import { Link } from "react-router";
 
@@ -27,6 +27,13 @@ interface UpcomingBirthday {
 export function BirthdayList() {
   const { data: contactsData } = useContactSearch("");
   const [template] = useState(DEFAULT_TEMPLATE);
+  const [sendTime] = useState("09:00");
+
+  // Real-time ticking just for status recalculation
+  const [currentTime] = useState(() => {
+    const now = new Date();
+    return `${String(now.getHours()).padStart(2, "0")}:${String(now.getMinutes()).padStart(2, "0")}`;
+  });
 
   const upcomingList = useMemo(() => {
     const items: UpcomingBirthday[] = [];
@@ -102,7 +109,7 @@ export function BirthdayList() {
     },
     {
       key: "countdown",
-      label: "Status",
+      label: "Jadwal",
       render: (u) => {
         if (u.daysUntil === 0) {
           return <Badge variant="default">Hari ini</Badge>;
@@ -114,6 +121,28 @@ export function BirthdayList() {
           <span className="text-sm text-muted-foreground">
             {u.daysUntil} hari lagi
           </span>
+        );
+      },
+    },
+    {
+      key: "status_kirim",
+      label: "Status Pengiriman",
+      render: (u) => {
+        if (u.daysUntil === 0) {
+          if (currentTime >= sendTime) {
+            return (
+              <Badge
+                variant="default"
+                className="bg-green-600 hover:bg-green-700"
+              >
+                Terkirim ({sendTime})
+              </Badge>
+            );
+          }
+          return <Badge variant="outline">Menunggu {sendTime}</Badge>;
+        }
+        return (
+          <span className="text-sm text-muted-foreground">Belum waktunya</span>
         );
       },
     },
@@ -136,9 +165,16 @@ export function BirthdayList() {
               <CardTitle className="text-base">
                 Template Automasi Ucapan
               </CardTitle>
-              <p className="text-xs text-muted-foreground mt-0.5">
-                Dikirim otomatis via WhatsApp pada hari ulang tahun.
-              </p>
+              <div className="text-xs text-muted-foreground mt-1 flex items-center gap-1.5">
+                Dikirim otomatis via WhatsApp setiap hari pukul
+                <Badge
+                  variant="secondary"
+                  className="px-1.5 py-0 h-5 font-medium flex items-center gap-1"
+                >
+                  <Clock className="h-3 w-3" />
+                  {sendTime}
+                </Badge>
+              </div>
             </div>
           </div>
           <Button
@@ -147,7 +183,7 @@ export function BirthdayList() {
             onClick={() => alert("Mock: Edit dialog goes here")}
           >
             <Pencil className="mr-1 h-4 w-4" />
-            Edit Template
+            Pengaturan
           </Button>
         </CardHeader>
         <CardContent>
