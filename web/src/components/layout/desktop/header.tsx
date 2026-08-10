@@ -1,3 +1,4 @@
+import { NotificationBell } from "@/components/shared/notification-bell";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Separator } from "@/components/ui/separator";
@@ -10,6 +11,7 @@ export function DesktopHeader() {
       <Separator orientation="vertical" className="h-4" />
       <div className="flex-1" />
       <ThemeToggle />
+      <NotificationBell />
       <Avatar className="h-8 w-8">
         <AvatarFallback className="text-xs">AD</AvatarFallback>
       </Avatar>

@@ -1,3 +1,4 @@
+import { NotificationBell } from "@/components/shared/notification-bell";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 
@@ -7,6 +8,7 @@ export function MobileHeader() {
       <span className="text-base font-semibold">CRM Wika</span>
       <div className="flex items-center gap-1">
         <ThemeToggle />
+        <NotificationBell />
         <Avatar className="h-8 w-8">
           <AvatarFallback className="text-xs">AD</AvatarFallback>
         </Avatar>

@@ -1,6 +1,6 @@
 # Notification bell in header
 
-**Status:** Backlog
+**Status:** Done
 **Raised by:** Mas Amir + Mas Fari (meeting 2026-08-09) — see [meeting-summary-2026-08-09.md](../../prd/meeting-summary-2026-08-09.md) §8
 
 ## Problem
@@ -15,10 +15,10 @@ Notifications to surface:
 
 ## Scope
 
-- [ ] Add a bell icon + dropdown popover in [web/src/components/layout/desktop/header.tsx](../../web/src/components/layout/desktop/header.tsx) (and mobile header).
-- [ ] Reuse `DashboardReminder` + add a "pending action" feed (quotations `new`, projects stale in `prospect`/`in_progress`).
-- [ ] Unread indicator badge; clicking an item navigates to the relevant record.
-- [ ] Keep volume minimal — client explicitly said "notif untuk seminimalisir mungkin", don't spam every event.
+- [x] Add a bell icon + dropdown popover in [web/src/components/layout/desktop/header.tsx](../../web/src/components/layout/desktop/header.tsx) (and mobile header).
+- [x] Reuse `DashboardReminder` + add a "pending action" feed (quotations `new`, projects stale in `prospect`/`in_progress`).
+- [x] Unread indicator badge; clicking an item navigates to the relevant record.
+- [x] Keep volume minimal — client explicitly said "notif untuk seminimalisir mungkin", don't spam every event.
 
 ## Notes
 

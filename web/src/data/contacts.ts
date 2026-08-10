@@ -34,7 +34,7 @@ export const mockContacts: Contact[] = [
     email: "dewi@majubersama.co.id",
     gender: "female",
     birthPlace: "Bandung",
-    dateOfBirth: "1985-09-03",
+    dateOfBirth: "1985-08-10",
     religion: "Kristen",
     education: "Sarjana S-1 Akuntansi",
     isPrimary: false,
