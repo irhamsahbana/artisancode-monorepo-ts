@@ -18,7 +18,7 @@
     "drizzle:push": "drizzle-kit push",
     "drizzle:studio": "drizzle-kit studio",
     "drizzle:pull": "drizzle-kit pull",
-    "drizzle:seed": "bun src/db/seed.ts",
+    "drizzle:seed": "bun src/db/seed/index.ts",
     "test:doku": "bunx tsx scripts/test_doku.ts",
     "lint": "eslint --ext .ts src --fix",
     "format": "prettier --write \"src/**/*.{ts,js,json}\"",

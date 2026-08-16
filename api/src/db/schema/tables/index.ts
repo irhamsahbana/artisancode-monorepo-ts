@@ -10,12 +10,7 @@ export { businessProfiles } from './business_profile'
 export { customers } from './customer'
 export { contacts } from './contact'
 export { uoms, unitConversions } from './uom'
-export {
-  projects,
-  projectVisits,
-  quotations,
-  customerRatings,
-  ProjectProductLineRow,
-  QuotationProductLineRow,
-} from './project'
-export { broadcastTemplates, broadcastLogs, PerContactLogRow } from './broadcast'
+export { projects, projectVisits, quotations, customerRatings } from './project'
+export type { ProjectProductLineRow, QuotationProductLineRow } from './project'
+export { broadcastTemplates, broadcastLogs } from './broadcast'
+export type { PerContactLogRow } from './broadcast'
