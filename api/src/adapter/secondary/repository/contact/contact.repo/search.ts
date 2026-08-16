@@ -59,7 +59,7 @@ function toCustomerEntity(data: typeof customers.$inferSelect): CustomerEntity.C
   }
 }
 
-export async function searchContacts(q?: string): Promise<ContactEntity.ContactSearchResult[]> {
+async function queryContacts(q?: string): Promise<ContactEntity.ContactSearchResult[]> {
   const conditions = [isNull(contacts.deletedAt), isNull(customers.deletedAt)]
 
   if (q) {
@@ -83,4 +83,47 @@ export async function searchContacts(q?: string): Promise<ContactEntity.ContactS
     contact: toContactEntity(row.contact),
     customer: toCustomerEntity(row.customer),
   }))
+}
+
+// Flat, ungrouped, unpaginated — used by pickers (broadcast targeting,
+// project/birthday contact lookups) that need the full matching set.
+export async function searchContacts(q?: string): Promise<ContactEntity.ContactSearchResult[]> {
+  return queryContacts(q)
+}
+
+// Same person can appear as a separate Contact row per company ("pinjam
+// perusahaan") — group by name so pagination counts people, not raw rows,
+// and one person's full company list always lands on a single page. Used by
+// the Key Person directory view only.
+function groupByPerson(
+  results: ContactEntity.ContactSearchResult[],
+): ContactEntity.ContactPersonGroup[] {
+  const groups = new Map<string, ContactEntity.ContactPersonGroup>()
+  for (const r of results) {
+    const key = r.contact.name.trim().toLowerCase()
+    const group = groups.get(key)
+    if (group) {
+      group.entries.push(r)
+    } else {
+      groups.set(key, { name: r.contact.name, entries: [r] })
+    }
+  }
+  return Array.from(groups.values())
+}
+
+export async function searchContactPersons(
+  req: ContactEntity.SearchContactsReq,
+): Promise<ContactEntity.ContactPersonGroupList> {
+  const { q, pagination = {} } = req
+  const { page = 1, per_page = 10 } = pagination
+
+  const results = await queryContacts(q)
+  const groups = groupByPerson(results).sort((a, b) => a.name.localeCompare(b.name))
+  const total = groups.length
+  const offset = (page - 1) * per_page
+
+  return {
+    items: groups.slice(offset, offset + per_page),
+    pagination: { total, page, per_page, last_page: Math.max(1, Math.ceil(total / per_page)) },
+  }
 }

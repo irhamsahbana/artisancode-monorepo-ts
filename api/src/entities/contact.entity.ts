@@ -52,3 +52,21 @@ export interface ContactSearchResult {
   contact: Contact
   customer: Customer
 }
+
+export interface SearchContactsReq {
+  q?: string
+  pagination?: PaginationQuery
+}
+
+// Contact search results grouped by person (name) so someone who appears at
+// multiple companies ("pinjam perusahaan") lands in one group with every
+// related company, instead of one row per (contact, customer) pair.
+export interface ContactPersonGroup {
+  name: string
+  entries: ContactSearchResult[]
+}
+
+export interface ContactPersonGroupList {
+  items: ContactPersonGroup[]
+  pagination: PaginationMetadata
+}

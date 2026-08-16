@@ -24,3 +24,9 @@ export const getContactListSchema = z.object({
   per_page: z.coerce.number().int().min(1).max(100).optional(),
   customer_id: z.uuid(),
 })
+
+export const searchContactPersonsSchema = z.object({
+  page: z.coerce.number().int().min(1).optional(),
+  per_page: z.coerce.number().int().min(1).max(100).optional(),
+  q: z.string().optional(),
+})

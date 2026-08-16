@@ -16,6 +16,8 @@ export function createContactUsecase(repo: IContactRepo): IContactUsecase {
 
     search: (q) => repo.search(q),
 
+    searchPersons: (req) => repo.searchPersons(req),
+
     update: async (req) => {
       const item = await repo.update(req)
       if (!item) throw new AppError(ErrorCode.NOT_FOUND, 'Contact not found')

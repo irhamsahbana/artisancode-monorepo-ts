@@ -7,6 +7,8 @@ export type {
   CreateContactReq,
   UpdateContactReq,
   ContactSearchResult,
+  ContactPersonGroup,
+  ContactPersonGroupList,
   GetContactReq,
 } from './contact'
 export type {

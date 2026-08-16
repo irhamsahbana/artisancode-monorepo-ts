@@ -1,3 +1,4 @@
+import type { PaginationMetadata } from './common'
 import type { Customer } from './customer'
 
 export interface Contact {
@@ -79,4 +80,18 @@ export interface GetContactReq {
   q?: string
   customerId?: string
   isPrimary?: boolean
+}
+
+// Key Person directory: contact search results grouped by person (name),
+// paginated by group count so one person's full company list always lands
+// on a single page. See ContactSearchResult for the flat, ungrouped shape
+// used by pickers.
+export interface ContactPersonGroup {
+  name: string
+  entries: ContactSearchResult[]
+}
+
+export interface ContactPersonGroupList {
+  items: ContactPersonGroup[]
+  pagination: PaginationMetadata
 }
