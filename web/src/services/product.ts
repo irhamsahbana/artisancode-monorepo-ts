@@ -9,23 +9,35 @@ import type {
   UpdateProductReq,
 } from "@artisancode/api-types";
 
-function mockList(q?: string): ProductList {
+function mockList(params?: {
+  page?: number;
+  per_page?: number;
+  q?: string;
+}): ProductList {
+  const { page = 1, per_page = 100, q } = params ?? {};
   let items = mockProducts;
   if (q) {
     const query = q.toLowerCase();
     items = items.filter((p) => p.name.toLowerCase().includes(query));
   }
+  const start = (page - 1) * per_page;
+  const paginatedItems = items.slice(start, start + per_page);
   return {
-    items,
-    pagination: { total: items.length, page: 1, per_page: 100, last_page: 1 },
+    items: paginatedItems,
+    pagination: {
+      total: items.length,
+      page,
+      per_page,
+      last_page: Math.ceil(items.length / per_page),
+    },
   };
 }
 
 export const productService = {
-  list: (q?: string) =>
+  list: (params?: { page?: number; per_page?: number; q?: string }) =>
     DEMO_MODE
-      ? Promise.resolve(mockList(q))
-      : api.get<ProductList>("/products", { q, per_page: 100 }),
+      ? Promise.resolve(mockList(params))
+      : api.get<ProductList>("/products", params),
 
   create: (body: CreateProductReq) =>
     DEMO_MODE ? mockCreate(body) : api.post<Product>("/products", body),

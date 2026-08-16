@@ -8,11 +8,12 @@ import { DataTable } from "@/components/shared/data-table";
 import { PageHeader } from "@/components/shared/page-header";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { useBroadcasts, useDeleteBroadcast } from "@/hooks/use-broadcasts";
+import { useDeleteBroadcast } from "@/hooks/use-broadcasts";
 import { useCategoryList } from "@/hooks/use-categories";
-import { useClientTable } from "@/hooks/use-client-table";
 import { useContactSearch } from "@/hooks/use-contacts";
-import { filterAudience } from "@/services/broadcast";
+import { useServerTable } from "@/hooks/use-server-table";
+import { queryKeys } from "@/lib/query-keys";
+import { broadcastService, filterAudience } from "@/services/broadcast";
 
 import { occasionLabel, statusLabel } from "./broadcast-status";
 
@@ -31,11 +32,14 @@ const customerStatusLabel: Record<string, string> = {
 
 export function BroadcastList() {
   const navigate = useNavigate();
-  const { data } = useBroadcasts();
   const { data: allContacts } = useContactSearch("");
   const { data: segmentationsData } = useCategoryList("segmentation");
   const { mutate: deleteBroadcast } = useDeleteBroadcast();
-  const table = useClientTable(data?.items ?? []);
+  const table = useServerTable<BroadcastTemplate>({
+    queryKey: (params) => queryKeys.broadcasts.list(params),
+    fetcher: (params) => broadcastService.list(params),
+    pageSize: 10,
+  });
 
   const segmentationName = useMemo(() => {
     const map = new Map<string, string>();
@@ -196,8 +200,8 @@ export function BroadcastList() {
       />
 
       <DataTable
-        data={table.data}
-        loadedData={table.loadedData}
+        data={table.items}
+        loadedData={table.loadedItems}
         columns={columns}
         page={table.page}
         totalPages={table.totalPages}

@@ -7,15 +7,16 @@ import { DataTable } from "@/components/shared/data-table";
 import { PageHeader } from "@/components/shared/page-header";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { useClientTable } from "@/hooks/use-client-table";
 import { useContactSearch } from "@/hooks/use-contacts";
 import { useCustomers } from "@/hooks/use-customers";
-import { useProjects } from "@/hooks/use-projects";
 import { useQuotations } from "@/hooks/use-quotations";
+import { useServerTable } from "@/hooks/use-server-table";
+import { queryKeys } from "@/lib/query-keys";
 import {
   quotationStatusLabel,
   quotationStatusVariant,
 } from "@/pages/quotations/quotation-status";
+import { projectService } from "@/services/project";
 
 import {
   formatRupiah,
@@ -40,7 +41,6 @@ const filters: FilterOption[] = [
 
 export function ProjectList() {
   const navigate = useNavigate();
-  const { data } = useProjects();
   const { data: customersData } = useCustomers({ per_page: 100 });
   const { data: contactResults } = useContactSearch("");
   const { data: quotationsData } = useQuotations();
@@ -65,13 +65,11 @@ export function ProjectList() {
     return map;
   }, [quotationsData]);
 
-  const table = useClientTable(data?.items ?? [], {
-    searchFn: (p, q) =>
-      p.name.toLowerCase().includes(q.toLowerCase()) ||
-      p.projectNumber.toLowerCase().includes(q.toLowerCase()) ||
-      (p.location ?? "").toLowerCase().includes(q.toLowerCase()),
-    filterFn: (p, f) =>
-      Object.entries(f).every(([key, val]) => p[key as keyof Project] === val),
+  const table = useServerTable<Project>({
+    queryKey: (params) =>
+      queryKeys.projects.list(params as Record<string, unknown>),
+    fetcher: (params) => projectService.list(params),
+    pageSize: 10,
   });
 
   const columns: Column<Project>[] = [
@@ -149,8 +147,8 @@ export function ProjectList() {
         }
       />
       <DataTable
-        data={table.data}
-        loadedData={table.loadedData}
+        data={table.items}
+        loadedData={table.loadedItems}
         columns={columns}
         searchPlaceholder="Cari nomor proyek / nama / lokasi..."
         query={table.query}
@@ -164,6 +162,7 @@ export function ProjectList() {
         onPageChange={table.onPageChange}
         hasMore={table.hasMore}
         onLoadMore={table.onLoadMore}
+        loading={table.loading}
         actions={(p) => (
           <div className="flex items-center gap-1">
             <Button

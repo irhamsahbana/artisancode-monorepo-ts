@@ -23,15 +23,16 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { useClientTable } from "@/hooks/use-client-table";
+import { useServerTable } from "@/hooks/use-server-table";
 import {
   useCreateUnitConversion,
-  useUnitConversions,
   useUpdateUnitConversion,
 } from "@/hooks/use-unit-conversions";
 import { useUoms } from "@/hooks/use-uoms";
+import { queryKeys } from "@/lib/query-keys";
 import { categoryOptions } from "@/pages/master/uoms";
 import { convertQuantity } from "@/services/unit-conversion";
+import { unitConversionService } from "@/services/unit-conversion";
 
 import type {
   UnitConversion,
@@ -40,7 +41,6 @@ import type {
 import type { ReactNode } from "react";
 
 export function UnitConversions() {
-  const { data, isLoading } = useUnitConversions();
   const { data: uomsData } = useUoms();
   const { mutate: create } = useCreateUnitConversion();
   const { mutate: update } = useUpdateUnitConversion();
@@ -73,8 +73,13 @@ export function UnitConversions() {
     [uoms, category],
   );
 
-  const items = useMemo(() => data?.items ?? [], [data]);
-  const table = useClientTable(items);
+  const table = useServerTable<UnitConversion>({
+    queryKey: (params) => queryKeys.unitConversions.list(params),
+    fetcher: (params) => unitConversionService.list(params),
+    pageSize: 10,
+  });
+
+  const items = table.loadedItems;
 
   const [calcQuantity, setCalcQuantity] = useState("1");
   const [calcFromUnitId, setCalcFromUnitId] = useState("");
@@ -182,10 +187,10 @@ export function UnitConversions() {
         }
       />
       <DataTable
-        data={table.data}
-        loadedData={table.loadedData}
+        data={table.items}
+        loadedData={table.loadedItems}
         columns={columns}
-        loading={isLoading}
+        loading={table.loading}
         page={table.page}
         totalPages={table.totalPages}
         totalCount={table.totalCount}

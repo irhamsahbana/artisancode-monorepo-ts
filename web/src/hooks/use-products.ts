@@ -5,10 +5,14 @@ import { productService } from "@/services/product";
 
 import type { UpdateProductReq } from "@artisancode/api-types";
 
-export function useProducts(q?: string) {
+export function useProducts(params?: {
+  page?: number;
+  per_page?: number;
+  q?: string;
+}) {
   return useQuery({
-    queryKey: queryKeys.products.list(q),
-    queryFn: () => productService.list(q),
+    queryKey: queryKeys.products.list(params),
+    queryFn: () => productService.list(params),
   });
 }
 

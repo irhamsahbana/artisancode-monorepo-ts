@@ -16,17 +16,14 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useClientTable } from "@/hooks/use-client-table";
-import {
-  useCreateProduct,
-  useProducts,
-  useUpdateProduct,
-} from "@/hooks/use-products";
+import { useCreateProduct, useUpdateProduct } from "@/hooks/use-products";
+import { useServerTable } from "@/hooks/use-server-table";
+import { queryKeys } from "@/lib/query-keys";
+import { productService } from "@/services/product";
 
 import type { Product } from "@artisancode/api-types";
 
 export function Products() {
-  const { data, isLoading } = useProducts();
   const { mutate: create } = useCreateProduct();
   const { mutate: update } = useUpdateProduct();
 
@@ -35,10 +32,47 @@ export function Products() {
   const [name, setName] = useState("");
   const [unit, setUnit] = useState("");
 
-  const items = data?.items ?? [];
-  const table = useClientTable(items, {
-    searchFn: (i, q) => i.name.toLowerCase().includes(q.toLowerCase()),
+  const table = useServerTable<Product>({
+    queryKey: (params) => queryKeys.products.list(params),
+    fetcher: (params) => productService.list(params),
+    pageSize: 10,
   });
+
+  function toggleActive(item: Product) {
+    update(
+      { id: item.id, isActive: !item.isActive },
+      {
+        onSuccess: () =>
+          toast.success(item.isActive ? "Dinonaktifkan." : "Diaktifkan."),
+      },
+    );
+  }
+
+  const columns: Column<Product>[] = [
+    {
+      key: "name",
+      label: "Nama Produk",
+      render: (i) => <span className="font-medium">{i.name}</span>,
+    },
+    {
+      key: "unit",
+      label: "Satuan",
+      render: (i) => i.unit,
+    },
+    {
+      key: "status",
+      label: "Status",
+      render: (i) => (
+        <Badge
+          variant={i.isActive ? "default" : "outline"}
+          className="cursor-pointer"
+          onClick={() => toggleActive(i)}
+        >
+          {i.isActive ? "Aktif" : "Nonaktif"}
+        </Badge>
+      ),
+    },
+  ];
 
   function openAdd() {
     setEditing(null);
@@ -79,42 +113,6 @@ export function Products() {
     }
   }
 
-  function toggleActive(item: Product) {
-    update(
-      { id: item.id, isActive: !item.isActive },
-      {
-        onSuccess: () =>
-          toast.success(item.isActive ? "Dinonaktifkan." : "Diaktifkan."),
-      },
-    );
-  }
-
-  const columns: Column<Product>[] = [
-    {
-      key: "name",
-      label: "Nama Produk",
-      render: (i) => <span className="font-medium">{i.name}</span>,
-    },
-    {
-      key: "unit",
-      label: "Satuan",
-      render: (i) => i.unit,
-    },
-    {
-      key: "status",
-      label: "Status",
-      render: (i) => (
-        <Badge
-          variant={i.isActive ? "default" : "outline"}
-          className="cursor-pointer"
-          onClick={() => toggleActive(i)}
-        >
-          {i.isActive ? "Aktif" : "Nonaktif"}
-        </Badge>
-      ),
-    },
-  ];
-
   return (
     <div>
       <PageHeader
@@ -127,10 +125,9 @@ export function Products() {
         }
       />
       <DataTable
-        data={table.data}
-        loadedData={table.loadedData}
+        data={table.items}
+        loadedData={table.loadedItems}
         columns={columns}
-        loading={isLoading}
         searchPlaceholder="Cari produk..."
         query={table.query}
         onQueryChange={table.onQueryChange}
@@ -140,6 +137,7 @@ export function Products() {
         onPageChange={table.onPageChange}
         hasMore={table.hasMore}
         onLoadMore={table.onLoadMore}
+        loading={table.loading}
         actions={(item) => (
           <Button variant="ghost" size="icon" onClick={() => openEdit(item)}>
             <Pencil className="h-4 w-4" />

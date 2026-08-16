@@ -10,22 +10,49 @@ import type {
   QuotationStatus,
 } from "@artisancode/api-types";
 
-function mockList(): QuotationList {
+export interface QuotationListParams {
+  page?: number;
+  per_page?: number;
+  q?: string;
+  status?: QuotationStatus;
+}
+
+function mockList(params?: QuotationListParams): QuotationList {
+  const { q, status, page = 1, per_page = 100 } = params ?? {};
   // ponytail: newest first
-  const items = [...mockQuotations].sort((a, b) =>
+  let items = [...mockQuotations].sort((a, b) =>
     b.createdAt.localeCompare(a.createdAt),
   );
+  if (q) {
+    const query = q.toLowerCase();
+    items = items.filter(
+      (r) =>
+        r.requesterName.toLowerCase().includes(query) ||
+        (r.companyName ?? "").toLowerCase().includes(query) ||
+        (r.title ?? "").toLowerCase().includes(query),
+    );
+  }
+  if (status) items = items.filter((r) => r.status === status);
+  const start = (page - 1) * per_page;
   return {
-    items,
-    pagination: { total: items.length, page: 1, per_page: 100, last_page: 1 },
+    items: items.slice(start, start + per_page),
+    pagination: {
+      total: items.length,
+      page,
+      per_page,
+      last_page: Math.max(1, Math.ceil(items.length / per_page)),
+    },
   };
 }
 
 export const quotationService = {
-  list: () =>
+  list: (params?: QuotationListParams) =>
     DEMO_MODE
-      ? Promise.resolve(mockList())
-      : api.get<QuotationList>("/quotations"),
+      ? Promise.resolve(mockList(params))
+      : api.get<QuotationList>(
+          "/quotations",
+          params as Record<string, string | number | boolean | undefined>,
+        ),
 
   create: (body: CreateQuotationReq) =>
     DEMO_MODE

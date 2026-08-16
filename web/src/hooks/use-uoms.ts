@@ -7,8 +7,8 @@ import type { UpdateUnitOfMeasurementReq } from "@artisancode/api-types";
 
 export function useUoms(q?: string) {
   return useQuery({
-    queryKey: queryKeys.uoms.list(q),
-    queryFn: () => uomService.list(q),
+    queryKey: queryKeys.uoms.list({ q }),
+    queryFn: () => uomService.list({ q, per_page: 100 }),
   });
 }
 

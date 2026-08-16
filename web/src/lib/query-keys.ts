@@ -32,11 +32,13 @@ export const queryKeys = {
   },
   broadcasts: {
     all: ["broadcasts"] as const,
-    list: () => ["broadcasts", "list"] as const,
+    list: (params?: Record<string, unknown>) =>
+      ["broadcasts", "list", params] as const,
   },
   quotations: {
     all: ["quotations"] as const,
-    list: () => ["quotations", "list"] as const,
+    list: (params?: Record<string, unknown>) =>
+      ["quotations", "list", params] as const,
   },
   ratings: {
     all: ["ratings"] as const,
@@ -44,19 +46,23 @@ export const queryKeys = {
   },
   products: {
     all: ["products"] as const,
-    list: (q?: string) => ["products", "list", q] as const,
+    list: (params?: Record<string, unknown>) =>
+      ["products", "list", params] as const,
   },
   uoms: {
     all: ["uoms"] as const,
-    list: (q?: string) => ["uoms", "list", q] as const,
+    list: (params?: Record<string, unknown>) =>
+      ["uoms", "list", params] as const,
   },
   unitConversions: {
     all: ["unitConversions"] as const,
-    list: () => ["unitConversions", "list"] as const,
+    list: (params?: Record<string, unknown>) =>
+      ["unitConversions", "list", params] as const,
   },
   roles: {
     all: ["roles"] as const,
-    list: (q?: string) => ["roles", "list", q] as const,
+    list: (params?: Record<string, unknown>) =>
+      ["roles", "list", params] as const,
     detail: (id: string) => ["roles", "detail", id] as const,
   },
 } as const;

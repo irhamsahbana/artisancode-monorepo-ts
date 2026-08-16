@@ -9,23 +9,39 @@ import type {
   UpdateRoleReq,
 } from "@artisancode/api-types";
 
-function mockList(q?: string): RoleList {
+export interface RoleListParams {
+  page?: number;
+  per_page?: number;
+  q?: string;
+}
+
+function mockList(params?: RoleListParams): RoleList {
+  const { q, page = 1, per_page = 100 } = params ?? {};
   let items = mockRoles;
   if (q) {
     const query = q.toLowerCase();
     items = items.filter((r) => r.name.toLowerCase().includes(query));
   }
+  const start = (page - 1) * per_page;
   return {
-    items,
-    pagination: { total: items.length, page: 1, per_page: 100, last_page: 1 },
+    items: items.slice(start, start + per_page),
+    pagination: {
+      total: items.length,
+      page,
+      per_page,
+      last_page: Math.max(1, Math.ceil(items.length / per_page)),
+    },
   };
 }
 
 export const roleService = {
-  list: (q?: string) =>
+  list: (params?: RoleListParams) =>
     DEMO_MODE
-      ? Promise.resolve(mockList(q))
-      : api.get<RoleList>("/roles", { q, per_page: 100 }),
+      ? Promise.resolve(mockList(params))
+      : api.get<RoleList>(
+          "/roles",
+          params as Record<string, string | number | boolean | undefined>,
+        ),
 
   get: (id: string) =>
     DEMO_MODE ? mockGet(id) : api.get<Role>(`/roles/${id}`),

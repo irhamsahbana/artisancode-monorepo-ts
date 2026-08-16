@@ -9,19 +9,34 @@ import type {
   UpdateUnitConversionReq,
 } from "@artisancode/api-types";
 
-function mockList(): UnitConversionList {
+export interface UnitConversionListParams {
+  page?: number;
+  per_page?: number;
+}
+
+function mockList(params?: UnitConversionListParams): UnitConversionList {
+  const { page = 1, per_page = 100 } = params ?? {};
   const items = mockUnitConversions;
+  const start = (page - 1) * per_page;
   return {
-    items,
-    pagination: { total: items.length, page: 1, per_page: 100, last_page: 1 },
+    items: items.slice(start, start + per_page),
+    pagination: {
+      total: items.length,
+      page,
+      per_page,
+      last_page: Math.max(1, Math.ceil(items.length / per_page)),
+    },
   };
 }
 
 export const unitConversionService = {
-  list: () =>
+  list: (params?: UnitConversionListParams) =>
     DEMO_MODE
-      ? Promise.resolve(mockList())
-      : api.get<UnitConversionList>("/unit-conversions", { per_page: 100 }),
+      ? Promise.resolve(mockList(params))
+      : api.get<UnitConversionList>(
+          "/unit-conversions",
+          params as Record<string, string | number | boolean | undefined>,
+        ),
 
   create: (body: CreateUnitConversionReq) =>
     DEMO_MODE

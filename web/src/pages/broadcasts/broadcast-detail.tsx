@@ -24,8 +24,9 @@ import {
   useBroadcastLogs,
 } from "@/hooks/use-broadcasts";
 import { useCategoryList } from "@/hooks/use-categories";
-import { useClientTable } from "@/hooks/use-client-table";
-import { useContactSearch } from "@/hooks/use-contacts";
+import { useServerTable } from "@/hooks/use-server-table";
+import { queryKeys } from "@/lib/query-keys";
+import { contactService } from "@/services/contact";
 
 import { occasionLabel, statusLabel } from "./broadcast-status";
 
@@ -47,7 +48,6 @@ export function BroadcastDetail() {
   const { id } = useParams<{ id: string }>();
   const { data: broadcasts } = useBroadcasts();
   const { mutateAsync: send, isPending: isSending } = useSendBroadcast();
-  const { data: allContacts } = useContactSearch("");
   const { data: segmentationsData } = useCategoryList("segmentation");
   const { data: broadcastLogs } = useBroadcastLogs(id);
 
@@ -71,50 +71,47 @@ export function BroadcastDetail() {
     new Set(),
   );
 
+  const contactTable = useServerTable<ContactSearchResult>({
+    queryKey: (params) => queryKeys.contacts.searchPersons(params),
+    fetcher: async (params) => {
+      const result = await contactService.searchPersons(params);
+      const flattenedItems = result.items.flatMap((group) => group.entries);
+      return { items: flattenedItems, pagination: result.pagination };
+    },
+    pageSize: 10,
+    initialFilters: {
+      gender: form.gender,
+      religion: form.religion,
+      segmentationId: form.segmentationId,
+      customerStatus: form.customerStatus,
+    },
+  });
+
   function set<K extends keyof FormState>(key: K, val: FormState[K]) {
     setForm((prev) => ({ ...prev, [key]: val }));
   }
 
+  // Audience filter selects drive both the template's audience criteria
+  // (form state) and the live "Target Penerima" preview (table filters).
+  function setAudienceFilter(
+    key: "gender" | "religion" | "segmentationId" | "customerStatus",
+    value: string,
+  ) {
+    set(key, value);
+    contactTable.onFilterChange(key, value);
+  }
+
   const religions = useMemo(() => {
     const set = new Set<string>();
-    for (const r of allContacts ?? [])
+    for (const r of contactTable.loadedItems)
       if (r.contact.religion) set.add(r.contact.religion);
     return Array.from(set).sort();
-  }, [allContacts]);
-
-  // ponytail: filter the same contactService results the Key Person tab uses,
-  // so "Target Penerima" is just a filtered view of the contacts service.
-  const matchingContacts = useMemo(() => {
-    let items = allContacts ?? [];
-    if (form.gender)
-      items = items.filter((r) => r.contact.gender === form.gender);
-    if (form.religion)
-      items = items.filter((r) => r.contact.religion === form.religion);
-    if (form.segmentationId)
-      items = items.filter(
-        (r) => r.customer.segmentationId === form.segmentationId,
-      );
-    if (form.customerStatus)
-      items = items.filter((r) => r.customer.status === form.customerStatus);
-    return items;
-  }, [
-    allContacts,
-    form.gender,
-    form.religion,
-    form.segmentationId,
-    form.customerStatus,
-  ]);
-
-  const contactTable = useClientTable(matchingContacts, {
-    searchFn: (r, q) =>
-      r.contact.name.toLowerCase().includes(q.toLowerCase()) ||
-      r.customer.name.toLowerCase().includes(q.toLowerCase()),
-  });
+  }, [contactTable.loadedItems]);
 
   function handleSelectAll(checked: boolean) {
     const next = new Set(selectedContactIds);
     if (checked) {
-      matchingContacts.forEach((r) => next.add(r.contact.id));
+      contactTable.loadedItems.forEach((r) => next.add(r.contact.id));
     } else {
       next.clear();
     }
@@ -330,7 +327,7 @@ export function BroadcastDetail() {
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-sm">
                 <Users className="h-4 w-4" />
-                Target Penerima ({matchingContacts.length} key person)
+                Target Penerima ({contactTable.totalCount} key person)
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
@@ -338,7 +335,7 @@ export function BroadcastDetail() {
                 <Field label="Jenis Kelamin">
                   <Select
                     value={form.gender}
-                    onValueChange={(v) => set("gender", v)}
+                    onValueChange={(v) => setAudienceFilter("gender", v)}
                     disabled={!canEdit}
                   >
                     <SelectTrigger className="w-full">
@@ -355,7 +352,7 @@ export function BroadcastDetail() {
                 <Field label="Agama">
                   <Select
                     value={form.religion}
-                    onValueChange={(v) => set("religion", v)}
+                    onValueChange={(v) => setAudienceFilter("religion", v)}
                     disabled={!canEdit}
                   >
                     <SelectTrigger className="w-full">
@@ -375,7 +372,9 @@ export function BroadcastDetail() {
                 <Field label="Segmentasi Perusahaan">
                   <Select
                     value={form.segmentationId}
-                    onValueChange={(v) => set("segmentationId", v)}
+                    onValueChange={(v) =>
+                      setAudienceFilter("segmentationId", v)
+                    }
                     disabled={!canEdit}
                   >
                     <SelectTrigger className="w-full">
@@ -395,7 +394,9 @@ export function BroadcastDetail() {
                 <Field label="Status Pelanggan">
                   <Select
                     value={form.customerStatus}
-                    onValueChange={(v) => set("customerStatus", v)}
+                    onValueChange={(v) =>
+                      setAudienceFilter("customerStatus", v)
+                    }
                     disabled={!canEdit}
                   >
                     <SelectTrigger className="w-full">
@@ -415,8 +416,8 @@ export function BroadcastDetail() {
                 <input
                   type="checkbox"
                   checked={
-                    matchingContacts.length > 0 &&
-                    matchingContacts.every((r) =>
+                    contactTable.loadedItems.length > 0 &&
+                    contactTable.loadedItems.every((r) =>
                       selectedContactIds.has(r.contact.id),
                     )
                   }
@@ -427,14 +428,16 @@ export function BroadcastDetail() {
                   Pilih Semua (
                   <span className="font-medium">{selectedContactIds.size}</span>
                   /
-                  <span className="font-medium">{matchingContacts.length}</span>
+                  <span className="font-medium">
+                    {contactTable.loadedItems.length}
+                  </span>
                   )
                 </span>
               </div>
 
               <DataTable
-                data={contactTable.data}
-                loadedData={contactTable.loadedData}
+                data={contactTable.items}
+                loadedData={contactTable.loadedItems}
                 columns={contactColumns}
                 searchPlaceholder="Cari nama key person / perusahaan..."
                 query={contactTable.query}

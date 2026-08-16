@@ -9,21 +9,36 @@ import type {
   CreateBroadcastTemplateReq,
 } from "@artisancode/api-types";
 
-function mockList(): BroadcastList {
+export interface BroadcastListParams {
+  page?: number;
+  per_page?: number;
+}
+
+function mockList(params?: BroadcastListParams): BroadcastList {
+  const { page = 1, per_page = 100 } = params ?? {};
   const items = [...mockBroadcastTemplates].sort((a, b) =>
     b.createdAt.localeCompare(a.createdAt),
   );
+  const start = (page - 1) * per_page;
   return {
-    items,
-    pagination: { total: items.length, page: 1, per_page: 100, last_page: 1 },
+    items: items.slice(start, start + per_page),
+    pagination: {
+      total: items.length,
+      page,
+      per_page,
+      last_page: Math.max(1, Math.ceil(items.length / per_page)),
+    },
   };
 }
 
 export const broadcastService = {
-  list: () =>
+  list: (params?: BroadcastListParams) =>
     DEMO_MODE
-      ? Promise.resolve(mockList())
-      : api.get<BroadcastList>("/broadcasts"),
+      ? Promise.resolve(mockList(params))
+      : api.get<BroadcastList>(
+          "/broadcasts",
+          params as Record<string, string | number | boolean | undefined>,
+        ),
 
   create: (body: CreateBroadcastTemplateReq) =>
     DEMO_MODE

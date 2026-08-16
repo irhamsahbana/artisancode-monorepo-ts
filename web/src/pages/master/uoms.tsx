@@ -23,8 +23,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { useClientTable } from "@/hooks/use-client-table";
-import { useCreateUom, useUoms, useUpdateUom } from "@/hooks/use-uoms";
+import { useServerTable } from "@/hooks/use-server-table";
+import { useCreateUom, useUpdateUom } from "@/hooks/use-uoms";
+import { queryKeys } from "@/lib/query-keys";
+import { uomService } from "@/services/uom";
 
 import type {
   UnitOfMeasurement,
@@ -56,7 +58,6 @@ const categoryFilters: FilterOption[] = [
 ];
 
 export function Uoms() {
-  const { data, isLoading } = useUoms();
   const { mutate: create } = useCreateUom();
   const { mutate: update } = useUpdateUom();
 
@@ -66,10 +67,10 @@ export function Uoms() {
   const [symbol, setSymbol] = useState("");
   const [category, setCategory] = useState<UnitOfMeasurementCategory | "">("");
 
-  const items = data?.items ?? [];
-  const table = useClientTable(items, {
-    searchFn: (i, q) => i.name.toLowerCase().includes(q.toLowerCase()),
-    filterFn: (i, f) => i.category === f.category,
+  const table = useServerTable<UnitOfMeasurement>({
+    queryKey: (params) => queryKeys.uoms.list(params),
+    fetcher: (params) => uomService.list(params),
+    pageSize: 10,
   });
 
   function openAdd() {
@@ -171,10 +172,10 @@ export function Uoms() {
         }
       />
       <DataTable
-        data={table.data}
-        loadedData={table.loadedData}
+        data={table.items}
+        loadedData={table.loadedItems}
         columns={columns}
-        loading={isLoading}
+        loading={table.loading}
         searchPlaceholder="Cari satuan..."
         query={table.query}
         onQueryChange={table.onQueryChange}

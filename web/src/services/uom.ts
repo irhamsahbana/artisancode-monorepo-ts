@@ -9,23 +9,42 @@ import type {
   UpdateUnitOfMeasurementReq,
 } from "@artisancode/api-types";
 
-function mockList(q?: string): UnitOfMeasurementList {
+export interface UomListParams {
+  page?: number;
+  per_page?: number;
+  q?: string;
+  category?: string;
+  is_active?: boolean;
+}
+
+function mockList(params?: UomListParams): UnitOfMeasurementList {
+  const { q, category, page = 1, per_page = 100 } = params ?? {};
   let items = mockUnitsOfMeasurement;
   if (q) {
     const query = q.toLowerCase();
     items = items.filter((u) => u.name.toLowerCase().includes(query));
   }
+  if (category) items = items.filter((u) => u.category === category);
+  const start = (page - 1) * per_page;
   return {
-    items,
-    pagination: { total: items.length, page: 1, per_page: 100, last_page: 1 },
+    items: items.slice(start, start + per_page),
+    pagination: {
+      total: items.length,
+      page,
+      per_page,
+      last_page: Math.max(1, Math.ceil(items.length / per_page)),
+    },
   };
 }
 
 export const uomService = {
-  list: (q?: string) =>
+  list: (params?: UomListParams) =>
     DEMO_MODE
-      ? Promise.resolve(mockList(q))
-      : api.get<UnitOfMeasurementList>("/uoms", { q, per_page: 100 }),
+      ? Promise.resolve(mockList(params))
+      : api.get<UnitOfMeasurementList>(
+          "/uoms",
+          params as Record<string, string | number | boolean | undefined>,
+        ),
 
   create: (body: CreateUnitOfMeasurementReq) =>
     DEMO_MODE ? mockCreate(body) : api.post<UnitOfMeasurement>("/uoms", body),

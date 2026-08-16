@@ -8,8 +8,10 @@ import { DataTable } from "@/components/shared/data-table";
 import { PageHeader } from "@/components/shared/page-header";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { useClientTable } from "@/hooks/use-client-table";
-import { useDeleteRole, useRoles } from "@/hooks/use-roles";
+import { useDeleteRole } from "@/hooks/use-roles";
+import { useServerTable } from "@/hooks/use-server-table";
+import { queryKeys } from "@/lib/query-keys";
+import { roleService } from "@/services/role";
 
 import type { Role } from "@artisancode/api-types";
 
@@ -51,12 +53,12 @@ const columns: Column<Role>[] = [
 
 export function RoleList() {
   const navigate = useNavigate();
-  const { data, isLoading } = useRoles();
   const { mutate: deleteRole } = useDeleteRole();
 
-  const roles = data?.items ?? [];
-  const table = useClientTable(roles, {
-    searchFn: (r, q) => r.name.toLowerCase().includes(q.toLowerCase()),
+  const table = useServerTable<Role>({
+    queryKey: (params) => queryKeys.roles.list(params),
+    fetcher: (params) => roleService.list(params),
+    pageSize: 10,
   });
 
   function handleDelete(role: Role) {
@@ -80,10 +82,10 @@ export function RoleList() {
         }
       />
       <DataTable
-        data={table.data}
-        loadedData={table.loadedData}
+        data={table.items}
+        loadedData={table.loadedItems}
         columns={columns}
-        loading={isLoading}
+        loading={table.loading}
         searchPlaceholder="Cari role..."
         query={table.query}
         onQueryChange={table.onQueryChange}

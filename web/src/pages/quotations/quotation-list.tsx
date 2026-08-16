@@ -22,17 +22,18 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { useClientTable } from "@/hooks/use-client-table";
 import { useProjects } from "@/hooks/use-projects";
 import {
-  useQuotations,
   useUpdateQuotationStatus,
   useAssignQuotation,
 } from "@/hooks/use-quotations";
+import { useServerTable } from "@/hooks/use-server-table";
+import { queryKeys } from "@/lib/query-keys";
 import {
   projectStatusLabel,
   projectStatusVariant,
 } from "@/pages/projects/project-status";
+import { quotationService } from "@/services/quotation";
 
 import {
   quotationStatusLabel,
@@ -55,7 +56,6 @@ const filters: FilterOption[] = [
 
 export function QuotationList() {
   const navigate = useNavigate();
-  const { data } = useQuotations();
   const { data: projectsData } = useProjects();
   const { mutateAsync: updateStatus, isPending } = useUpdateQuotationStatus();
   const { mutateAsync: assignProject, isPending: isAssigning } =
@@ -69,25 +69,18 @@ export function QuotationList() {
   const initialStatus = searchParams.get("status");
   const initialFilters = initialStatus ? { status: initialStatus } : undefined;
 
-  const table = useClientTable(data?.items ?? [], {
-    searchFn: (q, search) => {
-      const s = search.toLowerCase();
-      return (
-        q.requesterName.toLowerCase().includes(s) ||
-        (q.companyName ?? "").toLowerCase().includes(s) ||
-        (q.products ?? []).some((p) => p.productName.toLowerCase().includes(s))
-      );
-    },
-    filterFn: (q, f) =>
-      Object.entries(f).every(
-        ([key, val]) => q[key as keyof QuotationRequest] === val,
-      ),
+  const table = useServerTable<QuotationRequest>({
+    queryKey: (params) => queryKeys.quotations.list(params),
+    fetcher: (params) => quotationService.list(params),
+    pageSize: 10,
     initialFilters,
   });
+
   const selectedProducts = selected?.products ?? [];
 
+  // Calculate assignable projects based on currently loaded page items
   const assignedProjectIds = new Set(
-    (data?.items ?? [])
+    (table.items ?? [])
       .filter((q) => q.projectId && q.id !== assigningQuotation?.id)
       .map((q) => q.projectId),
   );
@@ -269,8 +262,8 @@ export function QuotationList() {
         }
       />
       <DataTable
-        data={table.data}
-        loadedData={table.loadedData}
+        data={table.items}
+        loadedData={table.loadedItems}
         columns={columns}
         searchPlaceholder="Cari nama / perusahaan / produk..."
         query={table.query}
@@ -284,6 +277,7 @@ export function QuotationList() {
         onPageChange={table.onPageChange}
         hasMore={table.hasMore}
         onLoadMore={table.onLoadMore}
+        loading={table.loading}
         actions={(q) => (
           <div className="flex items-center gap-1.5">
             <Button variant="ghost" size="icon" onClick={() => setSelected(q)}>

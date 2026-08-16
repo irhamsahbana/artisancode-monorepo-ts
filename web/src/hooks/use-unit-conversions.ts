@@ -2,13 +2,14 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 import { queryKeys } from "@/lib/query-keys";
 import { unitConversionService } from "@/services/unit-conversion";
+import type { UnitConversionListParams } from "@/services/unit-conversion";
 
 import type { UpdateUnitConversionReq } from "@artisancode/api-types";
 
-export function useUnitConversions() {
+export function useUnitConversions(params?: UnitConversionListParams) {
   return useQuery({
-    queryKey: queryKeys.unitConversions.list(),
-    queryFn: () => unitConversionService.list(),
+    queryKey: queryKeys.unitConversions.list(params as Record<string, unknown>),
+    queryFn: () => unitConversionService.list(params),
   });
 }
 

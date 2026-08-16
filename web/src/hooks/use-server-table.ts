@@ -5,11 +5,11 @@ import { useDebouncedValue } from "@/hooks/use-debounced-value";
 
 import type { PaginationMetadata } from "@artisancode/api-types";
 
-interface ServerTableParams {
+export interface ServerTableParams {
   page: number;
   per_page: number;
   q?: string;
-  [key: string]: unknown;
+  [key: string]: string | number | boolean | undefined;
 }
 
 interface UseServerTableOptions<T> {

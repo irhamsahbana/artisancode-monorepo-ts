@@ -15,6 +15,8 @@ export interface ProjectQuery {
   q?: string;
   status?: string;
   customerId?: string;
+  page?: number;
+  per_page?: number;
 }
 
 function mockList(params?: ProjectQuery): ProjectList {
@@ -24,15 +26,27 @@ function mockList(params?: ProjectQuery): ProjectList {
     items = items.filter(
       (p) =>
         p.name.toLowerCase().includes(q) ||
+        p.projectNumber.toLowerCase().includes(q) ||
         (p.location ?? "").toLowerCase().includes(q),
     );
   }
   if (params?.status) items = items.filter((p) => p.status === params.status);
   if (params?.customerId)
     items = items.filter((p) => p.customerId === params.customerId);
+
+  const page = params?.page ?? 1;
+  const perPage = params?.per_page ?? 100;
+  const start = (page - 1) * perPage;
+  const sliced = items.slice(start, start + perPage);
+
   return {
-    items,
-    pagination: { total: items.length, page: 1, per_page: 100, last_page: 1 },
+    items: sliced,
+    pagination: {
+      total: items.length,
+      page,
+      per_page: perPage,
+      last_page: Math.max(1, Math.ceil(items.length / perPage)),
+    },
   };
 }
 
