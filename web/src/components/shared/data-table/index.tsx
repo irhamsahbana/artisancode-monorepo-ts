@@ -1,5 +1,3 @@
-import { useState, useMemo } from "react";
-
 import { useIsMobile } from "@/hooks/use-mobile";
 
 import { DataTableDesktopView } from "./desktop-view";
@@ -12,66 +10,46 @@ export type { Column, FilterOption } from "./types";
 
 interface Props<T> {
   data: T[];
+  loadedData?: T[];
   columns: Column<T>[];
   searchPlaceholder?: string;
-  searchFn?: (row: T, query: string) => boolean;
+  query?: string;
+  onQueryChange?: (value: string) => void;
   filters?: FilterOption[];
-  filterFn?: (row: T, filters: Record<string, string>) => boolean;
-  initialFilters?: Record<string, string>;
-  pageSize?: number;
+  activeFilters?: Record<string, string>;
+  onFilterChange?: (key: string, value: string) => void;
+  page: number;
+  totalPages: number;
+  totalCount: number;
+  onPageChange: (page: number) => void;
+  hasMore?: boolean;
+  onLoadMore?: () => void;
   actions?: (row: T) => React.ReactNode;
   loading?: boolean;
 }
 
+// Server-driven: `data`/`loadedData` are already the fetched page(s) — no
+// client-side search/filter/slice happens here. Pair with useServerTable.
 export function DataTable<T>({
   data,
+  loadedData,
   columns,
   searchPlaceholder = "Cari...",
-  searchFn,
+  query = "",
+  onQueryChange,
   filters,
-  filterFn,
-  initialFilters,
-  pageSize = 10,
+  activeFilters = {},
+  onFilterChange,
+  page,
+  totalPages,
+  totalCount,
+  onPageChange,
+  hasMore = false,
+  onLoadMore,
   actions,
   loading,
 }: Props<T>) {
   const isMobile = useIsMobile();
-  const [query, setQuery] = useState("");
-  const [activeFilters, setActiveFilters] = useState<Record<string, string>>(
-    initialFilters ?? {},
-  );
-  const [page, setPage] = useState(1);
-
-  const filtered = useMemo(() => {
-    let rows = data;
-    if (query && searchFn) rows = rows.filter((r) => searchFn(r, query));
-    if (Object.keys(activeFilters).length && filterFn)
-      rows = rows.filter((r) => filterFn(r, activeFilters));
-    return rows;
-  }, [data, query, activeFilters, searchFn, filterFn]);
-
-  const totalPages = Math.max(1, Math.ceil(filtered.length / pageSize));
-  const pageData = filtered.slice((page - 1) * pageSize, page * pageSize);
-  // ponytail: mobile reuses the same `page` state as a cumulative "how many loaded" counter
-  const loadedData = filtered.slice(0, page * pageSize);
-  const hasMore = loadedData.length < filtered.length;
-
-  function handleQueryChange(value: string) {
-    setQuery(value);
-    setPage(1);
-  }
-
-  function handleFilterChange(key: string, value: string) {
-    setPage(1);
-    setActiveFilters((prev) => {
-      if (value === "all") {
-        return Object.fromEntries(
-          Object.entries(prev).filter(([k]) => k !== key),
-        );
-      }
-      return { ...prev, [key]: value };
-    });
-  }
 
   const allColumns = actions
     ? [...columns, { key: "__actions", label: "", render: actions }]
@@ -81,31 +59,31 @@ export function DataTable<T>({
     <div className="space-y-3">
       <DataTableToolbar
         searchPlaceholder={searchPlaceholder}
-        showSearch={Boolean(searchFn)}
+        showSearch={Boolean(onQueryChange)}
         query={query}
-        onQueryChange={handleQueryChange}
+        onQueryChange={onQueryChange}
         filters={filters}
         activeFilters={activeFilters}
-        onFilterChange={handleFilterChange}
+        onFilterChange={onFilterChange}
       />
 
       {isMobile ? (
         <DataTableMobileView
           columns={allColumns}
-          rows={loadedData}
+          rows={loadedData ?? data}
           loading={loading}
           hasMore={hasMore}
-          onLoadMore={() => setPage(page + 1)}
+          onLoadMore={onLoadMore}
         />
       ) : (
         <DataTableDesktopView
           columns={allColumns}
-          rows={pageData}
+          rows={data}
           loading={loading}
           page={page}
           totalPages={totalPages}
-          totalCount={filtered.length}
-          onPageChange={setPage}
+          totalCount={totalCount}
+          onPageChange={onPageChange}
         />
       )}
     </div>

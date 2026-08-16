@@ -7,6 +7,7 @@ import { DataTable } from "@/components/shared/data-table";
 import { PageHeader } from "@/components/shared/page-header";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { useClientTable } from "@/hooks/use-client-table";
 import { useContactSearch } from "@/hooks/use-contacts";
 import { useCustomers } from "@/hooks/use-customers";
 import { useProjects } from "@/hooks/use-projects";
@@ -63,6 +64,15 @@ export function ProjectList() {
     }
     return map;
   }, [quotationsData]);
+
+  const table = useClientTable(data?.items ?? [], {
+    searchFn: (p, q) =>
+      p.name.toLowerCase().includes(q.toLowerCase()) ||
+      p.projectNumber.toLowerCase().includes(q.toLowerCase()) ||
+      (p.location ?? "").toLowerCase().includes(q.toLowerCase()),
+    filterFn: (p, f) =>
+      Object.entries(f).every(([key, val]) => p[key as keyof Project] === val),
+  });
 
   const columns: Column<Project>[] = [
     {
@@ -139,20 +149,21 @@ export function ProjectList() {
         }
       />
       <DataTable
-        data={data?.items ?? []}
+        data={table.data}
+        loadedData={table.loadedData}
         columns={columns}
         searchPlaceholder="Cari nomor proyek / nama / lokasi..."
-        searchFn={(p, q) =>
-          p.name.toLowerCase().includes(q.toLowerCase()) ||
-          p.projectNumber.toLowerCase().includes(q.toLowerCase()) ||
-          (p.location ?? "").toLowerCase().includes(q.toLowerCase())
-        }
+        query={table.query}
+        onQueryChange={table.onQueryChange}
         filters={filters}
-        filterFn={(p, f) =>
-          Object.entries(f).every(
-            ([key, val]) => p[key as keyof Project] === val,
-          )
-        }
+        activeFilters={table.activeFilters}
+        onFilterChange={table.onFilterChange}
+        page={table.page}
+        totalPages={table.totalPages}
+        totalCount={table.totalCount}
+        onPageChange={table.onPageChange}
+        hasMore={table.hasMore}
+        onLoadMore={table.onLoadMore}
         actions={(p) => (
           <div className="flex items-center gap-1">
             <Button

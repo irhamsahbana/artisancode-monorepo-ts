@@ -1,5 +1,5 @@
 import { Plus, Eye, Pencil, Users, Building2 } from "lucide-react";
-import { useMemo, useState, type ReactNode } from "react";
+import { useState, type ReactNode } from "react";
 import { Link, useNavigate } from "react-router";
 
 import type { Column, FilterOption } from "@/components/shared/data-table";
@@ -8,10 +8,12 @@ import { PageHeader } from "@/components/shared/page-header";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { useCategoryList } from "@/hooks/use-categories";
-import { useContactSearch } from "@/hooks/use-contacts";
-import { useCustomers } from "@/hooks/use-customers";
+import { useServerTable } from "@/hooks/use-server-table";
+import { queryKeys } from "@/lib/query-keys";
+import { contactService } from "@/services/contact";
+import { customerService } from "@/services/customer";
 
-import type { ContactSearchResult, Customer } from "@artisancode/api-types";
+import type { ContactPersonGroup, Customer } from "@artisancode/api-types";
 
 const statusLabel: Record<Customer["status"], string> = {
   active: "Aktif",
@@ -142,16 +144,19 @@ function ViewToggle({
 
 function CompanyView() {
   const navigate = useNavigate();
-  const { data } = useCustomers({ per_page: 100 });
   const { data: segmentationsData } = useCategoryList("segmentation");
-
   const segmentations = segmentationsData?.items ?? [];
-  const customers = data?.items ?? [];
+
+  const table = useServerTable<Customer>({
+    queryKey: (params) => queryKeys.customers.list(params),
+    fetcher: (params) => customerService.list(params),
+    pageSize: 10,
+  });
 
   const allFilters: FilterOption[] = [
     ...filters,
     {
-      key: "segmentationId",
+      key: "segmentation_id",
       label: "Segmentasi",
       options: segmentations.map((s) => ({ label: s.name, value: s.id })),
     },
@@ -159,16 +164,22 @@ function CompanyView() {
 
   return (
     <DataTable
-      data={customers}
+      data={table.items}
+      loadedData={table.loadedItems}
       columns={columns}
       searchPlaceholder="Cari nama pelanggan..."
-      searchFn={(c, q) => c.name.toLowerCase().includes(q.toLowerCase())}
+      query={table.query}
+      onQueryChange={table.onQueryChange}
       filters={allFilters}
-      filterFn={(c, f) =>
-        Object.entries(f).every(
-          ([key, val]) => c[key as keyof Customer] === val,
-        )
-      }
+      activeFilters={table.activeFilters}
+      onFilterChange={table.onFilterChange}
+      page={table.page}
+      totalPages={table.totalPages}
+      totalCount={table.totalCount}
+      onPageChange={table.onPageChange}
+      hasMore={table.hasMore}
+      onLoadMore={table.onLoadMore}
+      loading={table.loading}
       actions={(c) => (
         <div className="flex items-center gap-1">
           <Button
@@ -191,45 +202,19 @@ function CompanyView() {
   );
 }
 
-// Same person can appear as a separate Contact row per company ("pinjam
-// perusahaan") — group by name so the list shows one row per person with
-// every related company listed, instead of one row per (contact, customer).
-interface PersonGroup {
-  name: string;
-  entries: ContactSearchResult[];
-}
-
-function groupByPerson(results: ContactSearchResult[]): PersonGroup[] {
-  const groups = new Map<string, PersonGroup>();
-  for (const r of results) {
-    const key = r.contact.name.trim().toLowerCase();
-    const group = groups.get(key);
-    if (group) {
-      group.entries.push(r);
-    } else {
-      groups.set(key, { name: r.contact.name, entries: [r] });
-    }
-  }
-  return Array.from(groups.values());
-}
-
-// Tab Key Person: Contact digabung per orang, satu baris per nama dengan
-// semua perusahaan terkaitnya (bisa 2+ jika orang yang sama ada di beberapa
-// perusahaan).
+// Tab Key Person: satu baris per orang, semua perusahaan terkaitnya
+// (bisa 2+ jika orang yang sama ada di beberapa perusahaan) — grouping dan
+// pagination dilakukan di server (lihat contact.repo/search.ts).
 function PersonView() {
   const navigate = useNavigate();
-  const { data: allContacts } = useContactSearch("");
-  const { data: customersData } = useCustomers({ per_page: 100 });
 
-  const customerName = useMemo(() => {
-    const map = new Map<string, string>();
-    for (const c of customersData?.items ?? []) map.set(c.id, c.name);
-    return map;
-  }, [customersData]);
+  const table = useServerTable<ContactPersonGroup>({
+    queryKey: (params) => queryKeys.contacts.searchPersons(params),
+    fetcher: (params) => contactService.searchPersons(params),
+    pageSize: 10,
+  });
 
-  const groups = useMemo(() => groupByPerson(allContacts ?? []), [allContacts]);
-
-  const columns: Column<PersonGroup>[] = [
+  const columns: Column<ContactPersonGroup>[] = [
     {
       key: "contactName",
       label: "Nama",
@@ -257,7 +242,7 @@ function PersonView() {
               className="flex items-center gap-1 text-sm hover:underline"
             >
               <Building2 className="h-3.5 w-3.5 text-muted-foreground" />
-              {customerName.get(r.customer.id) ?? "-"}
+              {r.customer.name}
             </Link>
           ))}
           {g.entries.length > 1 && (
@@ -292,32 +277,29 @@ function PersonView() {
   ];
 
   return (
-    <div>
-      <DataTable
-        data={groups}
-        columns={columns}
-        searchPlaceholder="Cari nama key person atau perusahaan..."
-        searchFn={(g, q) => {
-          const query = q.toLowerCase();
-          return (
-            g.name.toLowerCase().includes(query) ||
-            g.entries.some(
-              (r) =>
-                (r.contact.position ?? "").toLowerCase().includes(query) ||
-                r.customer.name.toLowerCase().includes(query),
-            )
-          );
-        }}
-        actions={(g) => (
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => navigate(`/customers/${g.entries[0]?.customer.id}`)}
-          >
-            <Building2 className="h-4 w-4" />
-          </Button>
-        )}
-      />
-    </div>
+    <DataTable
+      data={table.items}
+      loadedData={table.loadedItems}
+      columns={columns}
+      searchPlaceholder="Cari nama key person atau perusahaan..."
+      query={table.query}
+      onQueryChange={table.onQueryChange}
+      page={table.page}
+      totalPages={table.totalPages}
+      totalCount={table.totalCount}
+      onPageChange={table.onPageChange}
+      hasMore={table.hasMore}
+      onLoadMore={table.onLoadMore}
+      loading={table.loading}
+      actions={(g) => (
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={() => navigate(`/customers/${g.entries[0]?.customer.id}`)}
+        >
+          <Building2 className="h-4 w-4" />
+        </Button>
+      )}
+    />
   );
 }

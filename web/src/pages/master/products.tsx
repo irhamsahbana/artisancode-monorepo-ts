@@ -16,6 +16,7 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { useClientTable } from "@/hooks/use-client-table";
 import {
   useCreateProduct,
   useProducts,
@@ -35,6 +36,9 @@ export function Products() {
   const [unit, setUnit] = useState("");
 
   const items = data?.items ?? [];
+  const table = useClientTable(items, {
+    searchFn: (i, q) => i.name.toLowerCase().includes(q.toLowerCase()),
+  });
 
   function openAdd() {
     setEditing(null);
@@ -123,11 +127,19 @@ export function Products() {
         }
       />
       <DataTable
-        data={items}
+        data={table.data}
+        loadedData={table.loadedData}
         columns={columns}
         loading={isLoading}
         searchPlaceholder="Cari produk..."
-        searchFn={(i, q) => i.name.toLowerCase().includes(q.toLowerCase())}
+        query={table.query}
+        onQueryChange={table.onQueryChange}
+        page={table.page}
+        totalPages={table.totalPages}
+        totalCount={table.totalCount}
+        onPageChange={table.onPageChange}
+        hasMore={table.hasMore}
+        onLoadMore={table.onLoadMore}
         actions={(item) => (
           <Button variant="ghost" size="icon" onClick={() => openEdit(item)}>
             <Pencil className="h-4 w-4" />

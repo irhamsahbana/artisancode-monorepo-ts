@@ -8,6 +8,7 @@ import { DataTable } from "@/components/shared/data-table";
 import { PageHeader } from "@/components/shared/page-header";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { useClientTable } from "@/hooks/use-client-table";
 import { useDeleteRole, useRoles } from "@/hooks/use-roles";
 
 import type { Role } from "@artisancode/api-types";
@@ -54,6 +55,9 @@ export function RoleList() {
   const { mutate: deleteRole } = useDeleteRole();
 
   const roles = data?.items ?? [];
+  const table = useClientTable(roles, {
+    searchFn: (r, q) => r.name.toLowerCase().includes(q.toLowerCase()),
+  });
 
   function handleDelete(role: Role) {
     if (!confirm(`Hapus role "${role.name}"?`)) return;
@@ -76,11 +80,19 @@ export function RoleList() {
         }
       />
       <DataTable
-        data={roles}
+        data={table.data}
+        loadedData={table.loadedData}
         columns={columns}
         loading={isLoading}
         searchPlaceholder="Cari role..."
-        searchFn={(r, q) => r.name.toLowerCase().includes(q.toLowerCase())}
+        query={table.query}
+        onQueryChange={table.onQueryChange}
+        page={table.page}
+        totalPages={table.totalPages}
+        totalCount={table.totalCount}
+        onPageChange={table.onPageChange}
+        hasMore={table.hasMore}
+        onLoadMore={table.onLoadMore}
         actions={(role) => (
           <div className="flex items-center gap-1">
             <Button

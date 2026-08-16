@@ -23,6 +23,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { useClientTable } from "@/hooks/use-client-table";
 import { useCreateUom, useUoms, useUpdateUom } from "@/hooks/use-uoms";
 
 import type {
@@ -66,6 +67,10 @@ export function Uoms() {
   const [category, setCategory] = useState<UnitOfMeasurementCategory | "">("");
 
   const items = data?.items ?? [];
+  const table = useClientTable(items, {
+    searchFn: (i, q) => i.name.toLowerCase().includes(q.toLowerCase()),
+    filterFn: (i, f) => i.category === f.category,
+  });
 
   function openAdd() {
     setEditing(null);
@@ -166,13 +171,22 @@ export function Uoms() {
         }
       />
       <DataTable
-        data={items}
+        data={table.data}
+        loadedData={table.loadedData}
         columns={columns}
         loading={isLoading}
         searchPlaceholder="Cari satuan..."
-        searchFn={(i, q) => i.name.toLowerCase().includes(q.toLowerCase())}
+        query={table.query}
+        onQueryChange={table.onQueryChange}
         filters={categoryFilters}
-        filterFn={(i, f) => i.category === f.category}
+        activeFilters={table.activeFilters}
+        onFilterChange={table.onFilterChange}
+        page={table.page}
+        totalPages={table.totalPages}
+        totalCount={table.totalCount}
+        onPageChange={table.onPageChange}
+        hasMore={table.hasMore}
+        onLoadMore={table.onLoadMore}
         actions={(item) => (
           <Button variant="ghost" size="icon" onClick={() => openEdit(item)}>
             <Pencil className="h-4 w-4" />

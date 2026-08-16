@@ -5,6 +5,8 @@ import { DEMO_MODE } from "@/lib/demo-mode";
 
 import type {
   Contact,
+  ContactPersonGroup,
+  ContactPersonGroupList,
   ContactSearchResult,
   CreateContactReq,
   UpdateContactReq,
@@ -58,6 +60,44 @@ function mockSearch(q: string): ContactSearchResult[] {
   return results;
 }
 
+export interface SearchContactPersonsQuery {
+  q?: string;
+  page?: number;
+  per_page?: number;
+}
+
+// Mirrors api/src/adapter/secondary/repository/contact/contact.repo/search.ts's
+// searchContactPersons — same grouping so demo mode matches real API shape.
+function mockSearchPersons(
+  params: SearchContactPersonsQuery,
+): ContactPersonGroupList {
+  const results = mockSearch(params.q ?? "");
+  const groups = new Map<string, ContactPersonGroup>();
+  for (const r of results) {
+    const key = r.contact.name.trim().toLowerCase();
+    const group = groups.get(key);
+    if (group) group.entries.push(r);
+    else groups.set(key, { name: r.contact.name, entries: [r] });
+  }
+  const sorted = Array.from(groups.values()).sort((a, b) =>
+    a.name.localeCompare(b.name),
+  );
+
+  const page = params.page ?? 1;
+  const perPage = params.per_page ?? 10;
+  const start = (page - 1) * perPage;
+  const total = sorted.length;
+  return {
+    items: sorted.slice(start, start + perPage),
+    pagination: {
+      total,
+      page,
+      per_page: perPage,
+      last_page: Math.max(1, Math.ceil(total / perPage)),
+    },
+  };
+}
+
 export const contactService = {
   list: (customerId: string) =>
     DEMO_MODE
@@ -87,6 +127,14 @@ export const contactService = {
     DEMO_MODE
       ? Promise.resolve(mockSearch(q))
       : api.get<ContactSearchResult[]>("/contacts/search", { q }),
+
+  searchPersons: (params: SearchContactPersonsQuery) =>
+    DEMO_MODE
+      ? Promise.resolve(mockSearchPersons(params))
+      : api.get<ContactPersonGroupList>(
+          "/contacts/persons",
+          params as Record<string, string>,
+        ),
 };
 
 function mockCreate(body: CreateContactReq): Promise<Contact> {

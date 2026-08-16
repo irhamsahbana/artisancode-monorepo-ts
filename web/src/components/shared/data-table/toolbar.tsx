@@ -13,10 +13,10 @@ interface Props {
   searchPlaceholder: string;
   showSearch: boolean;
   query: string;
-  onQueryChange: (value: string) => void;
+  onQueryChange?: (value: string) => void;
   filters?: FilterOption[];
   activeFilters: Record<string, string>;
-  onFilterChange: (key: string, value: string) => void;
+  onFilterChange?: (key: string, value: string) => void;
 }
 
 export function DataTableToolbar({
@@ -36,7 +36,7 @@ export function DataTableToolbar({
         <Input
           placeholder={searchPlaceholder}
           value={query}
-          onChange={(e) => onQueryChange(e.target.value)}
+          onChange={(e) => onQueryChange?.(e.target.value)}
           className="h-9 w-64"
         />
       )}
@@ -44,7 +44,7 @@ export function DataTableToolbar({
         <Select
           key={f.key}
           value={activeFilters[f.key] ?? "all"}
-          onValueChange={(v) => onFilterChange(f.key, v)}
+          onValueChange={(v) => onFilterChange?.(f.key, v)}
         >
           <SelectTrigger className="h-9 w-44">
             <SelectValue placeholder={f.label} />

@@ -10,6 +10,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { useBroadcasts, useDeleteBroadcast } from "@/hooks/use-broadcasts";
 import { useCategoryList } from "@/hooks/use-categories";
+import { useClientTable } from "@/hooks/use-client-table";
 import { useContactSearch } from "@/hooks/use-contacts";
 import { filterAudience } from "@/services/broadcast";
 
@@ -34,6 +35,7 @@ export function BroadcastList() {
   const { data: allContacts } = useContactSearch("");
   const { data: segmentationsData } = useCategoryList("segmentation");
   const { mutate: deleteBroadcast } = useDeleteBroadcast();
+  const table = useClientTable(data?.items ?? []);
 
   const segmentationName = useMemo(() => {
     const map = new Map<string, string>();
@@ -193,7 +195,17 @@ export function BroadcastList() {
         }
       />
 
-      <DataTable data={data?.items ?? []} columns={columns} />
+      <DataTable
+        data={table.data}
+        loadedData={table.loadedData}
+        columns={columns}
+        page={table.page}
+        totalPages={table.totalPages}
+        totalCount={table.totalCount}
+        onPageChange={table.onPageChange}
+        hasMore={table.hasMore}
+        onLoadMore={table.onLoadMore}
+      />
     </div>
   );
 }

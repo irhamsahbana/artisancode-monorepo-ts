@@ -24,6 +24,7 @@ import {
   useBroadcastLogs,
 } from "@/hooks/use-broadcasts";
 import { useCategoryList } from "@/hooks/use-categories";
+import { useClientTable } from "@/hooks/use-client-table";
 import { useContactSearch } from "@/hooks/use-contacts";
 
 import { occasionLabel, statusLabel } from "./broadcast-status";
@@ -103,6 +104,12 @@ export function BroadcastDetail() {
     form.segmentationId,
     form.customerStatus,
   ]);
+
+  const contactTable = useClientTable(matchingContacts, {
+    searchFn: (r, q) =>
+      r.contact.name.toLowerCase().includes(q.toLowerCase()) ||
+      r.customer.name.toLowerCase().includes(q.toLowerCase()),
+  });
 
   function handleSelectAll(checked: boolean) {
     const next = new Set(selectedContactIds);
@@ -426,13 +433,18 @@ export function BroadcastDetail() {
               </div>
 
               <DataTable
-                data={matchingContacts}
+                data={contactTable.data}
+                loadedData={contactTable.loadedData}
                 columns={contactColumns}
                 searchPlaceholder="Cari nama key person / perusahaan..."
-                searchFn={(r, q) =>
-                  r.contact.name.toLowerCase().includes(q.toLowerCase()) ||
-                  r.customer.name.toLowerCase().includes(q.toLowerCase())
-                }
+                query={contactTable.query}
+                onQueryChange={contactTable.onQueryChange}
+                page={contactTable.page}
+                totalPages={contactTable.totalPages}
+                totalCount={contactTable.totalCount}
+                onPageChange={contactTable.onPageChange}
+                hasMore={contactTable.hasMore}
+                onLoadMore={contactTable.onLoadMore}
               />
             </CardContent>
           </Card>

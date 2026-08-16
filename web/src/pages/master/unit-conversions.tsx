@@ -23,6 +23,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { useClientTable } from "@/hooks/use-client-table";
 import {
   useCreateUnitConversion,
   useUnitConversions,
@@ -73,6 +74,7 @@ export function UnitConversions() {
   );
 
   const items = useMemo(() => data?.items ?? [], [data]);
+  const table = useClientTable(items);
 
   const [calcQuantity, setCalcQuantity] = useState("1");
   const [calcFromUnitId, setCalcFromUnitId] = useState("");
@@ -180,9 +182,16 @@ export function UnitConversions() {
         }
       />
       <DataTable
-        data={items}
+        data={table.data}
+        loadedData={table.loadedData}
         columns={columns}
         loading={isLoading}
+        page={table.page}
+        totalPages={table.totalPages}
+        totalCount={table.totalCount}
+        onPageChange={table.onPageChange}
+        hasMore={table.hasMore}
+        onLoadMore={table.onLoadMore}
         actions={(item) => (
           <Button variant="ghost" size="icon" onClick={() => openEdit(item)}>
             <Pencil className="h-4 w-4" />

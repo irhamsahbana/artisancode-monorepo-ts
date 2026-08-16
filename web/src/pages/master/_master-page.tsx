@@ -21,6 +21,7 @@ import {
   useCreateCategory,
   useUpdateCategory,
 } from "@/hooks/use-categories";
+import { useClientTable } from "@/hooks/use-client-table";
 import type { CategoryItem } from "@/services/category";
 
 interface Props {
@@ -38,6 +39,9 @@ export function MasterPage({ title, group }: Props) {
   const [name, setName] = useState("");
 
   const items = data?.items ?? [];
+  const table = useClientTable(items, {
+    searchFn: (i, q) => i.name.toLowerCase().includes(q.toLowerCase()),
+  });
 
   function openAdd() {
     setEditing(null);
@@ -118,11 +122,19 @@ export function MasterPage({ title, group }: Props) {
         }
       />
       <DataTable
-        data={items}
+        data={table.data}
+        loadedData={table.loadedData}
         columns={columns}
         loading={isLoading}
         searchPlaceholder={`Cari ${title.toLowerCase()}...`}
-        searchFn={(i, q) => i.name.toLowerCase().includes(q.toLowerCase())}
+        query={table.query}
+        onQueryChange={table.onQueryChange}
+        page={table.page}
+        totalPages={table.totalPages}
+        totalCount={table.totalCount}
+        onPageChange={table.onPageChange}
+        hasMore={table.hasMore}
+        onLoadMore={table.onLoadMore}
         actions={(item) => (
           <Button variant="ghost" size="icon" onClick={() => openEdit(item)}>
             <Pencil className="h-4 w-4" />

@@ -10,7 +10,7 @@ interface Props<T> {
   rows: T[];
   loading?: boolean;
   hasMore: boolean;
-  onLoadMore: () => void;
+  onLoadMore?: () => void;
 }
 
 export function DataTableMobileView<T>({
@@ -55,7 +55,11 @@ export function DataTableMobileView<T>({
       )}
 
       {hasMore && (
-        <Button variant="outline" className="w-full" onClick={onLoadMore}>
+        <Button
+          variant="outline"
+          className="w-full"
+          onClick={() => onLoadMore?.()}
+        >
           Muat lebih banyak
         </Button>
       )}

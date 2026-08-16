@@ -20,6 +20,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { useClientTable } from "@/hooks/use-client-table";
 import { useContactSearch } from "@/hooks/use-contacts";
 
 // ponytail: Template is local state for demo purposes.
@@ -102,6 +103,8 @@ export function BirthdayList() {
 
     return items.sort((a, b) => a.daysUntil - b.daysUntil);
   }, [contactsData]);
+
+  const table = useClientTable(upcomingList);
 
   const columns: Column<UpcomingBirthday>[] = [
     {
@@ -229,7 +232,17 @@ export function BirthdayList() {
       <h2 className="mb-4 text-base font-semibold">
         Daftar Ulang Tahun Mendatang
       </h2>
-      <DataTable data={upcomingList} columns={columns} />
+      <DataTable
+        data={table.data}
+        loadedData={table.loadedData}
+        columns={columns}
+        page={table.page}
+        totalPages={table.totalPages}
+        totalCount={table.totalCount}
+        onPageChange={table.onPageChange}
+        hasMore={table.hasMore}
+        onLoadMore={table.onLoadMore}
+      />
 
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
         <DialogContent>

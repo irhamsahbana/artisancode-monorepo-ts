@@ -22,6 +22,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { useClientTable } from "@/hooks/use-client-table";
 import { useProjects } from "@/hooks/use-projects";
 import {
   useQuotations,
@@ -67,6 +68,22 @@ export function QuotationList() {
 
   const initialStatus = searchParams.get("status");
   const initialFilters = initialStatus ? { status: initialStatus } : undefined;
+
+  const table = useClientTable(data?.items ?? [], {
+    searchFn: (q, search) => {
+      const s = search.toLowerCase();
+      return (
+        q.requesterName.toLowerCase().includes(s) ||
+        (q.companyName ?? "").toLowerCase().includes(s) ||
+        (q.products ?? []).some((p) => p.productName.toLowerCase().includes(s))
+      );
+    },
+    filterFn: (q, f) =>
+      Object.entries(f).every(
+        ([key, val]) => q[key as keyof QuotationRequest] === val,
+      ),
+    initialFilters,
+  });
   const selectedProducts = selected?.products ?? [];
 
   const assignedProjectIds = new Set(
@@ -153,7 +170,7 @@ export function QuotationList() {
         if (!project)
           return <span className="text-sm text-muted-foreground">-</span>;
         return (
-          <div className="flex flex-col gap-1 max-w-[200px]">
+          <div className="flex flex-col gap-1 max-w-50">
             <span className="truncate font-medium">{project.name}</span>
             <Badge
               variant={projectStatusVariant[project.status]}
@@ -252,26 +269,21 @@ export function QuotationList() {
         }
       />
       <DataTable
-        data={data?.items ?? []}
+        data={table.data}
+        loadedData={table.loadedData}
         columns={columns}
         searchPlaceholder="Cari nama / perusahaan / produk..."
-        searchFn={(q, search) => {
-          const s = search.toLowerCase();
-          return (
-            q.requesterName.toLowerCase().includes(s) ||
-            (q.companyName ?? "").toLowerCase().includes(s) ||
-            (q.products ?? []).some((p) =>
-              p.productName.toLowerCase().includes(s),
-            )
-          );
-        }}
+        query={table.query}
+        onQueryChange={table.onQueryChange}
         filters={filters}
-        filterFn={(q, f) =>
-          Object.entries(f).every(
-            ([key, val]) => q[key as keyof QuotationRequest] === val,
-          )
-        }
-        initialFilters={initialFilters}
+        activeFilters={table.activeFilters}
+        onFilterChange={table.onFilterChange}
+        page={table.page}
+        totalPages={table.totalPages}
+        totalCount={table.totalCount}
+        onPageChange={table.onPageChange}
+        hasMore={table.hasMore}
+        onLoadMore={table.onLoadMore}
         actions={(q) => (
           <div className="flex items-center gap-1.5">
             <Button variant="ghost" size="icon" onClick={() => setSelected(q)}>
