@@ -1,4 +1,4 @@
-import { desc, eq, sql } from 'drizzle-orm'
+import { and, desc, eq, ilike, or, sql } from 'drizzle-orm'
 
 import { getExecutor } from '@/common/executor'
 import { IQuotationRepo } from '@/contracts/quotation.contract'
@@ -59,22 +59,41 @@ export function createQuotationRepo(): IQuotationRepo {
       return row ? toEntity(row) : null
     },
 
-    findList: async (page, perPage) => {
+    findList: async (req) => {
+      const { pagination = {}, q, status } = req
+      const { page = 1, per_page = 10 } = pagination
+
+      const conditions = []
+      if (q) {
+        const search = or(
+          ilike(quotations.requesterName, `%${q}%`),
+          ilike(quotations.companyName, `%${q}%`),
+          ilike(quotations.title, `%${q}%`),
+        )
+        if (search) conditions.push(search)
+      }
+      if (status) conditions.push(eq(quotations.status, status))
+      const where = conditions.length ? and(...conditions) : undefined
+
       const exec = getExecutor()
       const [items, countResult] = await Promise.all([
         exec
           .select()
           .from(quotations)
+          .where(where)
           .orderBy(desc(quotations.createdAt))
-          .limit(perPage)
-          .offset((page - 1) * perPage),
-        exec.select({ count: sql<number>`count(*)::int` }).from(quotations),
+          .limit(per_page)
+          .offset((page - 1) * per_page),
+        exec
+          .select({ count: sql<number>`count(*)::int` })
+          .from(quotations)
+          .where(where),
       ])
 
       const total = countResult[0]?.count ?? 0
       return {
         items: items.map(toEntity),
-        pagination: { total, page, per_page: perPage, last_page: Math.ceil(total / perPage) },
+        pagination: { total, page, per_page, last_page: Math.max(1, Math.ceil(total / per_page)) },
       }
     },
 

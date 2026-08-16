@@ -26,7 +26,7 @@ export function createQuotationUsecase(repo: IQuotationRepo): IQuotationUsecase 
       return item
     },
 
-    findList: (page, perPage) => deps.repo.findList(page, perPage),
+    findList: (req) => deps.repo.findList(req),
 
     updateStatus: async (req) => {
       const existing = await deps.repo.findById(req.id)

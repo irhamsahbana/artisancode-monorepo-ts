@@ -56,6 +56,11 @@ export interface ContactSearchResult {
 export interface SearchContactsReq {
   q?: string
   pagination?: PaginationQuery
+  // Server-side filters for contact search
+  gender?: string
+  religion?: string
+  segmentationId?: string
+  customerStatus?: string
 }
 
 // Contact search results grouped by person (name) so someone who appears at

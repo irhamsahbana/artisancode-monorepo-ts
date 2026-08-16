@@ -29,4 +29,8 @@ export const searchContactPersonsSchema = z.object({
   page: z.coerce.number().int().min(1).optional(),
   per_page: z.coerce.number().int().min(1).max(100).optional(),
   q: z.string().optional(),
+  gender: z.string().optional(),
+  religion: z.string().optional(),
+  segmentationId: z.uuid().optional(),
+  customerStatus: z.string().optional(),
 })

@@ -59,7 +59,15 @@ function toCustomerEntity(data: typeof customers.$inferSelect): CustomerEntity.C
   }
 }
 
-async function queryContacts(q?: string): Promise<ContactEntity.ContactSearchResult[]> {
+async function queryContacts(
+  q?: string,
+  filters?: {
+    gender?: string
+    religion?: string
+    segmentationId?: string
+    customerStatus?: string
+  },
+): Promise<ContactEntity.ContactSearchResult[]> {
   const conditions = [isNull(contacts.deletedAt), isNull(customers.deletedAt)]
 
   if (q) {
@@ -70,6 +78,22 @@ async function queryContacts(q?: string): Promise<ContactEntity.ContactSearchRes
       ilike(customers.name, pattern),
     )
     if (matchesQuery) conditions.push(matchesQuery)
+  }
+
+  // Apply customer-level filters
+  if (filters?.gender) {
+    conditions.push(eq(customers.gender, filters.gender as 'male' | 'female'))
+  }
+  if (filters?.religion) {
+    conditions.push(eq(customers.religion, filters.religion))
+  }
+  if (filters?.segmentationId) {
+    conditions.push(eq(customers.segmentationId, filters.segmentationId))
+  }
+  if (filters?.customerStatus) {
+    conditions.push(
+      eq(customers.status, filters.customerStatus as 'active' | 'inactive' | 'prospect'),
+    )
   }
 
   const rows = await getExecutor()
@@ -114,10 +138,10 @@ function groupByPerson(
 export async function searchContactPersons(
   req: ContactEntity.SearchContactsReq,
 ): Promise<ContactEntity.ContactPersonGroupList> {
-  const { q, pagination = {} } = req
+  const { q, pagination = {}, gender, religion, segmentationId, customerStatus } = req
   const { page = 1, per_page = 10 } = pagination
 
-  const results = await queryContacts(q)
+  const results = await queryContacts(q, { gender, religion, segmentationId, customerStatus })
   const groups = groupByPerson(results).sort((a, b) => a.name.localeCompare(b.name))
   const total = groups.length
   const offset = (page - 1) * per_page

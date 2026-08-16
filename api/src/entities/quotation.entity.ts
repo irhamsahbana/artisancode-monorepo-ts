@@ -1,4 +1,4 @@
-import { PaginationMetadata } from './pagination.entity'
+import { PaginationMetadata, PaginationQuery } from './pagination.entity'
 
 export type QuotationStatus = 'new' | 'in_review' | 'responded'
 
@@ -50,4 +50,10 @@ export interface AssignQuotationReq {
 export interface QuotationList {
   items: QuotationRequest[]
   pagination: PaginationMetadata
+}
+
+export interface GetQuotationListReq {
+  q?: string
+  status?: QuotationStatus
+  pagination?: PaginationQuery
 }

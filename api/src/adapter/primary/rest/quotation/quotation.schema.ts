@@ -33,4 +33,6 @@ export const assignQuotationSchema = z.object({
 export const getQuotationListSchema = z.object({
   page: z.coerce.number().int().min(1).optional(),
   per_page: z.coerce.number().int().min(1).max(100).optional(),
+  q: z.string().optional(),
+  status: z.enum(QuotationStatuses as [string, ...string[]]).optional(),
 })
