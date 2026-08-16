@@ -4,6 +4,7 @@ import { createContactHandler } from './create'
 import { deleteContactHandler } from './delete'
 import { findContactByIdHandler } from './find-by-id'
 import { findContactListHandler } from './find-list'
+import { searchContactsHandler } from './search'
 import { updateContactHandler } from './update'
 
 export function createContactHandlerDeps(usecase: IContactUsecase) {
@@ -11,6 +12,7 @@ export function createContactHandlerDeps(usecase: IContactUsecase) {
     create: createContactHandler(usecase),
     findById: findContactByIdHandler(usecase),
     findList: findContactListHandler(usecase),
+    search: searchContactsHandler(usecase),
     update: updateContactHandler(usecase),
     delete: deleteContactHandler(usecase),
   }

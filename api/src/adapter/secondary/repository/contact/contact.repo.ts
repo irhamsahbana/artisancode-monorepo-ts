@@ -6,6 +6,7 @@ import { createContact } from './contact.repo/create'
 import { deleteContact } from './contact.repo/delete'
 import { findContactById } from './contact.repo/find-by-id'
 import { findContactList } from './contact.repo/find-list'
+import { searchContacts } from './contact.repo/search'
 import { updateContact } from './contact.repo/update'
 
 export interface ContactRepoDeps {
@@ -35,6 +36,7 @@ export function createContactRepo(): IContactRepo {
     create: (req) => createContact(deps, req),
     findById: (id) => findContactById(deps, id),
     findList: (req) => findContactList(deps, req),
+    search: (q) => searchContacts(q),
     update: (req) => updateContact(deps, req),
     delete: (id) => deleteContact(id),
   }

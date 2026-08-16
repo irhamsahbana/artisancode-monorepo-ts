@@ -4,6 +4,7 @@ export interface IContactRepo {
   create(req: Entity.CreateContactReq): Promise<Entity.Contact>
   findById(id: string): Promise<Entity.Contact | null>
   findList(req: Entity.GetContactReq): Promise<Entity.ContactList>
+  search(q?: string): Promise<Entity.ContactSearchResult[]>
   update(req: Entity.UpdateContactReq): Promise<Entity.Contact | null>
   delete(id: string): Promise<void>
 }
@@ -12,6 +13,7 @@ export interface IContactUsecase {
   create(req: Entity.CreateContactReq): Promise<Entity.Contact>
   findById(id: string): Promise<Entity.Contact | null>
   findList(req: Entity.GetContactReq): Promise<Entity.ContactList>
+  search(q?: string): Promise<Entity.ContactSearchResult[]>
   update(req: Entity.UpdateContactReq): Promise<Entity.Contact | null>
   delete(id: string): Promise<void>
 }

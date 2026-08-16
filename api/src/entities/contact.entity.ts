@@ -1,3 +1,4 @@
+import { Customer } from './customer.entity'
 import { PaginationMetadata, PaginationQuery } from './pagination.entity'
 
 export interface Contact {
@@ -43,4 +44,11 @@ export interface GetContactReq {
 export interface ContactList {
   items: Contact[]
   pagination: PaginationMetadata
+}
+
+// One row per (contact, customer) — same person listed at multiple companies
+// yields multiple rows, matching web/src/services/contact.ts's mockSearch.
+export interface ContactSearchResult {
+  contact: Contact
+  customer: Customer
 }
