@@ -11,7 +11,3 @@ export interface DashboardMetrics {
   byArea: { areaId: string; name: string; count: number }[]
   byPotential: { potential: string; count: number }[]
 }
-
-export interface GetDashboardReq {
-  company_id: string
-}

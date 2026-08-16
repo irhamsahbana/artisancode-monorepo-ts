@@ -9,14 +9,11 @@ import { CategoryRepoDeps } from '../category.repo'
 export async function findCategoryById(
   deps: CategoryRepoDeps,
   id: string,
-  companyId: string,
 ): Promise<Entity.Category | null> {
   const [row] = await getExecutor()
     .select()
     .from(categories)
-    .where(
-      and(eq(categories.id, id), eq(categories.companyId, companyId), isNull(categories.deletedAt)),
-    )
+    .where(and(eq(categories.id, id), isNull(categories.deletedAt)))
     .limit(1)
   return row ? deps.toEntity(row) : null
 }

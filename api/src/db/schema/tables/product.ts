@@ -1,23 +1,23 @@
-import { index, integer, pgTable, text, uuid } from 'drizzle-orm/pg-core'
+import { index, pgTable, text } from 'drizzle-orm/pg-core'
 
-import { productStatusEnum } from '../enums'
+import { statusEnum } from '../enums'
 import { defaultId, softDelete, timestamps } from './helpers'
 
 // ---------------------------------------------------------------------------
-// Product
+// Product (CRM catalog item, e.g. "Beton K-250" with unit "m3")
 // ---------------------------------------------------------------------------
 export const products = pgTable(
   'products',
   {
     id: defaultId,
-    companyId: uuid('company_id').notNull(),
-    branchId: uuid('branch_id'),
-    name: text('name').notNull().default(''),
-    description: text('description').notNull().default(''),
-    capacity: integer('capacity').default(0),
-    status: productStatusEnum('status').notNull().default('active'),
+    name: text('name').notNull(),
+    unit: text('unit').notNull().default(''),
+    status: statusEnum('status').notNull().default('active'),
     ...timestamps,
     ...softDelete,
   },
-  (t) => [index('products_company_id_deleted_at_idx').on(t.companyId, t.deletedAt)],
+  (t) => [
+    index('products_status_deleted_at_idx').on(t.status, t.deletedAt),
+    index('products_name_idx').on(t.name),
+  ],
 )

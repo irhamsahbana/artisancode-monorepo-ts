@@ -9,13 +9,8 @@ import { RoleAndPermissionRepoDeps } from '../role_and_permission.repo'
 export async function findRoleById(
   deps: RoleAndPermissionRepoDeps,
   id: string,
-  companyId?: string,
 ): Promise<Entity.Role | null> {
   const conditions = [eq(roles.id, id), isNull(roles.deletedAt)]
-
-  if (companyId) {
-    conditions.push(eq(roles.companyId, companyId))
-  }
 
   const [role] = await getExecutor()
     .select()

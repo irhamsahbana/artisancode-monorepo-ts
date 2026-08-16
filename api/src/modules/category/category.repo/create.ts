@@ -11,7 +11,6 @@ export async function createCategory(
   const [row] = await getExecutor()
     .insert(categories)
     .values({
-      companyId: req.company_id,
       parentId: req.parent_id,
       group: req.group || '',
       name: req.name,

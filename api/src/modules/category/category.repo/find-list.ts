@@ -10,11 +10,11 @@ export async function findCategoryList(
   deps: CategoryRepoDeps,
   req: Entity.GetCategoryReq,
 ): Promise<Entity.CategoryList> {
-  const { pagination = {}, q, company_id, group } = req
+  const { pagination = {}, q, group } = req
   const { page = 1, per_page = 10 } = pagination
   const offset = (page - 1) * per_page
 
-  const conditions = [eq(categories.companyId, company_id), isNull(categories.deletedAt)]
+  const conditions = [isNull(categories.deletedAt)]
 
   if (q) {
     conditions.push(ilike(categories.name, `%${q}%`))

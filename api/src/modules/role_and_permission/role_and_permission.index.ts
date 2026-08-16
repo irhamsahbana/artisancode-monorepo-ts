@@ -9,7 +9,6 @@ import * as Schema from './role_and_permission.schema'
 import { createRoleAndPermissionUsecase } from './role_and_permission.usecase'
 
 // Re-export error codes for external consumers
-export { RoleErrorCode } from './role_and_permission.errors'
 
 const repo = createRoleAndPermissionRepo()
 const usecase = createRoleAndPermissionUsecase(repo)

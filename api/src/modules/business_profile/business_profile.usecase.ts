@@ -7,8 +7,8 @@ import {
 
 export function createBusinessProfileUsecase(repo: IBusinessProfileRepo): IBusinessProfileUsecase {
   return {
-    findByCompanyId: async (companyId) => {
-      const item = await repo.findByCompanyId(companyId)
+    find: async () => {
+      const item = await repo.find()
       if (!item) throw new AppError(ErrorCode.NOT_FOUND, 'Business profile not found')
       return item
     },

@@ -8,7 +8,7 @@ export async function updateCategory(
   deps: CategoryUsecaseDeps,
   req: Entity.UpdateCategoryReq,
 ): Promise<Entity.Category> {
-  const category = await deps.repo.findById(req.id, req.company_id)
+  const category = await deps.repo.findById(req.id)
   if (!category) {
     throw new AppError(ErrorCode.NOT_FOUND, 'Category not found')
   }
@@ -17,7 +17,7 @@ export async function updateCategory(
     if (req.parent_id === req.id) {
       throw new AppError(ErrorCode.VALIDATION_ERROR, 'Category cannot be its own parent')
     }
-    const parent = await deps.repo.findById(req.parent_id, req.company_id)
+    const parent = await deps.repo.findById(req.parent_id)
     if (!parent) {
       throw new AppError(ErrorCode.NOT_FOUND, 'Parent category not found')
     }

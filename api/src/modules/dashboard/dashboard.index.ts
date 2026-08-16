@@ -1,21 +1,17 @@
 import { AppEnv } from '@artisancode/types'
-import { and, eq, isNull, sql } from 'drizzle-orm'
+import { eq, isNull, sql } from 'drizzle-orm'
 import { Hono } from 'hono'
 import { Context } from 'hono'
 
 import { getExecutor } from '@/common/executor'
 import { authenticate } from '@/common/middlewares/auth.middleware'
 import { responseSuccess } from '@/common/rest_response'
-import { getUserContext } from '@/common/store/user-context'
 import { categories, customers } from '@/db/schema'
 
 const router = new Hono()
 
 router.get('/', authenticate, async (c: Context<AppEnv>) => {
-  const user = getUserContext()
-  const companyId = user?.company_id || ''
-
-  const base = and(eq(customers.companyId, companyId), isNull(customers.deletedAt))
+  const base = isNull(customers.deletedAt)
   const exec = getExecutor()
 
   const [totals, byStatus, byType, byCategory, byArea, byPotential] = await Promise.all([

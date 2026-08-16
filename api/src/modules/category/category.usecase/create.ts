@@ -9,7 +9,7 @@ export async function createCategory(
   req: Entity.CreateCategoryReq,
 ): Promise<Entity.Category> {
   if (req.parent_id) {
-    const parent = await deps.repo.findById(req.parent_id, req.company_id)
+    const parent = await deps.repo.findById(req.parent_id)
     if (!parent) {
       throw new AppError(ErrorCode.NOT_FOUND, 'Parent category not found')
     }

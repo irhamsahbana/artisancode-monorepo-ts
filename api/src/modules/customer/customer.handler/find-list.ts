@@ -2,7 +2,6 @@ import { AppEnv } from '@artisancode/types'
 import { Context } from 'hono'
 
 import { responseSuccess } from '@/common/rest_response'
-import { getUserContext } from '@/common/store/user-context'
 import { ICustomerUsecase } from '@/contracts/customer.contract'
 import * as Entity from '@/entities/customer.entity'
 
@@ -21,10 +20,8 @@ export function findCustomerListHandler(usecase: ICustomerUsecase) {
       area_id,
       has_contract_history,
     } = query as Record<string, string>
-    const user = getUserContext()
 
     const payload: Entity.GetCustomerReq = {
-      company_id: user?.company_id || '',
       q,
       type: type as Entity.CustomerType | undefined,
       status: status as Entity.CustomerStatus | undefined,

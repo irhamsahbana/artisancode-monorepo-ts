@@ -2,61 +2,6 @@ import { pgEnum } from 'drizzle-orm/pg-core'
 
 export const statusEnum = pgEnum('status', ['active', 'inactive'])
 
-export const billingTypeEnum = pgEnum('billing_type', ['one_time', 'recurring'])
-
-export const billingIntervalEnum = pgEnum('billing_interval', ['day', 'week', 'month', 'year'])
-
-export const employeeStatusEnum = pgEnum('employee_status', [
-  'active',
-  'inactive',
-  'on_leave',
-  'terminated',
-])
-
-export const enrollmentStatusEnum = pgEnum('enrollment_status', ['active', 'inactive'])
-
-export const productStatusEnum = pgEnum('product_status', ['active', 'inactive', 'archived'])
-
-export const studentStatusEnum = pgEnum('student_status', [
-  'active',
-  'inactive',
-  'graduated',
-  'suspended',
-  'dropped',
-  'pending',
-  'on_leave',
-])
-
-export const pricingTypeEnum = pgEnum('pricing_type', [
-  'daily',
-  'weekly',
-  'monthly',
-  'yearly',
-  'custom',
-])
-
-export const paymentModeEnum = pgEnum('payment_mode', ['pay_now', 'pay_later'])
-
-export const invoiceStatusEnum = pgEnum('invoice_status', [
-  'draft',
-  'unpaid',
-  'paid',
-  'overdue',
-  'pending',
-  'expired',
-  'failed',
-  'cancelled',
-])
-
-export const billingCycleEnum = pgEnum('billing_cycle', [
-  'monthly',
-  'quarterly',
-  'annually',
-  'one_time',
-])
-
-export const fileStatusEnum = pgEnum('file_status', ['pending', 'attached', 'deleted', 'failed'])
-
 export const customerTypeEnum = pgEnum('customer_type', ['individual', 'business'])
 
 export const customerStatusEnum = pgEnum('customer_status', ['prospect', 'active', 'inactive'])
@@ -64,3 +9,44 @@ export const customerStatusEnum = pgEnum('customer_status', ['prospect', 'active
 export const customerPotentialEnum = pgEnum('customer_potential', ['high', 'medium', 'low'])
 
 export const genderEnum = pgEnum('gender', ['male', 'female'])
+
+export const uomCategoryEnum = pgEnum('uom_category', [
+  'length',
+  'area',
+  'volume',
+  'mass',
+  'time',
+  'quantity',
+  'other',
+])
+
+export const projectStatusEnum = pgEnum('project_status', [
+  'prospect',
+  'in_progress',
+  'won',
+  'lost',
+])
+
+export const quotationStatusEnum = pgEnum('quotation_status', ['new', 'in_review', 'responded'])
+
+export const riskLevelEnum = pgEnum('risk_level', ['low', 'medium', 'high'])
+
+export const broadcastOccasionEnum = pgEnum('broadcast_occasion', [
+  'idul_fitri',
+  'idul_adha',
+  'christmas',
+  'new_year',
+  'national_day',
+  'company_anniversary',
+  'thank_you',
+  'custom',
+])
+
+export const broadcastStatusEnum = pgEnum('broadcast_status', [
+  'draft',
+  'scheduled',
+  'sent',
+  'failed',
+])
+
+export const broadcastLogStatusEnum = pgEnum('broadcast_log_status', ['pending', 'sent', 'failed'])

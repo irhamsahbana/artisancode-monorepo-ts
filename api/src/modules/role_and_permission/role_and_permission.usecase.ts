@@ -25,10 +25,10 @@ export function createRoleAndPermissionUsecase(
     createRole: (req) =>
       withSpan('RoleAndPermissionUsecase.createRole', () => createRole(deps, req)),
     findRoleList: (req) => findRoleList(deps, req),
-    findRoleById: (id, companyId) => findRoleById(deps, id, companyId),
+    findRoleById: (id) => findRoleById(deps, id),
     updateRole: (req) =>
       withSpan('RoleAndPermissionUsecase.updateRole', () => updateRole(deps, req)),
-    deleteRole: (id, companyId) => deleteRole(deps, id, companyId),
+    deleteRole: (id) => deleteRole(deps, id),
     findPermissionList: (req) => findPermissionList(deps, req),
   }
 }

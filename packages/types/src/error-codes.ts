@@ -42,24 +42,8 @@ export const ErrorCode = {
   CIRCUIT_BREAKER_OPEN: 'CIRCUIT_BREAKER_OPEN',
   RESILIENCE_EXHAUSTED: 'RESILIENCE_EXHAUSTED',
 
-  // ── Invoice ────────────────────────────────────────────
-  INVOICE_NOT_FOUND: 'INVOICE_NOT_FOUND',
-  INVOICE_ALREADY_PAID: 'INVOICE_ALREADY_PAID',
-  INVOICE_EXPIRED: 'INVOICE_EXPIRED',
-  INVOICE_PAYMENT_FAILED: 'INVOICE_PAYMENT_FAILED',
-  INVOICE_STATUS_INVALID: 'INVOICE_STATUS_INVALID',
-
-  // ── Enrollment ─────────────────────────────────────────
-  ENROLLMENT_NOT_FOUND: 'ENROLLMENT_NOT_FOUND',
-
-  // ── Company ────────────────────────────────────────────
-  COMPANY_NOT_FOUND: 'COMPANY_NOT_FOUND',
-
-  // ── Role ───────────────────────────────────────────────
-  ROLE_COMPANY_REQUIRED: 'ROLE_COMPANY_REQUIRED',
-
-  // ── Program ────────────────────────────────────────────
-  PROGRAM_PRICE_NOT_FOUND: 'PROGRAM_PRICE_NOT_FOUND',
+  // ── Quotation ───────────────────────────────────────────
+  QUOTATION_INVALID_STATUS_TRANSITION: 'QUOTATION_INVALID_STATUS_TRANSITION',
 } as const
 
 export type ErrorCode = (typeof ErrorCode)[keyof typeof ErrorCode]

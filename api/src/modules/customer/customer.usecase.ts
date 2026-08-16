@@ -12,8 +12,8 @@ export function createCustomerUsecase(repo: ICustomerRepo): ICustomerUsecase {
   return {
     create: (req) => deps.repo.create(req),
 
-    findById: async (id, companyId) => {
-      const item = await deps.repo.findById(id, companyId)
+    findById: async (id) => {
+      const item = await deps.repo.findById(id)
       if (!item) throw new AppError(ErrorCode.NOT_FOUND, 'Customer not found')
       return item
     },
@@ -26,10 +26,10 @@ export function createCustomerUsecase(repo: ICustomerRepo): ICustomerUsecase {
       return item
     },
 
-    delete: async (id, companyId) => {
-      const item = await deps.repo.findById(id, companyId)
+    delete: async (id) => {
+      const item = await deps.repo.findById(id)
       if (!item) throw new AppError(ErrorCode.NOT_FOUND, 'Customer not found')
-      await deps.repo.delete(id, companyId)
+      await deps.repo.delete(id)
     },
   }
 }

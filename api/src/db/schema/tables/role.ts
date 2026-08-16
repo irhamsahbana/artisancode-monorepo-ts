@@ -1,4 +1,4 @@
-import { index, pgTable, text, unique, uuid } from 'drizzle-orm/pg-core'
+import { index, pgTable, text, unique } from 'drizzle-orm/pg-core'
 
 import { defaultId, softDelete, timestamps } from './helpers'
 
@@ -9,14 +9,10 @@ export const roles = pgTable(
   'roles',
   {
     id: defaultId,
-    companyId: uuid('company_id'),
     name: text('name').notNull(),
     description: text('description').notNull().default(''),
     ...timestamps,
     ...softDelete,
   },
-  (t) => [
-    index('roles_company_id_deleted_at_idx').on(t.companyId, t.deletedAt),
-    unique('roles_company_id_name_unique').on(t.companyId, t.name),
-  ],
+  (t) => [index('roles_deleted_at_idx').on(t.deletedAt), unique('roles_name_unique').on(t.name)],
 )

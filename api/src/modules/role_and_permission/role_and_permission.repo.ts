@@ -23,17 +23,9 @@ function toRoleEntity(
     rolePermissions?: { permission: typeof permissions.$inferSelect }[]
   },
 ): Entity.Role {
-  const permissionsList = data.rolePermissions?.map((rp) => ({
-    id: rp.permission.id,
-    name: rp.permission.name,
-    description: rp.permission.description,
-    createdAt: rp.permission.createdAt,
-    updatedAt: rp.permission.updatedAt,
-    deletedAt: rp.permission.deletedAt,
-  }))
+  const permissionsList = data.rolePermissions?.map((rp) => rp.permission.name)
   return {
     id: data.id,
-    companyId: data.companyId ?? undefined,
     name: data.name,
     description: data.description,
     createdAt: data.createdAt,
@@ -60,9 +52,9 @@ export function createRoleAndPermissionRepo(): IRoleAndPermissionRepo {
   return {
     createRole: (req) => createRole(deps, req),
     findRoleList: (req) => findRoleList(deps, req),
-    findRoleById: (id, companyId) => findRoleById(deps, id, companyId),
+    findRoleById: (id) => findRoleById(deps, id),
     updateRole: (req) => updateRole(deps, req),
-    deleteRole: (id, companyId) => deleteRole(id, companyId),
+    deleteRole: (id) => deleteRole(id),
     findPermissionList: (req) => findPermissionList(deps, req),
   }
 }

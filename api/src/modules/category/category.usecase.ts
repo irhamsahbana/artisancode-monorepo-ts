@@ -18,8 +18,8 @@ export function createCategoryUsecase(repo: ICategoryRepo): ICategoryUsecase {
   return {
     create: (req) => withSpan('CategoryUsecase.create', () => createCategory(deps, req)),
     update: (req) => withSpan('CategoryUsecase.update', () => updateCategory(deps, req)),
-    delete: (id, companyId) => deleteCategory(deps, id, companyId),
-    findById: (id, companyId) => findCategoryById(deps, id, companyId),
+    delete: (id) => deleteCategory(deps, id),
+    findById: (id) => findCategoryById(deps, id),
     findList: (req) => findCategoryList(deps, req),
   }
 }

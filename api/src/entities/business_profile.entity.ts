@@ -8,7 +8,6 @@ export interface BusinessProfile {
 }
 
 export interface UpdateBusinessProfileReq {
-  company_id: string
   name?: string
   businessType?: string
   phone?: string

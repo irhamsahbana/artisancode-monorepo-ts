@@ -13,7 +13,6 @@ const repo = createUserRepo()
 const usecase = createUserUsecase(repo)
 const handler = createUserHandlerDeps(usecase)
 
-router.post('/register', validate(Schema.registerSchema), handler.register)
 router.post('/login', validate(Schema.loginSchema), handler.login)
 
 router.get('/me', authenticate, handler.me)

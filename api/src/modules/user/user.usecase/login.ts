@@ -24,7 +24,6 @@ export async function loginUser(
   const { password: _, ...cleanUser } = user
   const token = generateToken({
     id: user.id,
-    company_id: user.companyId,
     role_id: user.roleId,
     name: user.name,
     username: user.username,

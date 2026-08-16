@@ -60,25 +60,8 @@ const ERROR_TO_HTTP_STATUS: Record<ErrorCode, number> = {
   // ── Resilience ───────────────────────────────────────
   [ErrorCode.CIRCUIT_BREAKER_OPEN]: 503,
   [ErrorCode.RESILIENCE_EXHAUSTED]: 503,
+  [ErrorCode.QUOTATION_INVALID_STATUS_TRANSITION]: 400,
 
-  // ── Invoice ──────────────────────────────────────────
-  [ErrorCode.INVOICE_NOT_FOUND]: 404,
-  [ErrorCode.INVOICE_ALREADY_PAID]: 409,
-  [ErrorCode.INVOICE_EXPIRED]: 409,
-  [ErrorCode.INVOICE_PAYMENT_FAILED]: 402,
-  [ErrorCode.INVOICE_STATUS_INVALID]: 409,
-
-  // ── Enrollment ───────────────────────────────────────
-  [ErrorCode.ENROLLMENT_NOT_FOUND]: 404,
-
-  // ── Company ──────────────────────────────────────────
-  [ErrorCode.COMPANY_NOT_FOUND]: 404,
-
-  // ── Role ─────────────────────────────────────────────
-  [ErrorCode.ROLE_COMPANY_REQUIRED]: 400,
-
-  // ── Program ──────────────────────────────────────────
-  [ErrorCode.PROGRAM_PRICE_NOT_FOUND]: 404,
 }
 
 export class AppError extends Error {

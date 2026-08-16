@@ -12,7 +12,6 @@ export async function findCustomerList(
 ): Promise<Entity.CustomerList> {
   const {
     pagination = {},
-    company_id,
     q,
     type,
     status,
@@ -25,7 +24,7 @@ export async function findCustomerList(
   const { page = 1, per_page = 10 } = pagination
   const offset = (page - 1) * per_page
 
-  const conditions = [eq(customers.companyId, company_id), isNull(customers.deletedAt)]
+  const conditions = [isNull(customers.deletedAt)]
 
   if (q) conditions.push(ilike(customers.name, `%${q}%`))
   if (type) conditions.push(eq(customers.type, type))

@@ -5,7 +5,6 @@ export interface Timestamp {
 }
 
 export interface BaseEntity extends Timestamp {
-  companyId?: string
   roleId?: string
   userId?: string
 }

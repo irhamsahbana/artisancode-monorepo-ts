@@ -2,7 +2,6 @@ import { AppEnv } from '@artisancode/types'
 import { Context } from 'hono'
 
 import { responseSuccess } from '@/common/rest_response'
-import { getUserContext } from '@/common/store/user-context'
 import { ICategoryUsecase } from '@/contracts/category.contract'
 import * as Entity from '@/entities/category.entity'
 
@@ -15,11 +14,8 @@ export function findCategoryListHandler(usecase: ICategoryUsecase) {
       q: string
       group: string
     }
-    const user = getUserContext()
-    const companyId = user?.company_id || ''
 
     const payload: Entity.GetCategoryReq = {
-      company_id: companyId,
       q,
       group,
       pagination: {

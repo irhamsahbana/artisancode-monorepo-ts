@@ -16,10 +16,6 @@ export async function findRoleList(
 
   const conditions = [isNull(roles.deletedAt)]
 
-  if (req.company_id) {
-    conditions.push(eq(roles.companyId, req.company_id))
-  }
-
   if (q) {
     conditions.push(ilike(roles.name, `%${q}%`))
   }

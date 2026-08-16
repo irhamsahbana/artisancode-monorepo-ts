@@ -2,16 +2,12 @@ import { boolean, index, integer, numeric, pgTable, text, uuid } from 'drizzle-o
 
 import { customerPotentialEnum, customerStatusEnum, customerTypeEnum, genderEnum } from '../enums'
 import { categories } from './category'
-import { companies } from './company'
 import { defaultId, softDelete, timestamps } from './helpers'
 
 export const customers = pgTable(
   'customers',
   {
     id: defaultId,
-    companyId: uuid('company_id')
-      .notNull()
-      .references(() => companies.id),
     name: text('name').notNull(),
     type: customerTypeEnum('type').notNull(),
     categoryId: uuid('category_id').references(() => categories.id),
@@ -49,5 +45,5 @@ export const customers = pgTable(
     ...timestamps,
     ...softDelete,
   },
-  (t) => [index('customers_company_id_deleted_at_idx').on(t.companyId, t.deletedAt)],
+  (t) => [index('customers_deleted_at_idx').on(t.deletedAt)],
 )

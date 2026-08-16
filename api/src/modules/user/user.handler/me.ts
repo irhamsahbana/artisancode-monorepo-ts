@@ -8,7 +8,7 @@ import { IUserUsecase } from '@/contracts/user.contract'
 export function getMeHandler(usecase: IUserUsecase) {
   return async (c: Context<AppEnv>) => {
     const user = getUserContext()
-    const data = await usecase.findById(user?.id || '', user?.company_id || '')
+    const data = await usecase.findById(user?.id || '')
     return c.json(responseSuccess(data))
   }
 }

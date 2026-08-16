@@ -6,7 +6,6 @@ export const CategoryStatuses: CategoryStatus[] = ['active', 'inactive']
 
 export interface Category {
   id: string
-  company_id: string
   parent_id: string | null
   group: string
   name: string
@@ -17,7 +16,6 @@ export interface Category {
 }
 
 export interface CreateCategoryReq {
-  company_id: string
   parent_id?: string
   group?: string
   name: string
@@ -26,7 +24,6 @@ export interface CreateCategoryReq {
 
 export interface UpdateCategoryReq {
   id: string
-  company_id: string
   parent_id?: string
   group?: string
   name?: string
@@ -35,7 +32,6 @@ export interface UpdateCategoryReq {
 
 export interface GetCategoryReq {
   id?: string
-  company_id: string
   q?: string
   group?: string
   pagination?: PaginationQuery

@@ -8,8 +8,6 @@ import { defaultId, softDelete, timestamps } from './helpers'
 // ---------------------------------------------------------------------------
 export const users = pgTable('users', {
   id: defaultId,
-  companyId: uuid('company_id').notNull(),
-  branchId: uuid('branch_id'),
   roleId: uuid('role_id').notNull(),
   name: text('name').notNull().default(''),
   username: text('username').notNull().unique(),

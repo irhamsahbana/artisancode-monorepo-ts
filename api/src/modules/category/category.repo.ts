@@ -15,7 +15,6 @@ export interface CategoryRepoDeps {
 function toEntity(data: typeof categories.$inferSelect): Entity.Category {
   return {
     id: data.id,
-    company_id: data.companyId || '',
     parent_id: data.parentId,
     group: data.group,
     name: data.name,
@@ -32,8 +31,8 @@ export function createCategoryRepo(): ICategoryRepo {
   return {
     create: (req) => createCategory(deps, req),
     update: (req) => updateCategory(deps, req),
-    delete: (id, companyId) => deleteCategory(id, companyId),
-    findById: (id, companyId) => findCategoryById(deps, id, companyId),
+    delete: (id) => deleteCategory(id),
+    findById: (id) => findCategoryById(deps, id),
     findList: (req) => findCategoryList(deps, req),
   }
 }

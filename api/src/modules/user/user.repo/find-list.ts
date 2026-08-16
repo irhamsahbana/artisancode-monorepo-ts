@@ -22,9 +22,6 @@ export async function findUserList(
   if (rest.username) {
     conditions.push(eq(users.username, rest.username))
   }
-  if (rest.company_id) {
-    conditions.push(eq(users.companyId, rest.company_id))
-  }
 
   const where = and(...conditions)
 

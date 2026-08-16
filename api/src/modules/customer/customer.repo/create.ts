@@ -11,7 +11,6 @@ export async function createCustomer(
   const [row] = await getExecutor()
     .insert(customers)
     .values({
-      companyId: req.company_id,
       name: req.name,
       type: req.type,
       categoryId: req.categoryId,

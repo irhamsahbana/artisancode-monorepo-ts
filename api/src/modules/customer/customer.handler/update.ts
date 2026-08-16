@@ -2,7 +2,6 @@ import { AppEnv } from '@artisancode/types'
 import { Context } from 'hono'
 
 import { responseSuccess } from '@/common/rest_response'
-import { getUserContext } from '@/common/store/user-context'
 import { ICustomerUsecase } from '@/contracts/customer.contract'
 import * as Entity from '@/entities/customer.entity'
 
@@ -10,11 +9,9 @@ export function updateCustomerHandler(usecase: ICustomerUsecase) {
   return async (c: Context<AppEnv>) => {
     const id = c.req.param('id') ?? ''
     const body = c.get('body')
-    const user = getUserContext()
 
     const payload: Entity.UpdateCustomerReq = {
       id,
-      company_id: user?.company_id || '',
       name: body.name,
       type: body.type,
       categoryId: body.category_id,

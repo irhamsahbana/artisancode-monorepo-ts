@@ -18,13 +18,7 @@ export async function updateCategory(
       name: req.name,
       status: req.status as 'active' | 'inactive',
     })
-    .where(
-      and(
-        eq(categories.id, req.id),
-        eq(categories.companyId, req.company_id),
-        isNull(categories.deletedAt),
-      ),
-    )
+    .where(and(eq(categories.id, req.id), isNull(categories.deletedAt)))
     .returning()
   return deps.toEntity(row)
 }

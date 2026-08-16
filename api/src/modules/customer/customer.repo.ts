@@ -15,7 +15,6 @@ export interface CustomerRepoDeps {
 function toEntity(data: typeof customers.$inferSelect): Entity.Customer {
   return {
     id: data.id,
-    companyId: data.companyId,
     name: data.name,
     type: data.type,
     categoryId: data.categoryId,
@@ -56,9 +55,9 @@ export function createCustomerRepo(): ICustomerRepo {
 
   return {
     create: (req) => createCustomer(deps, req),
-    findById: (id, companyId) => findCustomerById(deps, id, companyId),
+    findById: (id) => findCustomerById(deps, id),
     findList: (req) => findCustomerList(deps, req),
     update: (req) => updateCustomer(deps, req),
-    delete: (id, companyId) => deleteCustomer(id, companyId),
+    delete: (id) => deleteCustomer(id),
   }
 }

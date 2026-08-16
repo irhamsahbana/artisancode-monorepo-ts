@@ -11,7 +11,6 @@ export const CustomerPotentials: CustomerPotential[] = ['high', 'medium', 'low']
 
 export interface Customer {
   id: string
-  companyId: string
   name: string
   type: CustomerType
   categoryId: string | null
@@ -47,7 +46,6 @@ export interface Customer {
 }
 
 export interface CreateCustomerReq {
-  company_id: string
   name: string
   type: CustomerType
   categoryId?: string
@@ -80,7 +78,7 @@ export interface CreateCustomerReq {
 
 export interface UpdateCustomerReq {
   id: string
-  company_id: string
+
   name?: string
   type?: CustomerType
   categoryId?: string
@@ -113,7 +111,6 @@ export interface UpdateCustomerReq {
 }
 
 export interface GetCustomerReq {
-  company_id: string
   q?: string
   type?: CustomerType
   status?: CustomerStatus

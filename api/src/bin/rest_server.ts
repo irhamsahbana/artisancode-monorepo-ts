@@ -10,7 +10,6 @@ import { requestLogger } from '@/common/middlewares/request_logger'
 import { traceContext } from '@/common/middlewares/trace_context'
 import { env } from '@/config/env'
 import logger from '@/config/logger'
-import { startJobs } from '@/jobs'
 import restRouter from '@/routes/rest'
 
 class RESTServer {
@@ -52,7 +51,6 @@ class RESTServer {
 
   public listen() {
     logger.info(`Server running on port ${env.REST.PORT} using ${env.APP_LOGGER} logger`)
-    startJobs()
   }
 }
 

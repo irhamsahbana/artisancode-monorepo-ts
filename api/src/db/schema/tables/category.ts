@@ -10,7 +10,6 @@ export const categories = pgTable(
   'categories',
   {
     id: defaultId,
-    companyId: uuid('company_id'),
     parentId: uuid('parent_id'),
     group: text('group').notNull().default(''),
     name: text('name').notNull().default(''),
@@ -18,8 +17,5 @@ export const categories = pgTable(
     ...timestamps,
     ...softDelete,
   },
-  (t) => [
-    index('categories_company_id_deleted_at_idx').on(t.companyId, t.deletedAt),
-    index('categories_status_idx').on(t.status),
-  ],
+  (t) => [index('categories_group_idx').on(t.group), index('categories_status_idx').on(t.status)],
 )

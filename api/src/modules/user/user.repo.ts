@@ -8,7 +8,6 @@ import { findUserById } from './user.repo/find-by-id'
 import { findUserByUsername } from './user.repo/find-by-username'
 import { findUserByUsernameForLogin } from './user.repo/find-by-username-for-login'
 import { findUserList } from './user.repo/find-list'
-import { register } from './user.repo/register'
 
 export interface UserRepoDeps {
   toEntity: (data: typeof users.$inferSelect) => Entity.User
@@ -25,10 +24,10 @@ export function createUserRepo(): IUserRepo {
 
   return {
     create: (req) => createUser(deps, req),
-    register: (req) => register(req),
+
     checkExistingUser: (username, email) => checkExistingUser(username, email),
     findList: (req) => findUserList(deps, req),
-    findById: (id, companyId) => findUserById(deps, id, companyId),
+    findById: (id) => findUserById(deps, id),
     findByUsername: (username) => findUserByUsername(deps, username),
     findByUsernameForLogin: (username) => findUserByUsernameForLogin(username),
   }

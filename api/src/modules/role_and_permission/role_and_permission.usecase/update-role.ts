@@ -8,7 +8,7 @@ export async function updateRole(
   deps: RoleAndPermissionUsecaseDeps,
   req: Entity.UpdateRoleReq,
 ): Promise<Entity.Role> {
-  const existing = await deps.repo.findRoleById(req.id, req.company_id)
+  const existing = await deps.repo.findRoleById(req.id)
   if (!existing) {
     throw new AppError(ErrorCode.NOT_FOUND, 'Role not found')
   }

@@ -8,7 +8,6 @@ export const createUserSchema = z.object({
   password: z.string().min(6).max(100),
   email: z.email(),
   phone: z.string().max(20),
-  company_id: z.uuid(),
   role_id: z.uuid(),
   status: z.enum(UserStatuses as [string, ...string[]]).optional(),
 })

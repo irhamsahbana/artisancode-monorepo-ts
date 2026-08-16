@@ -47,13 +47,7 @@ export async function updateCustomer(
   const [row] = await getExecutor()
     .update(customers)
     .set(updates)
-    .where(
-      and(
-        eq(customers.id, req.id),
-        eq(customers.companyId, req.company_id),
-        isNull(customers.deletedAt),
-      ),
-    )
+    .where(and(eq(customers.id, req.id), isNull(customers.deletedAt)))
     .returning()
 
   return row ? deps.toEntity(row) : null

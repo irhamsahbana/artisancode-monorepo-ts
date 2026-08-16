@@ -11,7 +11,6 @@ export interface CreateUserReq {
   email: string
   password: string
   phone: string
-  company_id: string
   role_id: string
   status?: UserStatus
 }
@@ -41,13 +40,11 @@ export interface UpdateUserReq {
 export interface GetUserReq {
   id?: string
   username?: string
-  company_id?: string
   pagination?: PaginationQuery
 }
 
 export interface User extends BaseEntity {
   id: string
-  companyId: string
   roleId: string
   name: string
   username: string
