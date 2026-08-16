@@ -233,25 +233,27 @@ function PersonView() {
     {
       key: "customer",
       label: "Perusahaan",
-      render: (g) => (
-        <div className="flex flex-col gap-1">
-          {g.entries.map((r) => (
+      render: (g) => {
+        const first = g.entries[0];
+        const rest = g.entries.length - 1;
+        if (!first) return null;
+        return (
+          <div className="flex flex-col gap-1">
             <Link
-              key={r.customer.id}
-              to={`/customers/${r.customer.id}`}
+              to={`/customers/${first.customer.id}`}
               className="flex items-center gap-1 text-sm hover:underline"
             >
               <Building2 className="h-3.5 w-3.5 text-muted-foreground" />
-              {r.customer.name}
+              {first.customer.name}
             </Link>
-          ))}
-          {g.entries.length > 1 && (
-            <Badge variant="outline" className="w-fit text-[10px]">
-              {g.entries.length} perusahaan
-            </Badge>
-          )}
-        </div>
-      ),
+            {rest > 0 && (
+              <Badge variant="outline" className="w-fit text-[10px]">
+                {rest} Perusahaan Lainnya
+              </Badge>
+            )}
+          </div>
+        );
+      },
     },
     {
       key: "whatsapp",
