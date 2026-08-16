@@ -61,6 +61,7 @@
     "@types/jsonwebtoken": "^9.0.10",
     "@types/node-cron": "^3.0.11",
     "bcrypt": "^6.0.0",
+    "cacheable": "^2.5.0",
     "cockatiel": "^4.0.0",
     "doku-nodejs-library": "^1.0.52",
     "drizzle-orm": "^0.45.2",

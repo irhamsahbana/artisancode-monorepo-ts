@@ -10,6 +10,7 @@ export interface IRoleAndPermissionUsecase {
 
   // Permission
   findPermissionList(req: Entity.GetPermissionReq): Promise<Entity.PermissionList>
+  getPermissionNamesByRoleId(roleId: string): Promise<string[]>
 }
 
 export interface IRoleAndPermissionRepo {
@@ -22,4 +23,5 @@ export interface IRoleAndPermissionRepo {
 
   // Permission
   findPermissionList(req: Entity.GetPermissionReq): Promise<Entity.PermissionList>
+  findPermissionNamesByRoleId(roleId: string): Promise<string[]>
 }

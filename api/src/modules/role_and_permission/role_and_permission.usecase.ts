@@ -10,6 +10,7 @@ import { deleteRole } from './role_and_permission.usecase/delete-role'
 import { findRoleById } from './role_and_permission.usecase/find-by-id'
 import { findPermissionList } from './role_and_permission.usecase/find-permission-list'
 import { findRoleList } from './role_and_permission.usecase/find-role-list'
+import { getPermissionNamesByRoleId } from './role_and_permission.usecase/get-permission-names-by-role-id'
 import { updateRole } from './role_and_permission.usecase/update-role'
 
 export interface RoleAndPermissionUsecaseDeps {
@@ -30,6 +31,7 @@ export function createRoleAndPermissionUsecase(
       withSpan('RoleAndPermissionUsecase.updateRole', () => updateRole(deps, req)),
     deleteRole: (id) => deleteRole(deps, id),
     findPermissionList: (req) => findPermissionList(deps, req),
+    getPermissionNamesByRoleId: (roleId) => getPermissionNamesByRoleId(deps, roleId),
   }
 }
 

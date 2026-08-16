@@ -3,6 +3,7 @@ export interface JwtPayload {
   role_id: string
   name: string
   username: string
+  permissions?: string[]
 }
 
 export interface AppEnv {

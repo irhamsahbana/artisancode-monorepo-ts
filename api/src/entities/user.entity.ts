@@ -60,6 +60,7 @@ export interface UserList {
 
 export interface LoginRes extends User {
   token: string
+  permissions: string[]
 }
 
 export interface RegisterReq {

@@ -2,10 +2,14 @@ import { AppEnv, ErrorCode, JwtPayload } from '@artisancode/types'
 import { Context, Next } from 'hono'
 import jwt from 'jsonwebtoken'
 
+import { createRoleAndPermissionRepo } from '@/adapter/secondary/repository/role_and_permission/role_and_permission.repo'
 import { verifyToken } from '@/common/jwt'
 import { responseError } from '@/common/rest_response'
 import { runWithUserContext } from '@/common/store/user-context'
 import logger from '@/config/logger'
+import { createRoleAndPermissionUsecase } from '@/modules/role_and_permission/role_and_permission.usecase'
+
+const roleAndPermissionUsecase = createRoleAndPermissionUsecase(createRoleAndPermissionRepo())
 
 export const authenticate = async (c: Context<AppEnv>, next: Next) => {
   const authHeader = c.req.header('authorization')
@@ -25,6 +29,7 @@ export const authenticate = async (c: Context<AppEnv>, next: Next) => {
 
   try {
     const decoded = verifyToken(token) as JwtPayload
+    decoded.permissions = await roleAndPermissionUsecase.getPermissionNamesByRoleId(decoded.role_id)
     c.set('user', decoded)
     return runWithUserContext(decoded, () => next())
   } catch (error) {

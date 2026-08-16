@@ -1,12 +1,12 @@
 import { Hono } from 'hono'
 
+import { createRoleAndPermissionRepo } from '@/adapter/secondary/repository/role_and_permission/role_and_permission.repo'
 import { authenticate } from '@/common/middlewares/auth.middleware'
 import { validate, validateQuery } from '@/common/middlewares/validation.middleware'
+import { createRoleAndPermissionUsecase } from '@/modules/role_and_permission/role_and_permission.usecase'
 
 import { createRoleAndPermissionHandlerDeps } from './role_and_permission.handler'
-import { createRoleAndPermissionRepo } from './role_and_permission.repo'
 import * as Schema from './role_and_permission.schema'
-import { createRoleAndPermissionUsecase } from './role_and_permission.usecase'
 
 // Re-export error codes for external consumers
 

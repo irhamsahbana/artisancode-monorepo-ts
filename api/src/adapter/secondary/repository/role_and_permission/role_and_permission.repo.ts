@@ -6,6 +6,7 @@ import { createRole } from './role_and_permission.repo/create-role'
 import { deleteRole } from './role_and_permission.repo/delete-role'
 import { findRoleById } from './role_and_permission.repo/find-by-id'
 import { findPermissionList } from './role_and_permission.repo/find-permission-list'
+import { findPermissionNamesByRoleId } from './role_and_permission.repo/find-permission-names-by-role-id'
 import { findRoleList } from './role_and_permission.repo/find-role-list'
 import { updateRole } from './role_and_permission.repo/update-role'
 
@@ -56,6 +57,7 @@ export function createRoleAndPermissionRepo(): IRoleAndPermissionRepo {
     updateRole: (req) => updateRole(deps, req),
     deleteRole: (id) => deleteRole(id),
     findPermissionList: (req) => findPermissionList(deps, req),
+    findPermissionNamesByRoleId: (roleId) => findPermissionNamesByRoleId(roleId),
   }
 }
 

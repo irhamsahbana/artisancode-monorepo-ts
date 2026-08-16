@@ -1,5 +1,6 @@
 import { Hono } from 'hono'
 
+import roleAndPermissionRouter from '@/adapter/primary/rest/role_and_permission/role_and_permission.index'
 import broadcastRouter from '@/modules/broadcast/broadcast.index'
 import businessProfileRouter from '@/modules/business_profile/business_profile.index'
 import categoryRouter from '@/modules/category/category.index'
@@ -11,7 +12,6 @@ import productRouter from '@/modules/product/product.index'
 import projectRouter from '@/modules/project/project.index'
 import quotationRouter from '@/modules/quotation/quotation.index'
 import ratingRouter from '@/modules/rating/rating.index'
-import roleAndPermissionRouter from '@/modules/role_and_permission/role_and_permission.index'
 import uomRouter, { unitConversionRouter } from '@/modules/uom/uom.index'
 import userRouter from '@/modules/user/user.index'
 
