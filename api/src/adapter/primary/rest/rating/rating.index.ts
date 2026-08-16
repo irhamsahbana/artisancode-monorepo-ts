@@ -1,12 +1,12 @@
 import { Hono } from 'hono'
 
+import { createRatingRepo } from '@/adapter/secondary/repository/rating/rating.repo'
 import { authenticate } from '@/common/middlewares/auth.middleware'
 import { validate, validateQuery } from '@/common/middlewares/validation.middleware'
+import { createRatingUsecase } from '@/modules/rating/rating.usecase'
 
 import { createRatingHandler } from './rating.handler'
-import { createRatingRepo } from './rating.repo'
 import * as Schema from './rating.schema'
-import { createRatingUsecase } from './rating.usecase'
 
 const repo = createRatingRepo()
 const usecase = createRatingUsecase(repo)

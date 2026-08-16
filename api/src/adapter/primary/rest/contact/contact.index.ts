@@ -1,12 +1,12 @@
 import { Hono } from 'hono'
 
+import { createContactRepo } from '@/adapter/secondary/repository/contact/contact.repo'
 import { authenticate } from '@/common/middlewares/auth.middleware'
 import { validate, validateQuery } from '@/common/middlewares/validation.middleware'
+import { createContactUsecase } from '@/modules/contact/contact.usecase'
 
 import { createContactHandlerDeps } from './contact.handler'
-import { createContactRepo } from './contact.repo'
 import * as Schema from './contact.schema'
-import { createContactUsecase } from './contact.usecase'
 
 const repo = createContactRepo()
 const usecase = createContactUsecase(repo)

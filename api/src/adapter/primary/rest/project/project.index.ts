@@ -1,12 +1,12 @@
 import { Hono } from 'hono'
 
+import { createProjectRepo } from '@/adapter/secondary/repository/project/project.repo'
 import { authenticate } from '@/common/middlewares/auth.middleware'
 import { validate, validateQuery } from '@/common/middlewares/validation.middleware'
+import { createProjectUsecase } from '@/modules/project/project.usecase'
 
 import { createProjectHandler } from './project.handler'
-import { createProjectRepo } from './project.repo'
 import * as Schema from './project.schema'
-import { createProjectUsecase } from './project.usecase'
 
 const repo = createProjectRepo()
 const usecase = createProjectUsecase(repo)

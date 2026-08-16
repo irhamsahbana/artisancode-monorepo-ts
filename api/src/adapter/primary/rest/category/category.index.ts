@@ -1,12 +1,12 @@
 import { Hono } from 'hono'
 
+import { createCategoryRepo } from '@/adapter/secondary/repository/category/category.repo'
 import { authenticate } from '@/common/middlewares/auth.middleware'
 import { validate, validateQuery } from '@/common/middlewares/validation.middleware'
+import { createCategoryUsecase } from '@/modules/category/category.usecase'
 
 import { createCategoryHandlerDeps } from './category.handler'
-import { createCategoryRepo } from './category.repo'
 import * as Schema from './category.schema'
-import { createCategoryUsecase } from './category.usecase'
 
 const repo = createCategoryRepo()
 const usecase = createCategoryUsecase(repo)

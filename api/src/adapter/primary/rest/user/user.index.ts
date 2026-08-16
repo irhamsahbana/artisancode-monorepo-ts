@@ -1,12 +1,12 @@
 import { Hono } from 'hono'
 
+import { createUserRepo } from '@/adapter/secondary/repository/user/user.repo'
 import { authenticate } from '@/common/middlewares/auth.middleware'
 import { validate, validateQuery } from '@/common/middlewares/validation.middleware'
+import { createUserUsecase } from '@/modules/user/user.usecase'
 
 import { createUserHandlerDeps } from './user.handler'
-import { createUserRepo } from './user.repo'
 import * as Schema from './user.schema'
-import { createUserUsecase } from './user.usecase'
 
 const router = new Hono()
 const repo = createUserRepo()

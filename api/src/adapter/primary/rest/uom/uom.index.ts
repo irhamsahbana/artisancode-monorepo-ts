@@ -1,12 +1,12 @@
 import { Hono } from 'hono'
 
+import { createUomRepo } from '@/adapter/secondary/repository/uom/uom.repo'
 import { authenticate } from '@/common/middlewares/auth.middleware'
 import { validate, validateQuery } from '@/common/middlewares/validation.middleware'
+import { createUomUsecase } from '@/modules/uom/uom.usecase'
 
 import { createUomHandler } from './uom.handler'
-import { createUomRepo } from './uom.repo'
 import * as Schema from './uom.schema'
-import { createUomUsecase } from './uom.usecase'
 
 const repo = createUomRepo()
 const usecase = createUomUsecase(repo)

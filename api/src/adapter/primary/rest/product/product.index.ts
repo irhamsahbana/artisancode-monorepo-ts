@@ -1,12 +1,12 @@
 import { Hono } from 'hono'
 
+import { createProductRepo } from '@/adapter/secondary/repository/product/product.repo'
 import { authenticate } from '@/common/middlewares/auth.middleware'
 import { validate, validateQuery } from '@/common/middlewares/validation.middleware'
+import { createProductUsecase } from '@/modules/product/product.usecase'
 
 import { createProductHandler } from './product.handler'
-import { createProductRepo } from './product.repo'
 import * as Schema from './product.schema'
-import { createProductUsecase } from './product.usecase'
 
 const repo = createProductRepo()
 const usecase = createProductUsecase(repo)

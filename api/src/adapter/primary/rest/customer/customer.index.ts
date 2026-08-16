@@ -1,12 +1,12 @@
 import { Hono } from 'hono'
 
+import { createCustomerRepo } from '@/adapter/secondary/repository/customer/customer.repo'
 import { authenticate } from '@/common/middlewares/auth.middleware'
 import { validate, validateQuery } from '@/common/middlewares/validation.middleware'
+import { createCustomerUsecase } from '@/modules/customer/customer.usecase'
 
 import { createCustomerHandlerDeps } from './customer.handler'
-import { createCustomerRepo } from './customer.repo'
 import * as Schema from './customer.schema'
-import { createCustomerUsecase } from './customer.usecase'
 
 const repo = createCustomerRepo()
 const usecase = createCustomerUsecase(repo)

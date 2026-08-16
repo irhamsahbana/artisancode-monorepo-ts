@@ -1,6 +1,7 @@
+import HealthRepo from '@/adapter/secondary/repository/health/health.repo'
+import HealthUsecase from '@/modules/health/health.usecase'
+
 import healthHandler from './health.handler'
-import HealthRepo from './health.repo'
-import HealthUsecase from './health.usecase'
 
 const repo = new HealthRepo()
 const usecase = new HealthUsecase(repo)

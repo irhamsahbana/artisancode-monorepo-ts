@@ -2,14 +2,14 @@ import { AppEnv } from '@artisancode/types'
 import { Hono } from 'hono'
 import { Context } from 'hono'
 
+import { createBusinessProfileRepo } from '@/adapter/secondary/repository/business_profile/business_profile.repo'
 import { authenticate } from '@/common/middlewares/auth.middleware'
 import { validate } from '@/common/middlewares/validation.middleware'
 import { responseSuccess } from '@/common/rest_response'
 import * as Entity from '@/entities/business_profile.entity'
+import { createBusinessProfileUsecase } from '@/modules/business_profile/business_profile.usecase'
 
-import { createBusinessProfileRepo } from './business_profile.repo'
 import * as Schema from './business_profile.schema'
-import { createBusinessProfileUsecase } from './business_profile.usecase'
 
 const repo = createBusinessProfileRepo()
 const usecase = createBusinessProfileUsecase(repo)
