@@ -191,7 +191,31 @@ function CompanyView() {
   );
 }
 
-// Tab Key Person: flattened DataTable semua Contact dengan nama perusahaan.
+// Same person can appear as a separate Contact row per company ("pinjam
+// perusahaan") — group by name so the list shows one row per person with
+// every related company listed, instead of one row per (contact, customer).
+interface PersonGroup {
+  name: string;
+  entries: ContactSearchResult[];
+}
+
+function groupByPerson(results: ContactSearchResult[]): PersonGroup[] {
+  const groups = new Map<string, PersonGroup>();
+  for (const r of results) {
+    const key = r.contact.name.trim().toLowerCase();
+    const group = groups.get(key);
+    if (group) {
+      group.entries.push(r);
+    } else {
+      groups.set(key, { name: r.contact.name, entries: [r] });
+    }
+  }
+  return Array.from(groups.values());
+}
+
+// Tab Key Person: Contact digabung per orang, satu baris per nama dengan
+// semua perusahaan terkaitnya (bisa 2+ jika orang yang sama ada di beberapa
+// perusahaan).
 function PersonView() {
   const navigate = useNavigate();
   const { data: allContacts } = useContactSearch("");
@@ -203,18 +227,20 @@ function PersonView() {
     return map;
   }, [customersData]);
 
-  const columns: Column<ContactSearchResult>[] = [
+  const groups = useMemo(() => groupByPerson(allContacts ?? []), [allContacts]);
+
+  const columns: Column<PersonGroup>[] = [
     {
       key: "contactName",
       label: "Nama",
-      render: (r) => (
+      render: (g) => (
         <Link
-          to={`/contacts/${r.contact.id}`}
+          to={`/contacts/${g.entries[0]?.contact.id}`}
           className="block hover:underline"
         >
-          <p className="text-sm font-medium">{r.contact.name}</p>
+          <p className="text-sm font-medium">{g.name}</p>
           <p className="text-xs text-muted-foreground">
-            {r.contact.position ?? "-"}
+            {g.entries[0]?.contact.position ?? "-"}
           </p>
         </Link>
       ),
@@ -222,30 +248,40 @@ function PersonView() {
     {
       key: "customer",
       label: "Perusahaan",
-      render: (r) => (
-        <Link
-          to={`/customers/${r.customer.id}`}
-          className="flex items-center gap-1 text-sm hover:underline"
-        >
-          <Building2 className="h-3.5 w-3.5 text-muted-foreground" />
-          {customerName.get(r.customer.id) ?? "-"}
-        </Link>
+      render: (g) => (
+        <div className="flex flex-col gap-1">
+          {g.entries.map((r) => (
+            <Link
+              key={r.customer.id}
+              to={`/customers/${r.customer.id}`}
+              className="flex items-center gap-1 text-sm hover:underline"
+            >
+              <Building2 className="h-3.5 w-3.5 text-muted-foreground" />
+              {customerName.get(r.customer.id) ?? "-"}
+            </Link>
+          ))}
+          {g.entries.length > 1 && (
+            <Badge variant="outline" className="w-fit text-[10px]">
+              {g.entries.length} perusahaan
+            </Badge>
+          )}
+        </div>
       ),
     },
     {
       key: "whatsapp",
       label: "WhatsApp",
-      render: (r) => (
+      render: (g) => (
         <span className="text-sm text-muted-foreground">
-          {r.contact.whatsapp ?? "-"}
+          {g.entries.find((r) => r.contact.whatsapp)?.contact.whatsapp ?? "-"}
         </span>
       ),
     },
     {
       key: "isPrimary",
       label: "Utama",
-      render: (r) =>
-        r.contact.isPrimary ? (
+      render: (g) =>
+        g.entries.some((r) => r.contact.isPrimary) ? (
           <Badge variant="secondary" className="text-[10px]">
             Ya
           </Badge>
@@ -258,19 +294,25 @@ function PersonView() {
   return (
     <div>
       <DataTable
-        data={allContacts ?? []}
+        data={groups}
         columns={columns}
         searchPlaceholder="Cari nama key person atau perusahaan..."
-        searchFn={(r, q) =>
-          r.contact.name.toLowerCase().includes(q.toLowerCase()) ||
-          (r.contact.position ?? "").toLowerCase().includes(q.toLowerCase()) ||
-          r.customer.name.toLowerCase().includes(q.toLowerCase())
-        }
-        actions={(r) => (
+        searchFn={(g, q) => {
+          const query = q.toLowerCase();
+          return (
+            g.name.toLowerCase().includes(query) ||
+            g.entries.some(
+              (r) =>
+                (r.contact.position ?? "").toLowerCase().includes(query) ||
+                r.customer.name.toLowerCase().includes(query),
+            )
+          );
+        }}
+        actions={(g) => (
           <Button
             variant="ghost"
             size="icon"
-            onClick={() => navigate(`/customers/${r.customer.id}`)}
+            onClick={() => navigate(`/customers/${g.entries[0]?.customer.id}`)}
           >
             <Building2 className="h-4 w-4" />
           </Button>
