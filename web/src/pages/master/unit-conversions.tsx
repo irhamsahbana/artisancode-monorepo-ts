@@ -23,12 +23,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { mockUnitsOfMeasurement } from "@/data/uoms";
 import {
   useCreateUnitConversion,
   useUnitConversions,
   useUpdateUnitConversion,
 } from "@/hooks/use-unit-conversions";
+import { useUoms } from "@/hooks/use-uoms";
 import { categoryOptions } from "@/pages/master/uoms";
 import { convertQuantity } from "@/services/unit-conversion";
 
@@ -38,24 +38,27 @@ import type {
 } from "@artisancode/api-types";
 import type { ReactNode } from "react";
 
-function unitCategory(unitId: string) {
-  return mockUnitsOfMeasurement.find((u) => u.id === unitId)?.category;
-}
-
-function unitLabel(unitId: string) {
-  const unit = mockUnitsOfMeasurement.find((u) => u.id === unitId);
-  return unit ? `${unit.name} (${unit.symbol})` : unitId;
-}
-
-function unitSymbol(unitId: string) {
-  const unit = mockUnitsOfMeasurement.find((u) => u.id === unitId);
-  return unit?.symbol ?? unitId;
-}
-
 export function UnitConversions() {
   const { data, isLoading } = useUnitConversions();
+  const { data: uomsData } = useUoms();
   const { mutate: create } = useCreateUnitConversion();
   const { mutate: update } = useUpdateUnitConversion();
+
+  const uoms = useMemo(() => uomsData?.items ?? [], [uomsData]);
+
+  function unitCategory(unitId: string) {
+    return uoms.find((u) => u.id === unitId)?.category;
+  }
+
+  function unitLabel(unitId: string) {
+    const unit = uoms.find((u) => u.id === unitId);
+    return unit ? `${unit.name} (${unit.symbol})` : unitId;
+  }
+
+  function unitSymbol(unitId: string) {
+    const unit = uoms.find((u) => u.id === unitId);
+    return unit?.symbol ?? unitId;
+  }
 
   const [open, setOpen] = useState(false);
   const [editing, setEditing] = useState<UnitConversion | null>(null);
@@ -65,25 +68,26 @@ export function UnitConversions() {
   const [factor, setFactor] = useState("");
 
   const unitsInCategory = useMemo(
-    () => mockUnitsOfMeasurement.filter((u) => u.category === category),
-    [category],
+    () => uoms.filter((u) => u.category === category),
+    [uoms, category],
   );
 
   const items = useMemo(() => data?.items ?? [], [data]);
 
   const [calcQuantity, setCalcQuantity] = useState("1");
-  const [calcFromUnitId, setCalcFromUnitId] = useState(
-    mockUnitsOfMeasurement[0]?.id ?? "",
-  );
-  const [calcToUnitId, setCalcToUnitId] = useState(
-    mockUnitsOfMeasurement[1]?.id ?? "",
-  );
+  const [calcFromUnitId, setCalcFromUnitId] = useState("");
+  const [calcToUnitId, setCalcToUnitId] = useState("");
+
+  // Fall back to the first two loaded units until the user picks explicitly.
+  const effectiveFromUnitId = calcFromUnitId || (uoms[0]?.id ?? "");
+  const effectiveToUnitId = calcToUnitId || (uoms[1]?.id ?? "");
 
   const calcResult = useMemo(() => {
     const qty = Number(calcQuantity);
-    if (!calcFromUnitId || !calcToUnitId || Number.isNaN(qty)) return null;
-    return convertQuantity(qty, calcFromUnitId, calcToUnitId, items);
-  }, [calcQuantity, calcFromUnitId, calcToUnitId, items]);
+    if (!effectiveFromUnitId || !effectiveToUnitId || Number.isNaN(qty))
+      return null;
+    return convertQuantity(qty, effectiveFromUnitId, effectiveToUnitId, items);
+  }, [calcQuantity, effectiveFromUnitId, effectiveToUnitId, items]);
 
   function openAdd() {
     setEditing(null);
@@ -200,12 +204,15 @@ export function UnitConversions() {
               />
             </Field>
             <Field label="Dari Satuan">
-              <Select value={calcFromUnitId} onValueChange={setCalcFromUnitId}>
+              <Select
+                value={effectiveFromUnitId}
+                onValueChange={setCalcFromUnitId}
+              >
                 <SelectTrigger className="w-full">
                   <SelectValue placeholder="Pilih satuan" />
                 </SelectTrigger>
                 <SelectContent>
-                  {mockUnitsOfMeasurement.map((u) => (
+                  {uoms.map((u) => (
                     <SelectItem key={u.id} value={u.id}>
                       {u.name} ({u.symbol})
                     </SelectItem>
@@ -214,12 +221,12 @@ export function UnitConversions() {
               </Select>
             </Field>
             <Field label="Ke Satuan">
-              <Select value={calcToUnitId} onValueChange={setCalcToUnitId}>
+              <Select value={effectiveToUnitId} onValueChange={setCalcToUnitId}>
                 <SelectTrigger className="w-full">
                   <SelectValue placeholder="Pilih satuan" />
                 </SelectTrigger>
                 <SelectContent>
-                  {mockUnitsOfMeasurement.map((u) => (
+                  {uoms.map((u) => (
                     <SelectItem key={u.id} value={u.id}>
                       {u.name} ({u.symbol})
                     </SelectItem>
@@ -235,8 +242,8 @@ export function UnitConversions() {
               </span>
             ) : (
               <span className="font-medium">
-                {calcQuantity} {unitSymbol(calcFromUnitId)} = {calcResult}{" "}
-                {unitSymbol(calcToUnitId)}
+                {calcQuantity} {unitSymbol(effectiveFromUnitId)} = {calcResult}{" "}
+                {unitSymbol(effectiveToUnitId)}
               </span>
             )}
           </p>
