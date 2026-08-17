@@ -15,9 +15,11 @@ import type { Control } from "react-hook-form";
 export function RequestFields({
   control,
   projects,
+  isInternal,
 }: {
   control: Control<FormValues>;
   projects: { id: string; name: string; location?: string }[];
+  isInternal: boolean;
 }) {
   return (
     <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
@@ -63,28 +65,30 @@ export function RequestFields({
         />
       </div>
 
-      <div className="sm:col-span-2">
-        <FormField
-          control={control}
-          name="projectId"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Proyek Terkait (opsional)</FormLabel>
-              <Combobox
-                value={field.value ?? ""}
-                onChange={field.onChange}
-                options={projects.map((p) => ({
-                  value: p.id,
-                  label: `${p.name} — ${p.location}`,
-                }))}
-                placeholder="Pilih proyek yang sedang berjalan..."
-                enforceOptions
-              />
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-      </div>
+      {isInternal && (
+        <div className="sm:col-span-2">
+          <FormField
+            control={control}
+            name="projectId"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Proyek Terkait (opsional)</FormLabel>
+                <Combobox
+                  value={field.value ?? ""}
+                  onChange={field.onChange}
+                  options={projects.map((p) => ({
+                    value: p.id,
+                    label: `${p.name} — ${p.location}`,
+                  }))}
+                  placeholder="Pilih proyek yang sedang berjalan..."
+                  enforceOptions
+                />
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        </div>
+      )}
 
       <div className="sm:col-span-2">
         <FormField

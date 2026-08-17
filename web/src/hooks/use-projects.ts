@@ -8,10 +8,11 @@ import type {
   UpdateProjectReq,
 } from "@artisancode/api-types";
 
-export function useProjects(params?: ProjectQuery) {
+export function useProjects(params?: ProjectQuery, enabled = true) {
   return useQuery({
     queryKey: queryKeys.projects.list(params as Record<string, unknown>),
     queryFn: () => projectService.list(params),
+    enabled,
   });
 }
 

@@ -22,7 +22,9 @@ export function QuotationForm() {
   const isInternal = location.pathname.startsWith("/quotations");
 
   const { mutateAsync, isPending } = useCreateQuotation();
-  const { data: projectsData } = useProjects();
+  // Projects are internal/confidential — only fetch (and offer the picker) on
+  // the authenticated /quotations flow, never on the public /rfq form.
+  const { data: projectsData } = useProjects(undefined, isInternal);
   const { data: productsData } = useProducts();
 
   const form = useForm<FormValues>({
@@ -90,7 +92,11 @@ export function QuotationForm() {
                 onSubmit={form.handleSubmit(onSubmit)}
                 className="grid gap-5"
               >
-                <RequestFields control={form.control} projects={projects} />
+                <RequestFields
+                  control={form.control}
+                  projects={projects}
+                  isInternal={isInternal}
+                />
 
                 <ProductLinesSection control={form.control} />
 
