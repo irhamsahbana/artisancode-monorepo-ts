@@ -1,7 +1,6 @@
-import { Clock, Gift, Pencil } from "lucide-react";
-import { useMemo, useState } from "react";
-import { Link } from "react-router";
-import { toast } from "sonner";
+import { Clock, Gift, MessageSquarePlus } from "lucide-react";
+import { useMemo } from "react";
+import { Link, useNavigate } from "react-router";
 
 import type { Column } from "@/components/shared/data-table";
 import { DataTable } from "@/components/shared/data-table";
@@ -9,23 +8,13 @@ import { PageHeader } from "@/components/shared/page-header";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
+import { useBroadcastLogs, useBroadcasts } from "@/hooks/use-broadcasts";
 import { useClientTable } from "@/hooks/use-client-table";
 import { useContactSearch } from "@/hooks/use-contacts";
 
-// ponytail: Template is local state for demo purposes.
-const DEFAULT_TEMPLATE =
-  "Selamat Ulang Tahun {{Sapaan}} {{Nama}}! 🎉\n\nSemoga selalu diberikan kesehatan, kebahagiaan, dan kesuksesan. Terima kasih atas kepercayaan Anda bersama CRM Wika.";
+// Fixed daily fire time for the cronbake scheduler (jobs/scheduler.ts) — not
+// per-template, so it's informational text here, not an editable setting.
+const BIRTHDAY_SEND_TIME = "08:00 WIB";
 
 interface UpcomingBirthday {
   contactId: string;
@@ -39,31 +28,30 @@ interface UpcomingBirthday {
 }
 
 export function BirthdayList() {
+  const navigate = useNavigate();
   const { data: contactsData } = useContactSearch("");
-  const [template, setTemplate] = useState(DEFAULT_TEMPLATE);
-  const [sendTime, setSendTime] = useState("09:00");
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [editTemplate, setEditTemplate] = useState(template);
-  const [editTime, setEditTime] = useState(sendTime);
+  const { data: broadcastsData } = useBroadcasts();
 
-  // Real-time ticking just for status recalculation
-  const [currentTime] = useState(() => {
-    const now = new Date();
-    return `${String(now.getHours()).padStart(2, "0")}:${String(now.getMinutes()).padStart(2, "0")}`;
-  });
+  const birthdayTemplate = broadcastsData?.items.find(
+    (b) => b.occasion === "birthday",
+  );
+  const { data: templateLogs } = useBroadcastLogs(birthdayTemplate?.id);
 
-  function handleOpenDialog() {
-    setEditTemplate(template);
-    setEditTime(sendTime);
-    setIsDialogOpen(true);
-  }
+  // The scheduler fires once daily — find the log from today's run, if any.
+  const todayLog = useMemo(() => {
+    const todayKey = new Date().toDateString();
+    return (templateLogs ?? [])
+      .filter((l) => new Date(l.sentAt).toDateString() === todayKey)
+      .sort((a, b) => b.sentAt.localeCompare(a.sentAt))[0];
+  }, [templateLogs]);
 
-  function handleSave() {
-    setTemplate(editTemplate);
-    setSendTime(editTime);
-    setIsDialogOpen(false);
-    toast.success("Pengaturan automasi berhasil disimpan.");
-  }
+  const todayStatusByContact = useMemo(() => {
+    const map = new Map<string, "sent" | "failed" | "pending">();
+    for (const r of todayLog?.recipientLogs ?? []) {
+      map.set(r.contactId, r.status);
+    }
+    return map;
+  }, [todayLog]);
 
   const upcomingList = useMemo(() => {
     const items: UpcomingBirthday[] = [];
@@ -164,22 +152,33 @@ export function BirthdayList() {
       key: "status_kirim",
       label: "Status Pengiriman",
       render: (u) => {
-        if (u.daysUntil === 0) {
-          if (currentTime >= sendTime) {
-            return (
-              <Badge
-                variant="default"
-                className="bg-green-600 text-white hover:bg-green-700"
-              >
-                Terkirim ({sendTime})
-              </Badge>
-            );
-          }
-          return <Badge variant="outline">Menunggu {sendTime}</Badge>;
+        if (u.daysUntil !== 0) {
+          return (
+            <span className="text-sm text-muted-foreground">
+              Belum waktunya
+            </span>
+          );
         }
-        return (
-          <span className="text-sm text-muted-foreground">Belum waktunya</span>
-        );
+        if (!birthdayTemplate) {
+          return <Badge variant="outline">Tidak ada template aktif</Badge>;
+        }
+        const status = todayStatusByContact.get(u.contactId);
+        if (status === "sent") {
+          return (
+            <Badge className="bg-green-600 text-white hover:bg-green-700">
+              Terkirim
+            </Badge>
+          );
+        }
+        if (status === "failed") {
+          return <Badge variant="destructive">Gagal</Badge>;
+        }
+        if (todayLog) {
+          // Job already ran today but this contact didn't match the
+          // template's audience filters (gender/religion/segmentasi/status).
+          return <Badge variant="outline">Di luar target template</Badge>;
+        }
+        return <Badge variant="outline">Menunggu {BIRTHDAY_SEND_TIME}</Badge>;
       },
     },
   ];
@@ -201,32 +200,52 @@ export function BirthdayList() {
               <CardTitle className="text-base">
                 Template Automasi Ucapan
               </CardTitle>
-              <div className="text-xs text-muted-foreground mt-1 flex items-center gap-1.5">
-                Dikirim otomatis via WhatsApp setiap hari pukul
-                <Badge
-                  variant="secondary"
-                  className="px-1.5 py-0 h-5 font-medium flex items-center gap-1"
-                >
-                  <Clock className="h-3 w-3" />
-                  {sendTime}
-                </Badge>
-              </div>
+              {birthdayTemplate ? (
+                <div className="text-xs text-muted-foreground mt-1 flex items-center gap-1.5">
+                  Dikirim otomatis via WhatsApp setiap hari pukul
+                  <Badge
+                    variant="secondary"
+                    className="px-1.5 py-0 h-5 font-medium flex items-center gap-1"
+                  >
+                    <Clock className="h-3 w-3" />
+                    {BIRTHDAY_SEND_TIME}
+                  </Badge>
+                </div>
+              ) : (
+                <p className="mt-1 text-xs text-muted-foreground">
+                  Belum ada template aktif — ucapan ulang tahun tidak akan
+                  terkirim otomatis.
+                </p>
+              )}
             </div>
           </div>
-          <Button variant="outline" size="sm" onClick={handleOpenDialog}>
-            <Pencil className="mr-1 h-4 w-4" />
-            Pengaturan
-          </Button>
+          {birthdayTemplate ? (
+            <Button variant="outline" size="sm" asChild>
+              <Link to={`/broadcasts/${birthdayTemplate.id}`}>
+                Lihat Template
+              </Link>
+            </Button>
+          ) : (
+            <Button
+              size="sm"
+              onClick={() => navigate("/broadcasts/new?occasion=birthday")}
+            >
+              <MessageSquarePlus className="mr-1 h-4 w-4" />
+              Buat Template
+            </Button>
+          )}
         </CardHeader>
-        <CardContent>
-          <div className="rounded-md border bg-muted/30 p-4 text-sm whitespace-pre-wrap">
-            {template}
-          </div>
-          <p className="mt-3 text-xs text-muted-foreground">
-            Gunakan <b>{`{{Sapaan}}`}</b> untuk otomatis menjadi Bapak/Ibu
-            (berdasarkan gender Key Person), dan <b>{`{{Nama}}`}</b> untuk nama.
-          </p>
-        </CardContent>
+        {birthdayTemplate && (
+          <CardContent>
+            <div className="rounded-md border bg-muted/30 p-4 text-sm whitespace-pre-wrap">
+              {birthdayTemplate.message}
+            </div>
+            <p className="mt-3 text-xs text-muted-foreground">
+              Gunakan <b>{`{{nama}}`}</b> di pesan untuk otomatis diganti nama
+              tiap penerima.
+            </p>
+          </CardContent>
+        )}
       </Card>
 
       <h2 className="mb-4 text-base font-semibold">
@@ -243,45 +262,6 @@ export function BirthdayList() {
         hasMore={table.hasMore}
         onLoadMore={table.onLoadMore}
       />
-
-      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Pengaturan Automasi Ulang Tahun</DialogTitle>
-            <DialogDescription>
-              Ubah jam pengiriman dan isi pesan template yang akan dikirim.
-            </DialogDescription>
-          </DialogHeader>
-          <div className="grid gap-4 py-4">
-            <div className="grid gap-2">
-              <Label>Waktu Pengiriman</Label>
-              <Input
-                type="time"
-                value={editTime}
-                onChange={(e) => setEditTime(e.target.value)}
-              />
-            </div>
-            <div className="grid gap-2">
-              <Label>Pesan Template</Label>
-              <Textarea
-                rows={5}
-                value={editTemplate}
-                onChange={(e) => setEditTemplate(e.target.value)}
-              />
-              <p className="text-xs text-muted-foreground">
-                Gunakan <b>{`{{Sapaan}}`}</b> untuk Bapak/Ibu berdasarkan
-                gender, dan <b>{`{{Nama}}`}</b> untuk nama.
-              </p>
-            </div>
-          </div>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setIsDialogOpen(false)}>
-              Batal
-            </Button>
-            <Button onClick={handleSave}>Simpan Pengaturan</Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
     </div>
   );
 }
