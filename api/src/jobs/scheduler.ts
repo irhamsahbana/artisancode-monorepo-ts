@@ -4,6 +4,7 @@ import Baker, { FilePersistenceProvider } from 'cronbake'
 
 import logger from '@/config/logger'
 import { runBirthdayGreetingCron } from '@/modules/birthday_greeting/birthday-greeting.cron'
+import { runDueBroadcastsCron } from '@/modules/broadcast/broadcast.cron'
 
 let baker: ReturnType<typeof Baker.create> | null = null
 
@@ -50,9 +51,32 @@ export async function startScheduler(): Promise<void> {
     },
   })
 
+  baker.add({
+    name: 'due-broadcasts',
+    cron: '@every_minute',
+    start: true,
+    immediate: false,
+    overrunProtection: true,
+    callback: async () => {
+      await runDueBroadcastsCron()
+    },
+    onError: (error) => {
+      logger.error('Due broadcasts job error', {
+        label: 'SCHEDULER',
+        data: { error: error.message },
+      })
+    },
+  })
+
   logger.info('Scheduler started', {
     label: 'SCHEDULER',
-    data: { job: 'birthday-greeting', cron: '@at_8:0', tz: process.env.TZ },
+    data: {
+      jobs: [
+        { job: 'birthday-greeting', cron: '@at_8:0' },
+        { job: 'due-broadcasts', cron: '@every_minute' },
+      ],
+      tz: process.env.TZ,
+    },
   })
 }
 
