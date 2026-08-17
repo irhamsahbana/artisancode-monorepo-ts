@@ -8,21 +8,14 @@ import { PageHeader } from "@/components/shared/page-header";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
-  Dialog,
-  DialogContent,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import {
   useCategoryList,
   useCreateCategory,
   useUpdateCategory,
 } from "@/hooks/use-categories";
 import { useClientTable } from "@/hooks/use-client-table";
 import type { CategoryItem } from "@/services/category";
+
+import { CategoryDialog } from "./category-dialog";
 
 interface Props {
   title: string;
@@ -36,7 +29,6 @@ export function MasterPage({ title, group }: Props) {
 
   const [open, setOpen] = useState(false);
   const [editing, setEditing] = useState<CategoryItem | null>(null);
-  const [name, setName] = useState("");
 
   const items = data?.items ?? [];
   const table = useClientTable(items, {
@@ -45,21 +37,18 @@ export function MasterPage({ title, group }: Props) {
 
   function openAdd() {
     setEditing(null);
-    setName("");
     setOpen(true);
   }
 
   function openEdit(item: CategoryItem) {
     setEditing(item);
-    setName(item.name);
     setOpen(true);
   }
 
-  function handleSave() {
-    if (!name.trim()) return;
+  function handleSave(name: string) {
     if (editing) {
       update(
-        { id: editing.id, name: name.trim() },
+        { id: editing.id, name },
         {
           onSuccess: () => {
             toast.success("Berhasil diperbarui.");
@@ -68,7 +57,7 @@ export function MasterPage({ title, group }: Props) {
         },
       );
     } else {
-      create(name.trim(), {
+      create(name, {
         onSuccess: () => {
           toast.success("Berhasil ditambahkan.");
           setOpen(false);
@@ -142,33 +131,13 @@ export function MasterPage({ title, group }: Props) {
         )}
       />
 
-      <Dialog open={open} onOpenChange={setOpen}>
-        <DialogContent className="sm:max-w-sm">
-          <DialogHeader>
-            <DialogTitle>
-              {editing ? `Edit ${title}` : `Tambah ${title}`}
-            </DialogTitle>
-          </DialogHeader>
-          <div className="grid gap-1.5 py-2">
-            <Label>Nama</Label>
-            <Input
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              placeholder={`Nama ${title.toLowerCase()}`}
-              onKeyDown={(e) => e.key === "Enter" && handleSave()}
-              autoFocus
-            />
-          </div>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setOpen(false)}>
-              Batal
-            </Button>
-            <Button onClick={handleSave}>
-              {editing ? "Simpan" : "Tambah"}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      <CategoryDialog
+        open={open}
+        onOpenChange={setOpen}
+        title={title}
+        editing={editing}
+        onSave={handleSave}
+      />
     </div>
   );
 }

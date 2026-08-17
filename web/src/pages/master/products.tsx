@@ -7,30 +7,20 @@ import { DataTable } from "@/components/shared/data-table";
 import { PageHeader } from "@/components/shared/page-header";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import {
-  Dialog,
-  DialogContent,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { useCreateProduct, useUpdateProduct } from "@/hooks/use-products";
+import { useUpdateProduct } from "@/hooks/use-products";
 import { useServerTable } from "@/hooks/use-server-table";
 import { queryKeys } from "@/lib/query-keys";
 import { productService } from "@/services/product";
 
+import { ProductDialog } from "./product-dialog";
+
 import type { Product } from "@artisancode/api-types";
 
 export function Products() {
-  const { mutate: create } = useCreateProduct();
   const { mutate: update } = useUpdateProduct();
 
   const [open, setOpen] = useState(false);
   const [editing, setEditing] = useState<Product | null>(null);
-  const [name, setName] = useState("");
-  const [unit, setUnit] = useState("");
 
   const table = useServerTable<Product>({
     queryKey: (params) => queryKeys.products.list(params),
@@ -76,41 +66,12 @@ export function Products() {
 
   function openAdd() {
     setEditing(null);
-    setName("");
-    setUnit("");
     setOpen(true);
   }
 
   function openEdit(item: Product) {
     setEditing(item);
-    setName(item.name);
-    setUnit(item.unit);
     setOpen(true);
-  }
-
-  function handleSave() {
-    if (!name.trim() || !unit.trim()) return;
-    if (editing) {
-      update(
-        { id: editing.id, name: name.trim(), unit: unit.trim() },
-        {
-          onSuccess: () => {
-            toast.success("Produk berhasil diperbarui.");
-            setOpen(false);
-          },
-        },
-      );
-    } else {
-      create(
-        { name: name.trim(), unit: unit.trim() },
-        {
-          onSuccess: () => {
-            toast.success("Produk berhasil ditambahkan.");
-            setOpen(false);
-          },
-        },
-      );
-    }
   }
 
   return (
@@ -145,43 +106,7 @@ export function Products() {
         )}
       />
 
-      <Dialog open={open} onOpenChange={setOpen}>
-        <DialogContent className="sm:max-w-sm">
-          <DialogHeader>
-            <DialogTitle>
-              {editing ? "Edit Produk" : "Tambah Produk"}
-            </DialogTitle>
-          </DialogHeader>
-          <div className="grid gap-3 py-2">
-            <div className="grid gap-1.5">
-              <Label>Nama Produk</Label>
-              <Input
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                placeholder="Nama produk"
-                autoFocus
-              />
-            </div>
-            <div className="grid gap-1.5">
-              <Label>Satuan</Label>
-              <Input
-                value={unit}
-                onChange={(e) => setUnit(e.target.value)}
-                placeholder="m3, m2, sak, unit, dll."
-                onKeyDown={(e) => e.key === "Enter" && handleSave()}
-              />
-            </div>
-          </div>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setOpen(false)}>
-              Batal
-            </Button>
-            <Button onClick={handleSave}>
-              {editing ? "Simpan" : "Tambah"}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      <ProductDialog open={open} onOpenChange={setOpen} editing={editing} />
     </div>
   );
 }

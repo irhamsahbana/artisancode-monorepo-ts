@@ -1,41 +1,14 @@
-import { ArrowLeft, Pencil, MapPin, Plus, ExternalLink } from "lucide-react";
-import { useState } from "react";
+import { ArrowLeft, Pencil, MapPin, ExternalLink } from "lucide-react";
 import { Link, useParams, useNavigate } from "react-router";
-import { toast } from "sonner";
 
 import { LocationView } from "@/components/projects/location-view";
-import { Combobox } from "@/components/shared/combobox";
-import { EmptyState } from "@/components/shared/empty-state";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-  DialogFooter,
-} from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { Textarea } from "@/components/ui/textarea";
-import { useContacts } from "@/hooks/use-contacts";
 import { useContact } from "@/hooks/use-contacts";
 import { useCustomers } from "@/hooks/use-customers";
 import { useProducts } from "@/hooks/use-products";
-import {
-  useProject,
-  useProjectVisits,
-  useCreateProjectVisit,
-} from "@/hooks/use-projects";
+import { useProject, useProjectVisits } from "@/hooks/use-projects";
 import { useQuotations } from "@/hooks/use-quotations";
 import {
   quotationStatusLabel,
@@ -47,6 +20,7 @@ import {
   projectStatusLabel,
   projectStatusVariant,
 } from "./project-status";
+import { VisitLog } from "./visit-log";
 
 export function ProjectDetail() {
   const { id } = useParams<{ id: string }>();
@@ -266,205 +240,6 @@ export function ProjectDetail() {
         )}
       </div>
     </div>
-  );
-}
-
-const EMPTY_FORM = {
-  visitDate: "",
-  metWith: "",
-  topic: "",
-  notes: "",
-};
-
-function VisitLog({
-  projectId,
-  customerId,
-  visits,
-}: {
-  projectId: string;
-  customerId: string;
-  visits: {
-    id: string;
-    visitDate: string;
-    metWith?: string;
-    topic?: string;
-    notes?: string;
-  }[];
-}) {
-  const { mutateAsync: addVisit, isPending } = useCreateProjectVisit(projectId);
-  const { data: contacts } = useContacts(customerId);
-  const [open, setOpen] = useState(false);
-  const [form, setForm] = useState(EMPTY_FORM);
-
-  async function handleSubmit(e: React.FormEvent) {
-    e.preventDefault();
-    if (!form.visitDate) {
-      toast.error("Tanggal kunjungan wajib diisi.");
-      return;
-    }
-    try {
-      await addVisit({
-        projectId,
-        visitDate: form.visitDate,
-        metWith: form.metWith || undefined,
-        topic: form.topic || undefined,
-        notes: form.notes || undefined,
-      });
-      toast.success("Log kunjungan ditambahkan.");
-      setForm(EMPTY_FORM);
-      setOpen(false);
-    } catch {
-      toast.error("Gagal menambah log kunjungan.");
-    }
-  }
-
-  const sorted = [...visits].sort((a, b) =>
-    b.visitDate.localeCompare(a.visitDate),
-  );
-
-  const contactItems = contacts?.items ?? [];
-
-  return (
-    <Card>
-      <CardHeader className="flex flex-row items-center justify-between">
-        <CardTitle className="text-sm">Log Kunjungan / Follow-up</CardTitle>
-        <Dialog open={open} onOpenChange={setOpen}>
-          <DialogTrigger asChild>
-            <Button size="sm" variant="outline">
-              <Plus className="mr-1 h-4 w-4" />
-              Tambah Log
-            </Button>
-          </DialogTrigger>
-          <DialogContent>
-            <DialogHeader>
-              <DialogTitle>Tambah Log Kunjungan</DialogTitle>
-            </DialogHeader>
-            <form
-              id="visit-form"
-              onSubmit={handleSubmit}
-              className="grid grid-cols-1 gap-4 sm:grid-cols-2"
-            >
-              <div className="grid gap-1.5">
-                <Label>Tanggal *</Label>
-                <Input
-                  type="date"
-                  value={form.visitDate}
-                  onChange={(e) =>
-                    setForm({ ...form, visitDate: e.target.value })
-                  }
-                />
-              </div>
-              <div className="grid gap-1.5">
-                <Label>Bertemu Dengan</Label>
-                {contactItems.length > 0 ? (
-                  <Select
-                    value={form.metWith}
-                    onValueChange={(v) => setForm({ ...form, metWith: v })}
-                  >
-                    <SelectTrigger className="w-full">
-                      <SelectValue placeholder="Pilih kontak..." />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {contactItems.map((c) => (
-                        <SelectItem key={c.id} value={c.name}>
-                          {c.name}
-                          {c.position ? ` — ${c.position}` : ""}
-                        </SelectItem>
-                      ))}
-                      <div className="border-t px-2 py-1.5">
-                        <Link
-                          to={`/customers/${customerId}?tab=kontak`}
-                          className="text-xs text-muted-foreground hover:text-foreground hover:underline"
-                        >
-                          + Tambah kontak baru
-                        </Link>
-                      </div>
-                    </SelectContent>
-                  </Select>
-                ) : (
-                  <>
-                    <Input
-                      value={form.metWith}
-                      onChange={(e) =>
-                        setForm({ ...form, metWith: e.target.value })
-                      }
-                      placeholder="Nama kontak..."
-                    />
-                    <Link
-                      to={`/customers/${customerId}?tab=kontak`}
-                      className="text-xs text-muted-foreground hover:underline"
-                    >
-                      + Tambah kontak di halaman pelanggan
-                    </Link>
-                  </>
-                )}
-              </div>
-              <div className="grid gap-1.5 sm:col-span-2">
-                <Label>Topik</Label>
-                <Combobox
-                  value={form.topic}
-                  onChange={(v) => setForm({ ...form, topic: v })}
-                  options={[
-                    { value: "Follow up" },
-                    { value: "Presentasi" },
-                    { value: "Penjajakan Kebutuhan" },
-                    { value: "Negosiasi Harga" },
-                    { value: "Kunjungan Lapangan" },
-                  ]}
-                  placeholder="Pilih atau ketik topik..."
-                />
-              </div>
-              <div className="grid gap-1.5 sm:col-span-2">
-                <Label>Catatan</Label>
-                <Textarea
-                  value={form.notes}
-                  onChange={(e) => setForm({ ...form, notes: e.target.value })}
-                  rows={3}
-                />
-              </div>
-            </form>
-            <DialogFooter showCloseButton>
-              <Button type="submit" form="visit-form" disabled={isPending}>
-                {isPending ? "Menyimpan..." : "Simpan"}
-              </Button>
-            </DialogFooter>
-          </DialogContent>
-        </Dialog>
-      </CardHeader>
-      <CardContent>
-        {sorted.length === 0 ? (
-          <EmptyState
-            title="Belum ada log kunjungan"
-            description="Catat hasil follow-up sales di sini."
-          />
-        ) : (
-          <ul className="space-y-4">
-            {sorted.map((v) => (
-              <li key={v.id} className="rounded-md border px-4 py-3">
-                <div className="flex items-center justify-between">
-                  <p className="text-sm font-medium">
-                    {v.topic ?? "Kunjungan"}
-                  </p>
-                  <span className="text-xs text-muted-foreground">
-                    {v.visitDate}
-                  </span>
-                </div>
-                {v.metWith && (
-                  <p className="text-xs text-muted-foreground">
-                    Bertemu: {v.metWith}
-                  </p>
-                )}
-                {v.notes && (
-                  <p className="mt-1 text-sm text-muted-foreground">
-                    {v.notes}
-                  </p>
-                )}
-              </li>
-            ))}
-          </ul>
-        )}
-      </CardContent>
-    </Card>
   );
 }
 

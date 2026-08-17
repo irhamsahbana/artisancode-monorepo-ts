@@ -7,26 +7,12 @@ import { DataTable } from "@/components/shared/data-table";
 import { PageHeader } from "@/components/shared/page-header";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import {
-  Dialog,
-  DialogContent,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { useServerTable } from "@/hooks/use-server-table";
-import { useCreateUom, useUpdateUom } from "@/hooks/use-uoms";
+import { useUpdateUom } from "@/hooks/use-uoms";
 import { queryKeys } from "@/lib/query-keys";
 import { uomService } from "@/services/uom";
+
+import { UomDialog } from "./uom-dialog";
 
 import type {
   UnitOfMeasurement,
@@ -58,14 +44,10 @@ const categoryFilters: FilterOption[] = [
 ];
 
 export function Uoms() {
-  const { mutate: create } = useCreateUom();
   const { mutate: update } = useUpdateUom();
 
   const [open, setOpen] = useState(false);
   const [editing, setEditing] = useState<UnitOfMeasurement | null>(null);
-  const [name, setName] = useState("");
-  const [symbol, setSymbol] = useState("");
-  const [category, setCategory] = useState<UnitOfMeasurementCategory | "">("");
 
   const table = useServerTable<UnitOfMeasurement>({
     queryKey: (params) => queryKeys.uoms.list(params),
@@ -75,46 +57,12 @@ export function Uoms() {
 
   function openAdd() {
     setEditing(null);
-    setName("");
-    setSymbol("");
-    setCategory("");
     setOpen(true);
   }
 
   function openEdit(item: UnitOfMeasurement) {
     setEditing(item);
-    setName(item.name);
-    setSymbol(item.symbol);
-    setCategory(item.category);
     setOpen(true);
-  }
-
-  function handleSave() {
-    if (!name.trim() || !symbol.trim() || !category) {
-      toast.error("Lengkapi nama, simbol, dan kategori satuan.");
-      return;
-    }
-    if (editing) {
-      update(
-        { id: editing.id, name: name.trim(), symbol: symbol.trim(), category },
-        {
-          onSuccess: () => {
-            toast.success("Satuan berhasil diperbarui.");
-            setOpen(false);
-          },
-        },
-      );
-    } else {
-      create(
-        { name: name.trim(), symbol: symbol.trim(), category },
-        {
-          onSuccess: () => {
-            toast.success("Satuan berhasil ditambahkan.");
-            setOpen(false);
-          },
-        },
-      );
-    }
   }
 
   function toggleActive(item: UnitOfMeasurement) {
@@ -195,63 +143,7 @@ export function Uoms() {
         )}
       />
 
-      <Dialog open={open} onOpenChange={setOpen}>
-        <DialogContent className="sm:max-w-sm">
-          <DialogHeader>
-            <DialogTitle>
-              {editing ? "Edit Satuan" : "Tambah Satuan"}
-            </DialogTitle>
-          </DialogHeader>
-          <div className="grid gap-3 py-2">
-            <div className="grid gap-1.5">
-              <Label>Nama Satuan</Label>
-              <Input
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                placeholder="Nama satuan"
-                autoFocus
-              />
-            </div>
-            <div className="grid gap-1.5">
-              <Label>Simbol</Label>
-              <Input
-                value={symbol}
-                onChange={(e) => setSymbol(e.target.value)}
-                placeholder="kg, gram, sak, unit, dll."
-                onKeyDown={(e) => e.key === "Enter" && handleSave()}
-              />
-            </div>
-            <div className="grid gap-1.5">
-              <Label>Kategori</Label>
-              <Select
-                value={category}
-                onValueChange={(v) =>
-                  setCategory(v as UnitOfMeasurementCategory)
-                }
-              >
-                <SelectTrigger className="w-full">
-                  <SelectValue placeholder="Pilih kategori" />
-                </SelectTrigger>
-                <SelectContent>
-                  {categoryOptions.map((o) => (
-                    <SelectItem key={o.value} value={o.value}>
-                      {o.label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-          </div>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setOpen(false)}>
-              Batal
-            </Button>
-            <Button onClick={handleSave}>
-              {editing ? "Simpan" : "Tambah"}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      <UomDialog open={open} onOpenChange={setOpen} editing={editing} />
     </div>
   );
 }
