@@ -1,3 +1,5 @@
+import { eq } from 'drizzle-orm'
+
 import { hashPassword } from '@/common/encryption'
 
 import * as schema from '../schema'
@@ -15,6 +17,9 @@ export async function upsertAdminUser(roleId: string) {
   })
   if (existing) {
     console.log(`  user exists: ${existing.id}`)
+    if (!existing.isProtected) {
+      await db.update(users).set({ isProtected: true }).where(eq(users.id, existing.id))
+    }
     return existing
   }
   const [row] = await db
