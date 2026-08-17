@@ -9,8 +9,9 @@ const salesPermissions: Permission[] = PERMISSIONS.filter(
     p.startsWith("customers.") ||
     p.startsWith("projects.") ||
     p.startsWith("quotations.") ||
-    p === "broadcasts.view" ||
-    p === "ratings.view",
+    p === "broadcast_templates.view" ||
+    p === "broadcast_logs.view" ||
+    p === "customer_ratings.view",
 );
 
 // ponytail: in-memory role catalog (Pengaturan > Roles).

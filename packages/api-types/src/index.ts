@@ -96,7 +96,12 @@ export type {
   PermissionModule,
   PermissionAction,
 } from './role'
-export { PERMISSIONS, PERMISSION_MODULES, PERMISSION_ACTIONS } from './role'
+export {
+  PERMISSIONS,
+  PERMISSION_MODULES,
+  PERMISSION_ACTIONS,
+  MASTER_DATA_PERMISSION_MODULES,
+} from './role'
 export type {
   UserAccount,
   UserAccountStatus,

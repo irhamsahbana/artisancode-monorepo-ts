@@ -1,4 +1,5 @@
 import { Bell, FileText, Gift, Megaphone, Flag } from "lucide-react";
+import { useState } from "react";
 import { Link } from "react-router";
 
 import { Button } from "@/components/ui/button";
@@ -22,9 +23,10 @@ const ICON_MAP = {
 export function NotificationBell() {
   const { data: notifications } = useNotifications();
   const count = notifications.length;
+  const [open, setOpen] = useState(false);
 
   return (
-    <Popover>
+    <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
         <Button variant="ghost" size="icon" className="relative rounded-full">
           <Bell className="h-5 w-5" />
@@ -47,7 +49,11 @@ export function NotificationBell() {
           <div className="max-h-[60vh] overflow-y-auto">
             <div className="flex flex-col">
               {notifications.map((n) => (
-                <NotificationItem key={n.id} notification={n} />
+                <NotificationItem
+                  key={n.id}
+                  notification={n}
+                  onNavigate={() => setOpen(false)}
+                />
               ))}
             </div>
           </div>
@@ -57,10 +63,17 @@ export function NotificationBell() {
   );
 }
 
-function NotificationItem({ notification }: { notification: AppNotification }) {
+function NotificationItem({
+  notification,
+  onNavigate,
+}: {
+  notification: AppNotification;
+  onNavigate: () => void;
+}) {
   return (
     <Link
       to={notification.href}
+      onClick={onNavigate}
       className="flex items-start gap-3 border-b px-4 py-3 transition-colors hover:bg-muted/50 last:border-0"
     >
       <div className="mt-0.5 shrink-0 rounded-full bg-muted p-1.5">

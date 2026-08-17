@@ -1,4 +1,7 @@
-import { PERMISSION_MODULES } from "@artisancode/api-types";
+import {
+  MASTER_DATA_PERMISSION_MODULES,
+  PERMISSION_MODULES,
+} from "@artisancode/api-types";
 
 import { Separator } from "@/components/ui/separator";
 
@@ -7,10 +10,10 @@ import { PermissionTable } from "./permission-table";
 import type { Permission } from "@artisancode/api-types";
 
 const mainModules = PERMISSION_MODULES.filter(
-  (m) => !m.key.startsWith("master_"),
+  (m) => !(MASTER_DATA_PERMISSION_MODULES as readonly string[]).includes(m.key),
 );
 const masterDataModules = PERMISSION_MODULES.filter((m) =>
-  m.key.startsWith("master_"),
+  (MASTER_DATA_PERMISSION_MODULES as readonly string[]).includes(m.key),
 );
 
 export function PermissionsSection({
