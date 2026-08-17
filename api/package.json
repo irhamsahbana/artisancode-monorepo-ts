@@ -66,6 +66,7 @@
     "bullmq": "^6.1.2",
     "cacheable": "^2.5.0",
     "cockatiel": "^4.0.0",
+    "cronbake": "^0.4.0",
     "doku-nodejs-library": "^1.0.52",
     "drizzle-orm": "^0.45.2",
     "hono": "^4.12.25",

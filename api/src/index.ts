@@ -1,7 +1,8 @@
 import { parseArgs } from 'util'
 
-// --cmd=server (default) | worker | cron: run API, queue worker, and run-once
-// cron tasks (--task=<name>) as separate processes
+// --cmd=server (default) | worker | scheduler | cron: run API, queue worker,
+// in-process recurring scheduler, and run-once cron tasks (--task=<name>) as
+// separate processes
 const { values } = parseArgs({
   args: Bun.argv,
   options: {
@@ -27,6 +28,11 @@ async function main(): Promise<void> {
     case 'worker': {
       const { default: runWorker } = await import('./bin/worker')
       await runWorker()
+      break
+    }
+    case 'scheduler': {
+      const { default: runScheduler } = await import('./bin/scheduler')
+      await runScheduler()
       break
     }
     case 'cron': {

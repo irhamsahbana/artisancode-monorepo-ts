@@ -40,6 +40,7 @@
         "bullmq": "^6.1.2",
         "cacheable": "^2.5.0",
         "cockatiel": "^4.0.0",
+        "cronbake": "^0.4.0",
         "doku-nodejs-library": "^1.0.52",
         "drizzle-orm": "^0.45.2",
         "hono": "^4.12.25",
@@ -1147,6 +1148,8 @@
     "create-require": ["create-require@1.1.1", "", {}, "sha512-dcKFX3jn0MpIaXjisoRvexIJVEKzaq7z2rZKxf+MSr9TkdmHmsU4m2lcLojrj/FHl8mk5VxMmYA+ftRkP/3oKQ=="],
 
     "cron-parser": ["cron-parser@5.10.0", "", { "dependencies": { "luxon": "^3.7.2" } }, "sha512-izNAxJyRWUP8ljBoDSub5WyrVOUlT4SLGShswE7eoRBpp6QUsSycYxLBMJlbshgPBMcPT/nrfgjNY2918ayv2A=="],
+
+    "cronbake": ["cronbake@0.4.0", "", {}, "sha512-xxRy6KNi858/3RuBXHziRgcntSCXaT9FgEKkY8zh/72/yPD+8IpTfUWYxmwjFcYsce4jDvcunr7tXCq4vz5Hrw=="],
 
     "cross-spawn": ["cross-spawn@7.0.6", "", { "dependencies": { "path-key": "^3.1.0", "shebang-command": "^2.0.0", "which": "^2.0.1" } }, "sha512-uV2QOWP2nWzsy2aMp8aRibhi9dlzF5Hgh5SHaB9OiTGEyDTiJJyx0uy51QXdyWbtAHNua4XJzUKca3OzKUd3vA=="],
 

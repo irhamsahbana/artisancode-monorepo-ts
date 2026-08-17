@@ -3,6 +3,7 @@
 .env
 error.log
 *.bun-build
+cronbake-state.json
 
 # Directories
 .dist
