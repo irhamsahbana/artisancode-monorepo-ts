@@ -1,3 +1,4 @@
+import { toFullPhone } from "@artisancode/phone";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { useLocation, useNavigate } from "react-router";
@@ -49,7 +50,7 @@ export function QuotationForm() {
         projectId: values.projectId || undefined,
         requesterName: values.requesterName,
         companyName: values.companyName || undefined,
-        whatsapp: values.whatsapp,
+        whatsapp: toFullPhone(values.countryCode, values.whatsapp),
         email: values.email || undefined,
         products: products.length ? products : undefined,
         notes: values.notes || undefined,

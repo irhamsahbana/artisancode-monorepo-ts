@@ -1,4 +1,5 @@
 import { Combobox } from "@/components/shared/combobox";
+import { CountryCodeSelect } from "@/components/shared/country-code-select";
 import {
   FormControl,
   FormField,
@@ -121,9 +122,26 @@ export function RequestFields({
         render={({ field }) => (
           <FormItem>
             <FormLabel>WhatsApp *</FormLabel>
-            <FormControl>
-              <Input type="tel" placeholder="6281234567890" {...field} />
-            </FormControl>
+            <div className="flex gap-2">
+              <FormField
+                control={control}
+                name="countryCode"
+                render={({ field: countryField }) => (
+                  <CountryCodeSelect
+                    value={countryField.value}
+                    onValueChange={countryField.onChange}
+                  />
+                )}
+              />
+              <FormControl>
+                <Input
+                  type="tel"
+                  placeholder="812xxxxxxxx"
+                  className="flex-1"
+                  {...field}
+                />
+              </FormControl>
+            </div>
             <FormMessage />
           </FormItem>
         )}
