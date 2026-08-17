@@ -59,14 +59,14 @@ export function BroadcastDetail() {
   const isEditable = broadcast?.status === "draft";
 
   const [form, setForm] = useState<FormState>({
-    name: broadcast?.name ?? "",
-    message: broadcast?.message ?? "",
-    occasion: broadcast?.occasion ?? "thank_you",
-    gender: broadcast?.audienceGender ?? "",
-    religion: broadcast?.audienceReligion ?? "",
-    segmentationId: broadcast?.audienceSegmentationId ?? "",
-    customerStatus: broadcast?.audienceCustomerStatus ?? "",
-    scheduledAt: broadcast?.scheduledAt ?? "",
+    name: "",
+    message: "",
+    occasion: "thank_you",
+    gender: "",
+    religion: "",
+    segmentationId: "",
+    customerStatus: "",
+    scheduledAt: "",
   });
 
   const [selectedContactIds, setSelectedContactIds] = useState<Set<string>>(
@@ -81,13 +81,37 @@ export function BroadcastDetail() {
       return { items: flattenedItems, pagination: result.pagination };
     },
     pageSize: 10,
-    initialFilters: {
-      gender: form.gender,
-      religion: form.religion,
-      segmentationId: form.segmentationId,
-      customerStatus: form.customerStatus,
-    },
   });
+
+  // useBroadcasts() resolves after this component's first render, so seeding
+  // `form`/the audience filters from `broadcast` in useState's initializer
+  // would just capture undefined — sync here instead once it's loaded.
+  const [syncedBroadcastId, setSyncedBroadcastId] = useState<string | null>(
+    null,
+  );
+  if (broadcast && broadcast.id !== syncedBroadcastId) {
+    setSyncedBroadcastId(broadcast.id);
+    setForm({
+      name: broadcast.name,
+      message: broadcast.message,
+      occasion: broadcast.occasion,
+      gender: broadcast.audienceGender ?? "",
+      religion: broadcast.audienceReligion ?? "",
+      segmentationId: broadcast.audienceSegmentationId ?? "",
+      customerStatus: broadcast.audienceCustomerStatus ?? "",
+      scheduledAt: broadcast.scheduledAt ?? "",
+    });
+    contactTable.onFilterChange("gender", broadcast.audienceGender ?? "");
+    contactTable.onFilterChange("religion", broadcast.audienceReligion ?? "");
+    contactTable.onFilterChange(
+      "segmentationId",
+      broadcast.audienceSegmentationId ?? "",
+    );
+    contactTable.onFilterChange(
+      "customerStatus",
+      broadcast.audienceCustomerStatus ?? "",
+    );
+  }
 
   function set<K extends keyof FormState>(key: K, val: FormState[K]) {
     setForm((prev) => ({ ...prev, [key]: val }));
