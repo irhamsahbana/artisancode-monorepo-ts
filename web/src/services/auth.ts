@@ -1,6 +1,7 @@
 import { httpClient } from "@artisancode/http-client";
 
 import { env } from "@/config/env";
+import { api } from "@/lib/api";
 import { DEMO_MODE } from "@/lib/demo-mode";
 
 import type { LoginReq, LoginRes, User } from "@artisancode/api-types";
@@ -45,13 +46,5 @@ export function clearToken() {
 
 export async function getMe(): Promise<User> {
   if (DEMO_MODE) return Promise.resolve(DEMO_USER);
-  const token = getToken();
-  const res = await httpClient<RestResponse>(
-    env.API_BASE_URL,
-    "/api/users/me",
-    {
-      headers: { Authorization: `Bearer ${token}` },
-    },
-  );
-  return res.data.data as User;
+  return api.get<User>("/users/me");
 }

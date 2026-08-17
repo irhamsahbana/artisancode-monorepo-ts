@@ -1,4 +1,5 @@
 import { httpClient } from "@artisancode/http-client";
+import { AppError } from "@artisancode/types";
 
 import { env } from "@/config/env";
 
@@ -29,11 +30,25 @@ async function call<T>(
   path: string,
   options?: Parameters<typeof httpClient>[2],
 ): Promise<T> {
-  const res = await httpClient<RestResponse>(env.API_BASE_URL, `/api${path}`, {
-    ...options,
-    headers: { Authorization: `Bearer ${getToken()}`, ...options?.headers },
-  });
-  return camelKeys<T>(res.data.data);
+  try {
+    const res = await httpClient<RestResponse>(
+      env.API_BASE_URL,
+      `/api${path}`,
+      {
+        ...options,
+        headers: { Authorization: `Bearer ${getToken()}`, ...options?.headers },
+      },
+    );
+    return camelKeys<T>(res.data.data);
+  } catch (error) {
+    if (error instanceof AppError && error.httpCode === 401) {
+      localStorage.removeItem("token");
+      if (window.location.pathname !== "/login") {
+        window.location.href = "/login";
+      }
+    }
+    throw error;
+  }
 }
 
 export const api = {
