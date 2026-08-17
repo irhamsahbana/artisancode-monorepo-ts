@@ -28,6 +28,11 @@ export const env = {
   DATABASE_URL: process.env.DATABASE_URL,
   DATABASE: {
     URL: process.env.DATABASE_URL,
+    // BullMQ's Postgres backend always pins search_path via a connection startup
+    // parameter, which Neon's pooled (pgbouncer) endpoint rejects. Point it at the
+    // unpooled connection string instead; falls back to DATABASE_URL when unset
+    // (e.g. a plain Postgres that isn't behind a pooler).
+    URL_UNPOOLED: process.env.DATABASE_URL_UNPOOLED || process.env.DATABASE_URL,
     POOL: {
       MAX: parseNumber(process.env.DB_POOL_MAX, 20),
       MIN: parseNumber(process.env.DB_POOL_MIN, 5),
