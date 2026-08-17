@@ -8,6 +8,7 @@ export type BroadcastOccasion =
   | 'national_day'
   | 'company_anniversary'
   | 'thank_you'
+  | 'birthday'
   | 'custom'
 
 export const BroadcastOccasions: BroadcastOccasion[] = [
@@ -18,6 +19,7 @@ export const BroadcastOccasions: BroadcastOccasion[] = [
   'national_day',
   'company_anniversary',
   'thank_you',
+  'birthday',
   'custom',
 ]
 

@@ -38,13 +38,20 @@ function getWhatsAppQueue(): WhatsAppQueue {
 
 /**
  * Enqueue a broadcast send. jobId dedupes: a second send of the same template
- * while a job is waiting/running is rejected by BullMQ.
+ * while a job is waiting/running is rejected by BullMQ. Recurring per-occurrence
+ * sends (explicit `recipients`, e.g. birthday greetings) scope the jobId to
+ * today's date instead, since the same template legitimately fires again
+ * tomorrow — a bare `broadcast:<templateId>` id would collide with the
+ * already-completed job from a prior day and silently no-op.
  */
 export async function enqueueWhatsAppSend(data: WhatsAppSendJobData): Promise<void> {
   // ponytail: migrations run inline once per boot; move to deploy step if boot slows
   await ensureWhatsAppQueueSchema()
+  const jobId = data.recipients
+    ? `broadcast:${data.templateId}:${new Date().toISOString().slice(0, 10)}`
+    : `broadcast:${data.templateId}`
   await getWhatsAppQueue().add('broadcast', data, {
-    jobId: `broadcast:${data.templateId}`,
+    jobId,
     attempts: 3,
     backoff: { type: 'exponential', delay: 5000 },
     removeOnComplete: { count: 100 },

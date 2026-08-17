@@ -233,8 +233,13 @@ export function BroadcastDetail() {
   }
 
   const canEdit = isEditable;
+  const isBirthday = broadcast.occasion === "birthday";
+  // Birthday templates fire automatically every day (see broadcast-form) —
+  // manual "Kirim Sekarang" would blast the full audience today regardless
+  // of whose birthday it actually is, so it's not offered here.
   const canSend =
-    broadcast.status === "draft" || broadcast.status === "scheduled";
+    !isBirthday &&
+    (broadcast.status === "draft" || broadcast.status === "scheduled");
 
   return (
     <div>
@@ -263,6 +268,13 @@ export function BroadcastDetail() {
           </Button>
         )}
       </div>
+
+      {isBirthday && (
+        <p className="text-muted-foreground mb-4 text-sm">
+          Template ini terkirim otomatis tiap hari jam 08:00 WIB ke pelanggan
+          yang berulang tahun hari itu — tidak ada pengiriman manual.
+        </p>
+      )}
 
       <div className="grid gap-6">
         <Card>

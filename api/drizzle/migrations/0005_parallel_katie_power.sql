@@ -1,0 +1,1 @@
+ALTER TYPE "public"."broadcast_occasion" ADD VALUE 'birthday' BEFORE 'custom';

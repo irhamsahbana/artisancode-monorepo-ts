@@ -8,10 +8,13 @@ export interface IBroadcastRepo {
   countLogsForTemplate(templateId: string): Promise<number>
   deleteTemplate(id: string): Promise<void>
 
-  // Actually creates the log and updates template status
+  // Actually creates the log and (by default) updates template status.
+  // markSent: false skips the status flip — used for recurring per-occurrence
+  // sends (e.g. birthday greetings) that fire again on a future date.
   recordSend(
     templateId: string,
     recipientLogs: Entity.PerContactLog[],
+    options?: { markSent?: boolean },
   ): Promise<Entity.BroadcastLog>
 }
 

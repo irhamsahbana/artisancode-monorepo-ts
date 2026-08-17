@@ -5,8 +5,21 @@ import { env } from '@/config/env'
 
 export const WHATSAPP_SEND_QUEUE = 'whatsapp-send'
 
+export interface WhatsAppSendRecipient {
+  contactId: string
+  contactName: string
+  whatsapp: string
+}
+
 export interface WhatsAppSendJobData {
   templateId: string
+  /**
+   * Explicit per-occurrence recipients (e.g. today's birthdays). When set, the
+   * worker sends only to these contacts instead of re-querying the template's
+   * full audience, and skips the one-shot "already sent" guard/status flip —
+   * this is a recurring job, not a single campaign send.
+   */
+  recipients?: WhatsAppSendRecipient[]
 }
 
 const QUEUE_SCHEMA = 'bullmq'

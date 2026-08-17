@@ -39,6 +39,7 @@ export const broadcastOccasionEnum = pgEnum('broadcast_occasion', [
   'national_day',
   'company_anniversary',
   'thank_you',
+  'birthday',
   'custom',
 ])
 

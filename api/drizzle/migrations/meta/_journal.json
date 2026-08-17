@@ -36,6 +36,13 @@
       "when": 1786965177881,
       "tag": "0004_ancient_energizer",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1786975199959,
+      "tag": "0005_parallel_katie_power",
+      "breakpoints": true
     }
   ]
 }
