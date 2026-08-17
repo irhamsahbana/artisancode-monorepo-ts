@@ -11,7 +11,9 @@ import productRouter from '@/adapter/primary/rest/product/product.index'
 import projectRouter from '@/adapter/primary/rest/project/project.index'
 import quotationRouter from '@/adapter/primary/rest/quotation/quotation.index'
 import ratingRouter from '@/adapter/primary/rest/rating/rating.index'
-import roleAndPermissionRouter from '@/adapter/primary/rest/role_and_permission/role_and_permission.index'
+import roleRouter, {
+  permissionRouter,
+} from '@/adapter/primary/rest/role_and_permission/role_and_permission.index'
 import uomRouter, { unitConversionRouter } from '@/adapter/primary/rest/uom/uom.index'
 import userRouter from '@/adapter/primary/rest/user/user.index'
 import webhookRouter from '@/adapter/primary/rest/webhook/webhook.index'
@@ -23,8 +25,8 @@ router.route('/health', healthRouter)
 
 // Identity & Access
 router.route('/users', userRouter)
-router.route('/role-and-permissions', roleAndPermissionRouter)
-router.route('/roles', roleAndPermissionRouter) // Alias to fix frontend path mismatch
+router.route('/roles', roleRouter)
+router.route('/permissions', permissionRouter)
 
 // Core CRM
 router.route('/business-profile', businessProfileRouter)

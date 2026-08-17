@@ -14,21 +14,23 @@ const repo = createRoleAndPermissionRepo()
 const usecase = createRoleAndPermissionUsecase(repo)
 const handler = createRoleAndPermissionHandlerDeps(usecase)
 
-const router = new Hono()
+const roleRouter = new Hono()
+const permissionRouter = new Hono()
 
 // Role Routes
-router.post('/roles', authenticate, validate(Schema.createRoleSchema), handler.createRole)
-router.get('/roles', authenticate, validateQuery(Schema.getRoleListSchema), handler.findRoleList)
-router.get('/roles/:id', authenticate, handler.findRoleById)
-router.put('/roles/:id', authenticate, validate(Schema.updateRoleSchema), handler.updateRole)
-router.delete('/roles/:id', authenticate, handler.deleteRole)
+roleRouter.post('/', authenticate, validate(Schema.createRoleSchema), handler.createRole)
+roleRouter.get('/', authenticate, validateQuery(Schema.getRoleListSchema), handler.findRoleList)
+roleRouter.get('/:id', authenticate, handler.findRoleById)
+roleRouter.put('/:id', authenticate, validate(Schema.updateRoleSchema), handler.updateRole)
+roleRouter.delete('/:id', authenticate, handler.deleteRole)
 
 // Permission Routes
-router.get(
-  '/permissions',
+permissionRouter.get(
+  '/',
   authenticate,
   validateQuery(Schema.getPermissionListSchema),
   handler.findPermissionList,
 )
 
-export default router
+export default roleRouter
+export { permissionRouter }
