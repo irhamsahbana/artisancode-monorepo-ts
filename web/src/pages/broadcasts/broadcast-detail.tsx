@@ -74,7 +74,7 @@ export function BroadcastDetail() {
   );
 
   const contactTable = useServerTable<ContactSearchResult>({
-    queryKey: (params) => queryKeys.contacts.searchPersons(params),
+    queryKey: (params) => queryKeys.contacts.searchPersonsFlat(params),
     fetcher: async (params) => {
       const result = await contactService.searchPersons(params);
       const flattenedItems = result.items.flatMap((group) => group.entries);

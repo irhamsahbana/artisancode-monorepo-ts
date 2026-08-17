@@ -17,6 +17,11 @@ export const queryKeys = {
     search: (q: string) => ["contacts", "search", q] as const,
     searchPersons: (params?: Record<string, unknown>) =>
       ["contacts", "search-persons", params] as const,
+    // Distinct key: this caches the flattened ContactSearchResult[] shape,
+    // not searchPersons' grouped ContactPersonGroup[] — sharing one key
+    // let react-query serve the wrong shape across components.
+    searchPersonsFlat: (params?: Record<string, unknown>) =>
+      ["contacts", "search-persons-flat", params] as const,
   },
   dashboard: {
     all: ["dashboard"] as const,

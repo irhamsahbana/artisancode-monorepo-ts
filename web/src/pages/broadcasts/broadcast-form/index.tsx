@@ -38,7 +38,7 @@ export function BroadcastForm() {
   });
 
   const contactTable = useServerTable<ContactSearchResult>({
-    queryKey: (params) => queryKeys.contacts.searchPersons(params),
+    queryKey: (params) => queryKeys.contacts.searchPersonsFlat(params),
     fetcher: async (params) => {
       const result = await contactService.searchPersons(params);
       // Flatten ContactPersonGroup entries to individual ContactSearchResult rows
@@ -64,7 +64,7 @@ export function BroadcastForm() {
   const religions = useMemo(() => {
     const set = new Set<string>();
     for (const r of contactTable.loadedItems ?? [])
-      if (r.contact.religion) set.add(r.contact.religion);
+      if (r.customer.religion) set.add(r.customer.religion);
     return Array.from(set).sort();
   }, [contactTable.loadedItems]);
 
