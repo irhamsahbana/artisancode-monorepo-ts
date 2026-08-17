@@ -5,6 +5,8 @@ export interface IBroadcastRepo {
   findTemplateList(page: number, perPage: number): Promise<Entity.BroadcastList>
   findLogs(): Promise<Entity.BroadcastLog[]>
   findLogsByTemplateId(templateId: string): Promise<Entity.BroadcastLog[]>
+  countLogsForTemplate(templateId: string): Promise<number>
+  deleteTemplate(id: string): Promise<void>
 
   // Actually creates the log and updates template status
   recordSend(
@@ -18,6 +20,7 @@ export interface IBroadcastUsecase {
   findTemplateList(page: number, perPage: number): Promise<Entity.BroadcastList>
   findLogs(): Promise<Entity.BroadcastLog[]>
   findLogsByTemplateId(templateId: string): Promise<Entity.BroadcastLog[]>
+  deleteTemplate(id: string): Promise<void>
 
   send(req: Entity.SendBroadcastReq): Promise<Entity.BroadcastLog>
 }

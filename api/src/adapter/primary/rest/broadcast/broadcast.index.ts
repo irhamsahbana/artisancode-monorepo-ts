@@ -36,6 +36,12 @@ router.get(
   requirePermission('broadcast_logs.view'),
   handler.findLogsByTemplateId,
 )
+router.delete(
+  '/:id',
+  authenticate,
+  requirePermission('broadcast_templates.delete'),
+  handler.deleteTemplate,
+)
 router.post(
   '/send',
   authenticate,

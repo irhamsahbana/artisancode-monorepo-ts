@@ -89,6 +89,18 @@ export function createBroadcastRepo(): IBroadcastRepo {
       return rows.map(logToEntity)
     },
 
+    countLogsForTemplate: async (templateId) => {
+      const [result] = await getExecutor()
+        .select({ count: sql<number>`count(*)::int` })
+        .from(broadcastLogs)
+        .where(eq(broadcastLogs.templateId, templateId))
+      return result?.count ?? 0
+    },
+
+    deleteTemplate: async (id) => {
+      await getExecutor().delete(broadcastTemplates).where(eq(broadcastTemplates.id, id))
+    },
+
     recordSend: async (templateId, recipientLogs) => {
       const exec = getExecutor()
 

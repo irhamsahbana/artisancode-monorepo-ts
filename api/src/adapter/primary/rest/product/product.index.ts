@@ -36,5 +36,6 @@ router.put(
   validate(Schema.updateProductSchema),
   handler.update,
 )
+router.delete('/:id', authenticate, requirePermission('products.delete'), handler.delete)
 
 export default router

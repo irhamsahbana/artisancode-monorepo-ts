@@ -1,4 +1,4 @@
-import { and, asc, eq, ilike, sql } from 'drizzle-orm'
+import { and, asc, eq, ilike, or, sql } from 'drizzle-orm'
 
 import { getExecutor } from '@/common/executor'
 import { IUomRepo } from '@/contracts/uom.contract'
@@ -86,6 +86,18 @@ export function createUomRepo(): IUomRepo {
       return row ? uomToEntity(row) : null
     },
 
+    countConversionsForUom: async (uomId) => {
+      const [result] = await getExecutor()
+        .select({ count: sql<number>`count(*)::int` })
+        .from(unitConversions)
+        .where(or(eq(unitConversions.fromUnitId, uomId), eq(unitConversions.toUnitId, uomId)))
+      return result?.count ?? 0
+    },
+
+    deleteUom: async (id) => {
+      await getExecutor().delete(uoms).where(eq(uoms.id, id))
+    },
+
     createConversion: async (req) => {
       const [row] = await getExecutor()
         .insert(unitConversions)
@@ -133,6 +145,10 @@ export function createUomRepo(): IUomRepo {
         .where(eq(unitConversions.id, req.id))
         .returning()
       return row ? conversionToEntity(row) : null
+    },
+
+    deleteConversion: async (id) => {
+      await getExecutor().delete(unitConversions).where(eq(unitConversions.id, id))
     },
   }
 }

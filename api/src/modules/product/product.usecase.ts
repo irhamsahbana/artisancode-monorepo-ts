@@ -19,5 +19,7 @@ export function createProductUsecase(repo: IProductRepo): IProductUsecase {
       if (!item) throw new AppError(ErrorCode.NOT_FOUND, 'Product not found')
       return item
     },
+
+    delete: (id) => deps.repo.delete(id),
   }
 }

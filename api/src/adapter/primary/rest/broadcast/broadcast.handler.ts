@@ -28,6 +28,11 @@ export function createBroadcastHandler(usecase: IBroadcastUsecase) {
       return c.json(responseSuccess(data))
     },
 
+    deleteTemplate: async (c: Context<AppEnv>) => {
+      await usecase.deleteTemplate(c.req.param('id') as string)
+      return c.json(responseSuccess(null, 'Broadcast template deleted successfully'))
+    },
+
     send: async (c: Context<AppEnv>) => {
       const data = await usecase.send({ templateId: c.get('body').templateId })
       return c.json(responseSuccess(data, 'Broadcast sent successfully'))

@@ -20,6 +20,17 @@ export function createUomUsecase(repo: IUomRepo): IUomUsecase {
       return item
     },
 
+    deleteUom: async (id) => {
+      const conversionCount = await deps.repo.countConversionsForUom(id)
+      if (conversionCount > 0) {
+        throw new AppError(
+          ErrorCode.CONFLICT,
+          `Cannot delete: still used by ${conversionCount} unit conversion(s)`,
+        )
+      }
+      await deps.repo.deleteUom(id)
+    },
+
     createConversion: async (req) => {
       if (req.fromUnitId === req.toUnitId) {
         throw new AppError(
@@ -37,5 +48,7 @@ export function createUomUsecase(repo: IUomRepo): IUomUsecase {
       if (!item) throw new AppError(ErrorCode.NOT_FOUND, 'Unit conversion not found')
       return item
     },
+
+    deleteConversion: (id) => deps.repo.deleteConversion(id),
   }
 }

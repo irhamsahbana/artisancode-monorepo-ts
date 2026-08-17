@@ -31,6 +31,11 @@ export function createUomHandler(usecase: IUomUsecase) {
       return c.json(responseSuccess(data, 'Unit of measurement updated successfully'))
     },
 
+    deleteUom: async (c: Context<AppEnv>) => {
+      await usecase.deleteUom(c.req.param('id') as string)
+      return c.json(responseSuccess(null, 'Unit of measurement deleted successfully'))
+    },
+
     createConversion: async (c: Context<AppEnv>) => {
       const data = await usecase.createConversion(c.get('body'))
       return c.json(responseSuccess(data, 'Unit conversion created successfully'), 201)
@@ -52,6 +57,11 @@ export function createUomHandler(usecase: IUomUsecase) {
         id: c.req.param('id') as string,
       })
       return c.json(responseSuccess(data, 'Unit conversion updated successfully'))
+    },
+
+    deleteConversion: async (c: Context<AppEnv>) => {
+      await usecase.deleteConversion(c.req.param('id') as string)
+      return c.json(responseSuccess(null, 'Unit conversion deleted successfully'))
     },
   }
 }

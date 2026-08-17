@@ -37,6 +37,7 @@ uomRouter.put(
   validate(Schema.updateUomSchema),
   handler.updateUom,
 )
+uomRouter.delete('/:id', authenticate, requirePermission('uoms.delete'), handler.deleteUom)
 
 unitConversionRouter.post(
   '/',
@@ -58,6 +59,12 @@ unitConversionRouter.put(
   requirePermission('unit_conversions.update'),
   validate(Schema.updateUnitConversionSchema),
   handler.updateConversion,
+)
+unitConversionRouter.delete(
+  '/:id',
+  authenticate,
+  requirePermission('unit_conversions.delete'),
+  handler.deleteConversion,
 )
 
 export default uomRouter

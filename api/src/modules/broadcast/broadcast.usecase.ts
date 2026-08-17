@@ -19,6 +19,17 @@ export function createBroadcastUsecase(repo: IBroadcastRepo): IBroadcastUsecase 
     findLogs: () => deps.repo.findLogs(),
     findLogsByTemplateId: (templateId) => deps.repo.findLogsByTemplateId(templateId),
 
+    deleteTemplate: async (id) => {
+      const logCount = await deps.repo.countLogsForTemplate(id)
+      if (logCount > 0) {
+        throw new AppError(
+          ErrorCode.CONFLICT,
+          `Cannot delete: template has ${logCount} send log(s)`,
+        )
+      }
+      await deps.repo.deleteTemplate(id)
+    },
+
     send: async (req) => {
       const exec = getExecutor()
 

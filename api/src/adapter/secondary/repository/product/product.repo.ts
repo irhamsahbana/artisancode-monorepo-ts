@@ -72,5 +72,12 @@ export function createProductRepo(): IProductRepo {
         .returning()
       return row ? toEntity(row) : null
     },
+
+    delete: async (id) => {
+      await getExecutor()
+        .update(products)
+        .set({ deletedAt: sql`now()` as unknown as Date })
+        .where(and(eq(products.id, id), isNull(products.deletedAt)))
+    },
   }
 }

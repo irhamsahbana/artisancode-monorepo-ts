@@ -29,5 +29,10 @@ export function createProductHandler(usecase: IProductUsecase) {
       const data = await usecase.update(payload)
       return c.json(responseSuccess(data, 'Product updated successfully'))
     },
+
+    delete: async (c: Context<AppEnv>) => {
+      await usecase.delete(c.req.param('id') as string)
+      return c.json(responseSuccess(null, 'Product deleted successfully'))
+    },
   }
 }
