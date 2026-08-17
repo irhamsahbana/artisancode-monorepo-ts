@@ -22,5 +22,5 @@ export interface IBroadcastUsecase {
   findLogsByTemplateId(templateId: string): Promise<Entity.BroadcastLog[]>
   deleteTemplate(id: string): Promise<void>
 
-  send(req: Entity.SendBroadcastReq): Promise<Entity.BroadcastLog>
+  send(req: Entity.SendBroadcastReq): Promise<Entity.SendBroadcastRes>
 }

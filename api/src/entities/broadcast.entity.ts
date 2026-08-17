@@ -68,6 +68,13 @@ export interface SendBroadcastReq {
   templateId: string
 }
 
+/** Immediate ack while actual sending runs in the background */
+export interface SendBroadcastRes {
+  templateId: string
+  recipientCount: number
+  provider: string
+}
+
 export interface BroadcastList {
   items: BroadcastTemplate[]
   pagination: PaginationMetadata

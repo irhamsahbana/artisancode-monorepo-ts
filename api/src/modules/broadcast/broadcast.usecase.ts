@@ -1,10 +1,11 @@
 import { AppError, ErrorCode } from '@artisancode/types'
 import { and, eq, isNull } from 'drizzle-orm'
 
+import { enqueueWhatsAppSend } from '@/adapter/secondary/queue/whatsapp-send.queue'
 import { getExecutor } from '@/common/executor'
 import { IBroadcastRepo, IBroadcastUsecase } from '@/contracts/broadcast.contract'
 import { contacts, customers } from '@/db/schema'
-import * as Entity from '@/entities/broadcast.entity'
+import { getWhatsAppProvider } from '@/integrations/whatsapp'
 
 export interface BroadcastUsecaseDeps {
   repo: IBroadcastRepo
@@ -69,8 +70,6 @@ export function createBroadcastUsecase(repo: IBroadcastRepo): IBroadcastUsecase 
       const targetContacts = await exec
         .select({
           contactId: contacts.id,
-          contactName: contacts.name,
-          whatsapp: contacts.whatsapp,
         })
         .from(contacts)
         .innerJoin(customers, eq(contacts.customerId, customers.id))
@@ -80,29 +79,16 @@ export function createBroadcastUsecase(repo: IBroadcastRepo): IBroadcastUsecase 
         throw new AppError(ErrorCode.VALIDATION_ERROR, 'No contacts match the audience criteria')
       }
 
-      // 3. No-op execution (simulate sending via provider)
-      const recipientLogs: Entity.PerContactLog[] = targetContacts.map((c) => {
-        // Skip those without whatsapp
-        if (!c.whatsapp) {
-          return {
-            contactId: c.contactId,
-            contactName: c.contactName,
-            status: 'failed',
-            errorMessage: 'Missing WhatsApp number',
-          }
-        }
+      // 3. Enqueue: singletonKey = templateId dedupes a second send while one is running
+      const provider = getWhatsAppProvider()
+      await enqueueWhatsAppSend({ templateId: req.templateId })
 
-        // Simulate success for now
-        return {
-          contactId: c.contactId,
-          contactName: c.contactName,
-          status: 'sent',
-          sentAt: new Date().toISOString(),
-        }
-      })
-
-      // 4. Record results
-      return deps.repo.recordSend(req.templateId, recipientLogs)
+      // 4. Ack immediately with dispatch info
+      return {
+        templateId: req.templateId,
+        recipientCount: targetContacts.length,
+        provider: provider.name,
+      }
     },
   }
 }

@@ -18,3 +18,9 @@ export type {
 export type { ITransactor } from './transactor.contract'
 
 export type { Pokemon, PokemonListResult, IPokemonService } from './pokemon.contract'
+
+export type {
+  SendWhatsAppTextReq,
+  SendWhatsAppTextRes,
+  IWhatsAppProvider,
+} from './whatsapp.contract'

@@ -64,6 +64,18 @@ export const env = {
     SECRET_KEY: process.env.DOKU_SECRET_KEY,
     PUBLIC_KEY: process.env.DOKU_PUBLIC_KEY,
   },
+  WHATSAPP: {
+    PROVIDER: (process.env.WHATSAPP_PROVIDER || 'noop') as 'gowa' | 'noop',
+    // Random delay range between messages to reduce ban risk on unofficial API
+    SEND_DELAY_MIN_MS: parseNumber(process.env.WHATSAPP_SEND_DELAY_MIN_MS, 10_000),
+    SEND_DELAY_MAX_MS: parseNumber(process.env.WHATSAPP_SEND_DELAY_MAX_MS, 30_000),
+  },
+  GOWA: {
+    BASE_URL: process.env.GOWA_BASE_URL || '',
+    // "user:password" (matches APP_BASIC_AUTH on the gowa server)
+    BASIC_AUTH: process.env.GOWA_BASIC_AUTH || '',
+    DEVICE_ID: process.env.GOWA_DEVICE_ID || '',
+  },
   S3: {
     BUCKET: process.env.S3_BUCKET || '',
     REGION: process.env.S3_REGION || 'ap-southeast-1',

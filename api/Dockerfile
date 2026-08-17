@@ -23,4 +23,4 @@ ENV NODE_ENV=production
 EXPOSE 3002
 
 # ponytail: migration runs on every start; drizzle migrate is idempotent
-CMD ["sh", "-c", "bun run drizzle:migrate && bun src/index.ts"]
+CMD ["sh", "-c", "bun run drizzle:migrate && bun --preload ./src/otel.ts src/index.ts"]
