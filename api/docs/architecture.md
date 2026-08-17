@@ -71,3 +71,23 @@ export class DokuIntegration implements IPaymentGateway {
 - **New integrations**: Add a contract in `contracts/integration/`. If it's an outbound REST client, implement it in `adapter/secondary/rest/`; otherwise (mock, SDK-based) implement it in `integrations/`. Either way, export a factory function from `integrations/index.ts`.
 - **New operations**: Add a function file in the integration directory, add a wrapper method in `index.ts`.
 - **Jobs** (cron scripts) also use factory functions from `@/integrations`.
+
+## Process Split
+
+`src/index.ts` dispatches to one of four entrypoints via `--cmd=<name>`, so each concern deploys as its own process/container:
+
+```text
+src/bin/
+  app.ts        ← --cmd=server (default): the Hono REST API
+  worker.ts     ← --cmd=worker: BullMQ queue consumer(s)
+  scheduler.ts  ← --cmd=scheduler: in-process cron daemon (cronbake), runs recurring jobs
+  cron.ts       ← --cmd=cron --task=<name>: run one named task once, then exit (external triggers)
+```
+
+- **Recurring** jobs (e.g. daily birthday greeting) belong in `src/jobs/scheduler.ts`, registered with cronbake and run by the `scheduler` process. cronbake has no timezone option — it reads the container's local time, so the process needs `TZ=Asia/Jakarta` set.
+- **One-off/ad-hoc** tasks (manually triggered, not on a recurring schedule) go through `bin/cron.ts`'s task switch instead.
+- Async work that shouldn't block a request (e.g. sending WhatsApp messages) is enqueued onto a **Postgres-backed BullMQ queue** — no Redis dependency. Queue setup:
+  - `common/queue/*.queue.ts` — shared connection config + job data types (discriminated union when one queue serves multiple job kinds).
+  - `adapter/secondary/queue/*.queue.ts` — producer (`enqueue*`), called from usecases.
+  - `adapter/primary/queue/*.worker.ts` — consumer, registered in `bin/worker.ts`.
+  - Use `DATABASE_URL_UNPOOLED`, not the pooled connection — BullMQ pins `search_path` via a Postgres connection startup parameter, which Neon's pgbouncer pooled endpoint rejects.
