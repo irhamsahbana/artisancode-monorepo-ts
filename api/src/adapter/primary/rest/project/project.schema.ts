@@ -35,7 +35,9 @@ export const getProjectListSchema = z.object({
   per_page: z.coerce.number().int().min(1).max(100).optional(),
   q: z.string().optional(),
   status: z.enum(ProjectStatuses as [string, ...string[]]).optional(),
-  customerId: z.uuid().optional(),
+  // Plain string, not z.uuid(): frontend select sends "" for "all", which
+  // fails uuid validation — repo layer already treats a falsy filter as unset.
+  customerId: z.string().optional(),
 })
 
 export const createProjectVisitSchema = z.object({

@@ -16,6 +16,8 @@ export const createCustomerRatingSchema = z.object({
 export const getCustomerRatingListSchema = z.object({
   page: z.coerce.number().int().min(1).optional(),
   per_page: z.coerce.number().int().min(1).max(100).optional(),
-  customerId: z.uuid().optional(),
-  contactId: z.uuid().optional(),
+  // Plain string, not z.uuid(): frontend selects send "" for "all", which
+  // fails uuid validation — repo layer already treats a falsy filter as unset.
+  customerId: z.string().optional(),
+  contactId: z.string().optional(),
 })

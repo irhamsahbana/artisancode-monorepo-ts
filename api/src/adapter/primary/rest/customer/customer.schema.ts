@@ -44,9 +44,11 @@ export const getCustomerListSchema = z.object({
   type: z.enum(CustomerTypes as [string, ...string[]]).optional(),
   status: z.enum(CustomerStatuses as [string, ...string[]]).optional(),
   potential: z.enum(CustomerPotentials as [string, ...string[]]).optional(),
-  category_id: z.uuid().optional(),
-  segmentation_id: z.uuid().optional(),
-  area_id: z.uuid().optional(),
+  // Plain string, not z.uuid(): frontend selects send "" for "all", which
+  // fails uuid validation — repo layer already treats a falsy filter as unset.
+  category_id: z.string().optional(),
+  segmentation_id: z.string().optional(),
+  area_id: z.string().optional(),
   has_contract_history: z
     .string()
     .transform((v) => v === 'true')

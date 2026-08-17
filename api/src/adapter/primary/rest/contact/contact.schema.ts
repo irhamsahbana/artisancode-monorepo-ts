@@ -33,6 +33,8 @@ export const searchContactPersonsSchema = z.object({
   q: z.string().optional(),
   gender: z.string().optional(),
   religion: z.string().optional(),
-  segmentationId: z.uuid().optional(),
+  // Plain string, not z.uuid(): frontend select sends "" for "all", which
+  // fails uuid validation — repo layer already treats a falsy filter as unset.
+  segmentationId: z.string().optional(),
   customerStatus: z.string().optional(),
 })
