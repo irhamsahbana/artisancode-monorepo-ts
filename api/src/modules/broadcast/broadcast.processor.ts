@@ -78,8 +78,10 @@ export async function processBroadcastSend(
       continue
     }
 
+    const message = template.message.replace(/\{\{\s*nama\s*\}\}/gi, contact.contactName)
+
     try {
-      await provider.sendTextMessage({ to: contact.whatsapp, message: template.message })
+      await provider.sendTextMessage({ to: contact.whatsapp, message })
       recipientLogs.push({
         contactId: contact.contactId,
         contactName: contact.contactName,
