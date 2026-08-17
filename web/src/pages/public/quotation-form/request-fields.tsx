@@ -51,9 +51,9 @@ export function RequestFields({
                 value={field.value ?? ""}
                 onChange={field.onChange}
                 options={[
-                  { value: "Permintaan Penawaran" },
-                  { value: "Request for Quotation (RFQ)" },
+                  { value: "RFQ" },
                   { value: "Tender/Lelang" },
+                  { value: "Lainnya" },
                 ]}
                 placeholder="Pilih atau ketik topik..."
               />
