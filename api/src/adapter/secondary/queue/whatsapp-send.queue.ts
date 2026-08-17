@@ -48,10 +48,11 @@ function getWhatsAppQueue(): WhatsAppQueue {
 export async function enqueueWhatsAppSend(data: WhatsAppSendJobData): Promise<void> {
   // ponytail: migrations run inline once per boot; move to deploy step if boot slows
   await ensureWhatsAppQueueSchema()
+  // No ":" — the Postgres-backed queue rejects custom job IDs containing it.
   const jobId =
     data.kind === 'broadcast'
-      ? `broadcast:${data.templateId}`
-      : `birthday-greeting:${new Date().toISOString().slice(0, 10)}`
+      ? `broadcast-${data.templateId}`
+      : `birthday-greeting-${new Date().toISOString().slice(0, 10)}`
   await getWhatsAppQueue().add(data.kind, data, {
     jobId,
     attempts: 3,
