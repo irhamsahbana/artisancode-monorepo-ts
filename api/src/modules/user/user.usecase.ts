@@ -8,6 +8,7 @@ import { findUserById } from './user.usecase/find-by-id'
 import { findUserByUsername } from './user.usecase/find-by-username'
 import { findUserList } from './user.usecase/find-list'
 import { loginUser } from './user.usecase/login'
+import { refreshUserToken } from './user.usecase/refresh-token'
 import { updateUser } from './user.usecase/update'
 
 export interface UserUsecaseDeps {
@@ -20,6 +21,7 @@ export function createUserUsecase(repo: IUserRepo): IUserUsecase {
   return {
     create: (req) => withSpan('UserUsecase.create', () => createUser(deps, req)),
     login: (req) => withSpan('UserUsecase.login', () => loginUser(deps, req)),
+    refreshToken: (req) => withSpan('UserUsecase.refreshToken', () => refreshUserToken(deps, req)),
     findList: (req) => findUserList(deps, req),
     findById: (id) => findUserById(deps, id),
     findByUsername: (username) => findUserByUsername(deps, username),

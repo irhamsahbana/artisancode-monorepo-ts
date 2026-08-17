@@ -42,6 +42,8 @@ export const env = {
   JWT: {
     SECRET: process.env.JWT_SECRET || 'secret',
     EXPIRES_IN: process.env.JWT_EXPIRES_IN || '1d',
+    REFRESH_SECRET: process.env.JWT_REFRESH_SECRET || 'refresh-secret',
+    REFRESH_EXPIRES_IN: process.env.JWT_REFRESH_EXPIRES_IN || '7d',
   },
   OTEL: {
     ENABLED: parseBoolean(process.env.OTEL_ENABLED, false),

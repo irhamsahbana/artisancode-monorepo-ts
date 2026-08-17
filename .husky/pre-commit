@@ -1,1 +1,1 @@
-bun run --filter '*' lint-staged
+bun run --filter artisancode-backend-ts lint-staged && bun run --filter artisancode-react lint-staged

@@ -14,6 +14,8 @@ const usecase = createUserUsecase(repo)
 const handler = createUserHandlerDeps(usecase)
 
 router.post('/login', validate(Schema.loginSchema), handler.login)
+router.post('/logout', authenticate, handler.logout)
+router.post('/refresh-token', validate(Schema.refreshTokenSchema), handler.refreshToken)
 
 router.get('/me', authenticate, handler.me)
 router.patch('/me', authenticate, validate(Schema.updateAccountSchema), handler.updateAccount)

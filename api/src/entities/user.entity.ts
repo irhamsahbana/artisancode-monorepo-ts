@@ -64,7 +64,12 @@ export interface UserList {
 
 export interface LoginRes extends User {
   token: string
+  refreshToken: string
   permissions: string[]
+}
+
+export interface RefreshTokenReq {
+  refresh_token: string
 }
 
 export interface RegisterReq {

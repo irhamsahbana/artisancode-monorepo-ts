@@ -12,6 +12,7 @@ export interface LoginReq {
 export interface LoginRes {
   user: User
   token: string
+  refreshToken: string
 }
 
 export interface UpdateAccountReq {

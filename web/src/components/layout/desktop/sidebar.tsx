@@ -38,7 +38,7 @@ import {
   SidebarMenuSubButton,
   SidebarMenuSubItem,
 } from "@/components/ui/sidebar";
-import { clearToken } from "@/hooks/use-auth";
+import { logout } from "@/hooks/use-auth";
 import { cn } from "@/lib/utils";
 
 const mainNav = [
@@ -77,8 +77,8 @@ export function DesktopSidebar() {
   const navigate = useNavigate();
   const location = useLocation();
 
-  function handleLogout() {
-    clearToken();
+  async function handleLogout() {
+    await logout();
     navigate("/login");
   }
 

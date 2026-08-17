@@ -3,6 +3,7 @@ import * as Entity from '@/entities/user.entity'
 export interface IUserUsecase {
   create(req: Entity.CreateUserReq): Promise<Entity.User>
   login(req: Entity.LoginReq): Promise<Entity.LoginRes | null>
+  refreshToken(req: Entity.RefreshTokenReq): Promise<Entity.LoginRes | null>
   findList(req: Entity.GetUserReq): Promise<Entity.UserList>
   findById(id: string): Promise<Entity.User | null>
   findByUsername(username: string): Promise<Entity.User | null>

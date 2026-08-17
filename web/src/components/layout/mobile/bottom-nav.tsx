@@ -29,7 +29,7 @@ import {
   SheetHeader,
   SheetTitle,
 } from "@/components/ui/sheet";
-import { clearToken } from "@/hooks/use-auth";
+import { logout } from "@/hooks/use-auth";
 import { cn } from "@/lib/utils";
 
 const menuItems = [
@@ -78,8 +78,8 @@ export function BottomNav() {
     location.pathname.startsWith(p),
   );
 
-  function handleLogout() {
-    clearToken();
+  async function handleLogout() {
+    await logout();
     navigate("/login");
   }
 
