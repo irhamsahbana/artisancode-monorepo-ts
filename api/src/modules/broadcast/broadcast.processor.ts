@@ -56,6 +56,7 @@ export async function processBroadcastSend(
       contactId: contacts.id,
       contactName: contacts.name,
       whatsapp: contacts.whatsapp,
+      gender: customers.gender,
     })
     .from(contacts)
     .innerJoin(customers, eq(contacts.customerId, customers.id))
@@ -78,7 +79,10 @@ export async function processBroadcastSend(
       continue
     }
 
-    const message = template.message.replace(/\{\{\s*nama\s*\}\}/gi, contact.contactName)
+    const sapaan = contact.gender === 'female' ? 'Ibu' : 'Bapak'
+    const message = template.message
+      .replace(/\{\{\s*nama\s*\}\}/gi, contact.contactName)
+      .replace(/\{\{\s*sapaan\s*\}\}/gi, sapaan)
 
     try {
       await provider.sendTextMessage({ to: contact.whatsapp, message })
