@@ -4,10 +4,12 @@ import * as Entity from '@/entities/user.entity'
 
 import { checkExistingUser } from './user.repo/check-existing-user'
 import { createUser } from './user.repo/create'
+import { deleteUser } from './user.repo/delete'
 import { findUserById } from './user.repo/find-by-id'
 import { findUserByUsername } from './user.repo/find-by-username'
 import { findUserByUsernameForLogin } from './user.repo/find-by-username-for-login'
 import { findUserList } from './user.repo/find-list'
+import { updateUser } from './user.repo/update'
 
 export interface UserRepoDeps {
   toEntity: (data: typeof users.$inferSelect) => Entity.User
@@ -30,6 +32,8 @@ export function createUserRepo(): IUserRepo {
     findById: (id) => findUserById(deps, id),
     findByUsername: (username) => findUserByUsername(deps, username),
     findByUsernameForLogin: (username) => findUserByUsernameForLogin(username),
+    update: (req) => updateUser(deps, req),
+    delete: (id) => deleteUser(id),
   }
 }
 

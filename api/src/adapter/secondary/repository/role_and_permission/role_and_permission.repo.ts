@@ -29,6 +29,7 @@ function toRoleEntity(
     id: data.id,
     name: data.name,
     description: data.description,
+    isSystem: data.isSystem,
     createdAt: data.createdAt,
     updatedAt: data.updatedAt,
     deletedAt: data.deletedAt,

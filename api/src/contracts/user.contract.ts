@@ -6,6 +6,8 @@ export interface IUserUsecase {
   findList(req: Entity.GetUserReq): Promise<Entity.UserList>
   findById(id: string): Promise<Entity.User | null>
   findByUsername(username: string): Promise<Entity.User | null>
+  update(req: Entity.UpdateUserReq): Promise<Entity.User>
+  delete(id: string, requestedById: string): Promise<void>
 }
 
 export interface IUserRepo {
@@ -15,4 +17,6 @@ export interface IUserRepo {
   findById(id: string): Promise<Entity.User | null>
   findByUsername(username: string): Promise<Entity.User | null>
   findByUsernameForLogin(username: string): Promise<(Entity.User & { password: string }) | null>
+  update(req: Entity.UpdateUserReq): Promise<Entity.User>
+  delete(id: string): Promise<void>
 }

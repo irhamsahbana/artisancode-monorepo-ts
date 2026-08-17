@@ -21,5 +21,7 @@ router.patch('/me', authenticate, validate(Schema.updateAccountSchema), handler.
 router.post('/', authenticate, validate(Schema.createUserSchema), handler.create)
 router.get('/', authenticate, validateQuery(Schema.getUserListSchema), handler.findList)
 router.get('/:id', authenticate, handler.findById)
+router.put('/:id', authenticate, validate(Schema.updateUserSchema), handler.update)
+router.delete('/:id', authenticate, handler.delete)
 
 export default router

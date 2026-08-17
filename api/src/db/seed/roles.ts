@@ -14,11 +14,14 @@ export async function upsertRole(permissionIds: string[]) {
     (
       await db
         .insert(roles)
-        .values({ name: 'Admin', description: 'Full access administrator' })
+        .values({ name: 'Admin', description: 'Full access administrator', isSystem: true })
         .returning()
     )[0]
   if (existing) {
     console.log(`  role exists: ${existing.id}`)
+    if (!existing.isSystem) {
+      await db.update(roles).set({ isSystem: true }).where(eq(roles.id, existing.id))
+    }
   } else {
     console.log(`  role created: ${role.id}`)
   }

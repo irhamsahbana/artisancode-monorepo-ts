@@ -26,6 +26,7 @@ export async function upsertAdminUser(roleId: string) {
       email: ADMIN_EMAIL,
       password: await hashPassword(ADMIN_PASSWORD),
       phone: '081200000000',
+      isProtected: true,
     })
     .returning()
   console.log(`  user created: ${row.id} (email: ${ADMIN_EMAIL}, password: ${ADMIN_PASSWORD})`)

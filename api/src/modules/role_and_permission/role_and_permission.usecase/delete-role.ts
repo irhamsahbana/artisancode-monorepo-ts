@@ -7,5 +7,8 @@ export async function deleteRole(deps: RoleAndPermissionUsecaseDeps, id: string)
   if (!existing) {
     throw new AppError(ErrorCode.NOT_FOUND, 'Role not found')
   }
+  if (existing.isSystem) {
+    throw new AppError(ErrorCode.FORBIDDEN, 'This role is protected and cannot be deleted')
+  }
   await deps.repo.deleteRole(id)
 }

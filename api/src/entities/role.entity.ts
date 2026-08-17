@@ -31,6 +31,7 @@ export interface Role extends BaseEntity {
   id: string
   name: string
   description: string
+  isSystem: boolean
   /** Permission names, e.g. ["customers.view", "projects.create"] */
   permissions?: string[]
 }

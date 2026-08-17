@@ -1,4 +1,4 @@
-import { pgTable, text, uuid } from 'drizzle-orm/pg-core'
+import { boolean, pgTable, text, uuid } from 'drizzle-orm/pg-core'
 
 import { statusEnum } from '../enums'
 import { defaultId, softDelete, timestamps } from './helpers'
@@ -15,6 +15,9 @@ export const users = pgTable('users', {
   password: text('password').notNull(),
   phone: text('phone').notNull().default(''),
   status: statusEnum('status').notNull().default('active'),
+  // ponytail: protects seeded/system accounts from deletion — no admin UI to
+  // toggle it, set at creation time only.
+  isProtected: boolean('is_protected').notNull().default(false),
   ...timestamps,
   ...softDelete,
 })

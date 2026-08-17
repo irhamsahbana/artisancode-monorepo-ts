@@ -51,6 +51,7 @@ export interface User extends BaseEntity {
   email: string
   phone: string
   status: UserStatus
+  isProtected: boolean
 }
 
 export interface UserList {

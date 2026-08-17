@@ -12,6 +12,14 @@ export const createUserSchema = z.object({
   status: z.enum(UserStatuses as [string, ...string[]]).optional(),
 })
 
+export const updateUserSchema = z.object({
+  name: z.string().min(3).max(100).optional(),
+  email: z.email().optional(),
+  phone: z.string().max(20).optional(),
+  role_id: z.uuid().optional(),
+  status: z.enum(UserStatuses as [string, ...string[]]).optional(),
+})
+
 export const registerSchema = z.object({
   company_name: z.string().min(3).max(100),
   name: z.string().min(3).max(100),
