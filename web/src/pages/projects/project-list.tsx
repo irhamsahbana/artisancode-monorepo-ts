@@ -7,6 +7,7 @@ import { DataTable } from "@/components/shared/data-table";
 import { PageHeader } from "@/components/shared/page-header";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { useHasPermission } from "@/hooks/use-auth";
 import { useContactSearch } from "@/hooks/use-contacts";
 import { useCustomers } from "@/hooks/use-customers";
 import { useQuotations } from "@/hooks/use-quotations";
@@ -41,6 +42,8 @@ const filters: FilterOption[] = [
 
 export function ProjectList() {
   const navigate = useNavigate();
+  const canCreate = useHasPermission("projects.create");
+  const canEdit = useHasPermission("projects.update");
   const { data: customersData } = useCustomers({ per_page: 100 });
   const { data: contactResults } = useContactSearch("");
   const { data: quotationsData } = useQuotations();
@@ -140,7 +143,11 @@ export function ProjectList() {
         title="Monitoring Proyek"
         description="Pantau proyek yang sedang di-follow up."
         action={
-          <Button size="sm" onClick={() => navigate("/projects/new")}>
+          <Button
+            size="sm"
+            onClick={() => navigate("/projects/new")}
+            disabled={!canCreate}
+          >
             <Plus className="mr-1 h-4 w-4" />
             Tambah
           </Button>
@@ -176,6 +183,7 @@ export function ProjectList() {
               variant="ghost"
               size="icon"
               onClick={() => navigate(`/projects/${p.id}/edit`)}
+              disabled={!canEdit}
             >
               <Pencil className="h-4 w-4" />
             </Button>

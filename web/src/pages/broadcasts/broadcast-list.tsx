@@ -8,6 +8,7 @@ import { DataTable } from "@/components/shared/data-table";
 import { PageHeader } from "@/components/shared/page-header";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { useHasPermission } from "@/hooks/use-auth";
 import { useDeleteBroadcast } from "@/hooks/use-broadcasts";
 import { useCategoryList } from "@/hooks/use-categories";
 import { useContactSearch } from "@/hooks/use-contacts";
@@ -32,6 +33,7 @@ const customerStatusLabel: Record<string, string> = {
 
 export function BroadcastList() {
   const navigate = useNavigate();
+  const canCreateTemplate = useHasPermission("broadcast_templates.create");
   const { data: allContacts } = useContactSearch("");
   const { data: segmentationsData } = useCategoryList("segmentation");
   const { mutate: deleteBroadcast } = useDeleteBroadcast();
@@ -192,7 +194,11 @@ export function BroadcastList() {
         title="Chat Blast / Broadcast"
         description="Kelola template pesan massal ke key person via WhatsApp (mock)."
         action={
-          <Button size="sm" onClick={() => navigate("/broadcasts/new")}>
+          <Button
+            size="sm"
+            disabled={!canCreateTemplate}
+            onClick={() => navigate("/broadcasts/new")}
+          >
             <Plus className="mr-1 h-4 w-4" />
             Template Baru
           </Button>

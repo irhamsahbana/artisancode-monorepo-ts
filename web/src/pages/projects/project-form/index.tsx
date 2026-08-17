@@ -8,6 +8,7 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Form } from "@/components/ui/form";
+import { useHasPermission } from "@/hooks/use-auth";
 import { useContacts } from "@/hooks/use-contacts";
 import { useCustomers } from "@/hooks/use-customers";
 import {
@@ -26,6 +27,9 @@ export function ProjectForm() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const isEdit = !!id;
+  const canCreate = useHasPermission("projects.create");
+  const canEdit = useHasPermission("projects.update");
+  const canSubmit = isEdit ? canEdit : canCreate;
 
   const { data: existing } = useProject(id ?? "");
   const { data: customersData } = useCustomers({ per_page: 100 });
@@ -152,7 +156,7 @@ export function ProjectForm() {
                 >
                   Batal
                 </Button>
-                <Button type="submit" disabled={isPending}>
+                <Button type="submit" disabled={isPending || !canSubmit}>
                   {isPending
                     ? "Menyimpan..."
                     : isEdit

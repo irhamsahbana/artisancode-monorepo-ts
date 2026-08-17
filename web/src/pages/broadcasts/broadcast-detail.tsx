@@ -18,6 +18,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
+import { useHasPermission } from "@/hooks/use-auth";
 import {
   useBroadcasts,
   useSendBroadcast,
@@ -46,6 +47,7 @@ interface FormState {
 export function BroadcastDetail() {
   const navigate = useNavigate();
   const { id } = useParams<{ id: string }>();
+  const canSendBroadcast = useHasPermission("broadcast_logs.create");
   const { data: broadcasts } = useBroadcasts();
   const { mutateAsync: send, isPending: isSending } = useSendBroadcast();
   const { data: segmentationsData } = useCategoryList("segmentation");
@@ -252,7 +254,9 @@ export function BroadcastDetail() {
         {canSend && (
           <Button
             onClick={handleSend}
-            disabled={isSending || selectedContactIds.size === 0}
+            disabled={
+              isSending || selectedContactIds.size === 0 || !canSendBroadcast
+            }
           >
             <Send className="mr-2 h-4 w-4" />
             {isSending ? "Mengirim..." : "Kirim Sekarang"}

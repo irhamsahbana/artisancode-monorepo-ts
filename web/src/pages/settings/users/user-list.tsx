@@ -7,7 +7,7 @@ import { DataTable } from "@/components/shared/data-table";
 import { PageHeader } from "@/components/shared/page-header";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { useMe } from "@/hooks/use-auth";
+import { useHasPermission, useMe } from "@/hooks/use-auth";
 import { useRoles } from "@/hooks/use-roles";
 import { useServerTable } from "@/hooks/use-server-table";
 import { useDeleteUser } from "@/hooks/use-users";
@@ -25,6 +25,9 @@ export function UserList() {
   const roles = rolesData?.items ?? [];
   const { data: me } = useMe();
   const { mutate: deleteUser } = useDeleteUser();
+  const canCreate = useHasPermission("users.create");
+  const canUpdate = useHasPermission("users.update");
+  const canDelete = useHasPermission("users.delete");
 
   const table = useServerTable<UserAccount>({
     queryKey: (params) => queryKeys.users.list(params),
@@ -100,7 +103,7 @@ export function UserList() {
         title="Pengguna"
         description="Kelola pengguna yang dapat mengakses sistem."
         action={
-          <Button size="sm" onClick={openAdd}>
+          <Button size="sm" disabled={!canCreate} onClick={openAdd}>
             <Plus className="mr-1 h-4 w-4" />
             Tambah Pengguna
           </Button>
@@ -122,13 +125,18 @@ export function UserList() {
         onLoadMore={table.onLoadMore}
         actions={(user) => (
           <div className="flex items-center gap-1">
-            <Button variant="ghost" size="icon" onClick={() => openEdit(user)}>
+            <Button
+              variant="ghost"
+              size="icon"
+              disabled={!canUpdate}
+              onClick={() => openEdit(user)}
+            >
               <Pencil className="h-4 w-4" />
             </Button>
             <Button
               variant="ghost"
               size="icon"
-              disabled={user.isProtected || user.id === me?.id}
+              disabled={user.isProtected || user.id === me?.id || !canDelete}
               onClick={() => handleDelete(user)}
             >
               <Trash2 className="h-4 w-4" />

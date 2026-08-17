@@ -5,6 +5,7 @@ import { LocationView } from "@/components/projects/location-view";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { useHasPermission } from "@/hooks/use-auth";
 import { useContact } from "@/hooks/use-contacts";
 import { useCustomers } from "@/hooks/use-customers";
 import { useProducts } from "@/hooks/use-products";
@@ -25,6 +26,8 @@ import { VisitLog } from "./visit-log";
 export function ProjectDetail() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+
+  const canEdit = useHasPermission("projects.update");
 
   const { data: project, isLoading } = useProject(id ?? "");
   const { data: customersData } = useCustomers({ per_page: 100 });
@@ -75,11 +78,14 @@ export function ProjectDetail() {
             )}
           </div>
         </div>
-        <Button size="sm" variant="outline" asChild>
-          <Link to={`/projects/${id}/edit`}>
-            <Pencil className="mr-1 h-4 w-4" />
-            Edit
-          </Link>
+        <Button
+          size="sm"
+          variant="outline"
+          onClick={() => navigate(`/projects/${id}/edit`)}
+          disabled={!canEdit}
+        >
+          <Pencil className="mr-1 h-4 w-4" />
+          Edit
         </Button>
       </div>
 

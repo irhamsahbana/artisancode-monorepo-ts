@@ -6,11 +6,13 @@ import { PageHeader } from "@/components/shared/page-header";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Form } from "@/components/ui/form";
+import { useHasPermission } from "@/hooks/use-auth";
 
 import { ProfileFields } from "./profile-fields";
 import { schema, initialValues, type FormValues } from "./schema";
 
 export function BusinessProfile() {
+  const canUpdate = useHasPermission("business_profiles.update");
   const form = useForm<FormValues>({
     resolver: zodResolver(schema),
     defaultValues: initialValues,
@@ -35,7 +37,9 @@ export function BusinessProfile() {
             >
               <ProfileFields control={form.control} />
               <div className="sm:col-span-2 flex justify-end">
-                <Button type="submit">Simpan</Button>
+                <Button type="submit" disabled={!canUpdate}>
+                  Simpan
+                </Button>
               </div>
             </form>
           </Form>

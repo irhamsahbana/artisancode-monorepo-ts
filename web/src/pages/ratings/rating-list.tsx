@@ -7,6 +7,7 @@ import { PageHeader } from "@/components/shared/page-header";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { useHasPermission } from "@/hooks/use-auth";
 import { useCustomers } from "@/hooks/use-customers";
 import { useProjects } from "@/hooks/use-projects";
 import { useRatings } from "@/hooks/use-ratings";
@@ -17,6 +18,7 @@ import { RatingDialog } from "./rating-dialog";
 import { riskLabel, riskVariant } from "./rating-status";
 
 export function RatingList() {
+  const canCreate = useHasPermission("customer_ratings.create");
   const { data: customersData } = useCustomers({ per_page: 100 });
   const { data } = useRatings();
   const { data: wonProjectsData } = useProjects({ status: "won" });
@@ -47,7 +49,11 @@ export function RatingList() {
         title="Penilaian Pelanggan"
         description="Skor pembayaran & hubungan untuk pelanggan berkontrak."
         action={
-          <Button size="sm" onClick={() => setDialogOpen(true)}>
+          <Button
+            size="sm"
+            onClick={() => setDialogOpen(true)}
+            disabled={!canCreate}
+          >
             <Plus className="mr-1 h-4 w-4" />
             Tambah Penilaian
           </Button>

@@ -2,6 +2,7 @@ import { Hono } from 'hono'
 
 import { createProductRepo } from '@/adapter/secondary/repository/product/product.repo'
 import { authenticate } from '@/common/middlewares/auth.middleware'
+import { requirePermission } from '@/common/middlewares/permission.middleware'
 import { validate, validateQuery } from '@/common/middlewares/validation.middleware'
 import { createProductUsecase } from '@/modules/product/product.usecase'
 
@@ -14,8 +15,26 @@ const handler = createProductHandler(usecase)
 
 const router = new Hono()
 
-router.post('/', authenticate, validate(Schema.createProductSchema), handler.create)
-router.get('/', authenticate, validateQuery(Schema.getProductListSchema), handler.findList)
-router.put('/:id', authenticate, validate(Schema.updateProductSchema), handler.update)
+router.post(
+  '/',
+  authenticate,
+  requirePermission('products.create'),
+  validate(Schema.createProductSchema),
+  handler.create,
+)
+router.get(
+  '/',
+  authenticate,
+  requirePermission('products.view'),
+  validateQuery(Schema.getProductListSchema),
+  handler.findList,
+)
+router.put(
+  '/:id',
+  authenticate,
+  requirePermission('products.update'),
+  validate(Schema.updateProductSchema),
+  handler.update,
+)
 
 export default router

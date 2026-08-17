@@ -8,6 +8,7 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Form } from "@/components/ui/form";
+import { useHasPermission } from "@/hooks/use-auth";
 import { useCreateBroadcast } from "@/hooks/use-broadcasts";
 import { useCategoryList } from "@/hooks/use-categories";
 import { useServerTable } from "@/hooks/use-server-table";
@@ -23,6 +24,7 @@ import type { ContactSearchResult } from "@artisancode/api-types";
 
 export function BroadcastForm() {
   const navigate = useNavigate();
+  const canCreateTemplate = useHasPermission("broadcast_templates.create");
   const { mutateAsync: create, isPending } = useCreateBroadcast();
   const { data: segmentationsData } = useCategoryList("segmentation");
 
@@ -141,7 +143,10 @@ export function BroadcastForm() {
                   >
                     Batal
                   </Button>
-                  <Button type="submit" disabled={isPending}>
+                  <Button
+                    type="submit"
+                    disabled={isPending || !canCreateTemplate}
+                  >
                     {isPending ? "Menyimpan..." : "Simpan Template"}
                   </Button>
                 </div>

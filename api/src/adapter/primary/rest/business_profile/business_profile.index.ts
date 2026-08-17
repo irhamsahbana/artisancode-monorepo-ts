@@ -4,6 +4,7 @@ import { Context } from 'hono'
 
 import { createBusinessProfileRepo } from '@/adapter/secondary/repository/business_profile/business_profile.repo'
 import { authenticate } from '@/common/middlewares/auth.middleware'
+import { requirePermission } from '@/common/middlewares/permission.middleware'
 import { validate } from '@/common/middlewares/validation.middleware'
 import { responseSuccess } from '@/common/rest_response'
 import * as Entity from '@/entities/business_profile.entity'
@@ -16,14 +17,20 @@ const usecase = createBusinessProfileUsecase(repo)
 
 const router = new Hono()
 
-router.get('/', authenticate, async (c: Context<AppEnv>) => {
-  const data = await usecase.find()
-  return c.json(responseSuccess(data))
-})
+router.get(
+  '/',
+  authenticate,
+  requirePermission('business_profiles.view'),
+  async (c: Context<AppEnv>) => {
+    const data = await usecase.find()
+    return c.json(responseSuccess(data))
+  },
+)
 
 router.patch(
   '/',
   authenticate,
+  requirePermission('business_profiles.update'),
   validate(Schema.updateBusinessProfileSchema),
   async (c: Context<AppEnv>) => {
     const body = c.get('body')

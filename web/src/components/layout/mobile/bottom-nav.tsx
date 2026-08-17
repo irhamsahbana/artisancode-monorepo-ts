@@ -29,35 +29,115 @@ import {
   SheetHeader,
   SheetTitle,
 } from "@/components/ui/sheet";
-import { logout } from "@/hooks/use-auth";
+import { logout, useMe } from "@/hooks/use-auth";
 import { cn } from "@/lib/utils";
 
-const menuItems = [
-  { to: "/projects/map", label: "Peta Proyek", icon: Map },
-  { to: "/ratings", label: "Penilaian", icon: Star },
-  { to: "/quotations", label: "Penawaran", icon: FileText },
-  { to: "/broadcasts", label: "Broadcast", icon: Megaphone },
-  { to: "/birthdays", label: "Ulang Tahun", icon: Gift },
+import type { Permission } from "@artisancode/api-types";
+
+// `permission: undefined` = always accessible (no module in the permission
+// catalog covers it, e.g. self-service or uncatalogued pages).
+const menuItems: {
+  to: string;
+  label: string;
+  icon: typeof Star;
+  permission?: Permission;
+}[] = [
+  {
+    to: "/projects/map",
+    label: "Peta Proyek",
+    icon: Map,
+    permission: "projects.view",
+  },
+  {
+    to: "/ratings",
+    label: "Penilaian",
+    icon: Star,
+    permission: "customer_ratings.view",
+  },
+  {
+    to: "/quotations",
+    label: "Penawaran",
+    icon: FileText,
+    permission: "quotations.view",
+  },
+  {
+    to: "/broadcasts",
+    label: "Broadcast",
+    icon: Megaphone,
+    permission: "broadcast_templates.view",
+  },
+  {
+    to: "/birthdays",
+    label: "Ulang Tahun",
+    icon: Gift,
+    permission: "contacts.view",
+  },
 ];
 
-const masterItems = [
-  { to: "/master/segmentation", label: "Segmentasi", icon: PieChart },
-  { to: "/master/areas", label: "Area", icon: MapPin },
-  { to: "/master/relation-status", label: "Status Relasi", icon: Network },
-  { to: "/master/products", label: "Produk", icon: Package },
-  { to: "/master/uoms", label: "Satuan", icon: Ruler },
+const masterItems: {
+  to: string;
+  label: string;
+  icon: typeof Star;
+  permission?: Permission;
+}[] = [
+  {
+    to: "/master/segmentation",
+    label: "Segmentasi",
+    icon: PieChart,
+    permission: "categories.view",
+  },
+  {
+    to: "/master/areas",
+    label: "Area",
+    icon: MapPin,
+    permission: "categories.view",
+  },
+  {
+    to: "/master/relation-status",
+    label: "Status Relasi",
+    icon: Network,
+    permission: "categories.view",
+  },
+  {
+    to: "/master/products",
+    label: "Produk",
+    icon: Package,
+    permission: "products.view",
+  },
+  { to: "/master/uoms", label: "Satuan", icon: Ruler, permission: "uoms.view" },
   {
     to: "/master/unit-conversions",
     label: "Konversi Satuan",
     icon: ArrowLeftRight,
+    permission: "unit_conversions.view" as Permission,
   },
 ];
 
-const settingsItems = [
-  { to: "/settings/profile", label: "Profil Bisnis", icon: Building2 },
+const settingsItems: {
+  to: string;
+  label: string;
+  icon: typeof Star;
+  permission?: Permission;
+}[] = [
+  {
+    to: "/settings/profile",
+    label: "Profil Bisnis",
+    icon: Building2,
+    permission: "business_profiles.view",
+  },
   { to: "/settings/account", label: "Akun", icon: User },
-  { to: "/settings/roles", label: "Roles & Hak Akses", icon: ShieldCheck },
-  { to: "/settings/users", label: "Pengguna", icon: UserCog },
+  {
+    to: "/settings/roles",
+    label: "Roles & Hak Akses",
+    icon: ShieldCheck,
+    permission: "roles.view",
+  },
+  {
+    to: "/settings/users",
+    label: "Pengguna",
+    icon: UserCog,
+    permission: "users.view",
+  },
 ];
 
 const moreActivePrefixes = [
@@ -74,6 +154,9 @@ export function BottomNav() {
   const location = useLocation();
   const navigate = useNavigate();
   const [moreOpen, setMoreOpen] = useState(false);
+  const { data: me } = useMe();
+  const canViewCustomers = me?.permissions.includes("customers.view") ?? false;
+  const canViewProjects = me?.permissions.includes("projects.view") ?? false;
   const moreActive = moreActivePrefixes.some((p) =>
     location.pathname.startsWith(p),
   );
@@ -105,12 +188,16 @@ export function BottomNav() {
         </NavLink>
         <NavLink
           to="/customers"
+          aria-disabled={!canViewCustomers}
+          tabIndex={canViewCustomers ? undefined : -1}
+          onClick={(e) => !canViewCustomers && e.preventDefault()}
           className={({ isActive }) =>
             cn(
               "flex h-full flex-1 flex-col items-center justify-center gap-0.5 rounded-full text-[10px] font-medium transition-colors",
               isActive
                 ? "bg-muted text-foreground"
                 : "text-muted-foreground hover:bg-muted",
+              !canViewCustomers && "pointer-events-none opacity-50",
             )
           }
         >
@@ -119,6 +206,9 @@ export function BottomNav() {
         </NavLink>
         <NavLink
           to="/projects"
+          aria-disabled={!canViewProjects}
+          tabIndex={canViewProjects ? undefined : -1}
+          onClick={(e) => !canViewProjects && e.preventDefault()}
           className={cn(
             "flex h-full flex-1 flex-col items-center justify-center gap-0.5 rounded-full text-[10px] font-medium transition-colors",
             location.pathname === "/projects" ||
@@ -126,6 +216,7 @@ export function BottomNav() {
                 location.pathname !== "/projects/map")
               ? "bg-muted text-foreground"
               : "text-muted-foreground hover:bg-muted",
+            !canViewProjects && "pointer-events-none opacity-50",
           )}
         >
           <Briefcase className="h-5 w-5" />
@@ -188,29 +279,49 @@ function NavGroup({
   items,
   onNavigate,
 }: {
-  items: { to: string; label: string; icon: typeof Star }[];
+  items: {
+    to: string;
+    label: string;
+    icon: typeof Star;
+    permission?: Permission;
+  }[];
   onNavigate: () => void;
 }) {
+  const { data: me } = useMe();
+
   return (
     <div className="grid gap-1">
-      {items.map(({ to, label, icon: Icon }) => (
-        <NavLink
-          key={to}
-          to={to}
-          onClick={onNavigate}
-          className={({ isActive }) =>
-            cn(
-              "flex items-center gap-3 rounded-md px-3 py-2.5 text-sm",
-              isActive
-                ? "bg-primary text-primary-foreground"
-                : "hover:bg-muted",
-            )
-          }
-        >
-          <Icon className="h-4 w-4" />
-          {label}
-        </NavLink>
-      ))}
+      {items.map(({ to, label, icon: Icon, permission }) => {
+        const allowed =
+          !permission || (me?.permissions.includes(permission) ?? false);
+        return (
+          <NavLink
+            key={to}
+            to={to}
+            aria-disabled={!allowed}
+            tabIndex={allowed ? undefined : -1}
+            onClick={(e) => {
+              if (!allowed) {
+                e.preventDefault();
+                return;
+              }
+              onNavigate();
+            }}
+            className={({ isActive }) =>
+              cn(
+                "flex items-center gap-3 rounded-md px-3 py-2.5 text-sm",
+                isActive
+                  ? "bg-primary text-primary-foreground"
+                  : "hover:bg-muted",
+                !allowed && "pointer-events-none opacity-50",
+              )
+            }
+          >
+            <Icon className="h-4 w-4" />
+            {label}
+          </NavLink>
+        );
+      })}
     </div>
   );
 }

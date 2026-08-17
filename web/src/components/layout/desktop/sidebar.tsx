@@ -38,44 +38,139 @@ import {
   SidebarMenuSubButton,
   SidebarMenuSubItem,
 } from "@/components/ui/sidebar";
-import { logout } from "@/hooks/use-auth";
+import { logout, useMe } from "@/hooks/use-auth";
 import { cn } from "@/lib/utils";
 
-const mainNav = [
+import type { Permission } from "@artisancode/api-types";
+
+// `permission: undefined` = always accessible (no module in the permission
+// catalog covers it, e.g. self-service or uncatalogued pages).
+const mainNav: {
+  to: string;
+  label: string;
+  icon: typeof LayoutDashboard;
+  permission?: Permission;
+}[] = [
   { to: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
-  { to: "/customers", label: "Pelanggan", icon: Users },
-  { to: "/projects", label: "Proyek", icon: Briefcase },
-  { to: "/projects/map", label: "Peta Proyek", icon: Map },
-  { to: "/ratings", label: "Penilaian", icon: Star },
-  { to: "/quotations", label: "Penawaran", icon: FileText },
-  { to: "/broadcasts", label: "Broadcast", icon: Megaphone },
-  { to: "/birthdays", label: "Ulang Tahun", icon: Gift },
+  {
+    to: "/customers",
+    label: "Pelanggan",
+    icon: Users,
+    permission: "customers.view",
+  },
+  {
+    to: "/projects",
+    label: "Proyek",
+    icon: Briefcase,
+    permission: "projects.view",
+  },
+  {
+    to: "/projects/map",
+    label: "Peta Proyek",
+    icon: Map,
+    permission: "projects.view",
+  },
+  {
+    to: "/ratings",
+    label: "Penilaian",
+    icon: Star,
+    permission: "customer_ratings.view",
+  },
+  {
+    to: "/quotations",
+    label: "Penawaran",
+    icon: FileText,
+    permission: "quotations.view",
+  },
+  {
+    to: "/broadcasts",
+    label: "Broadcast",
+    icon: Megaphone,
+    permission: "broadcast_templates.view",
+  },
+  {
+    to: "/birthdays",
+    label: "Ulang Tahun",
+    icon: Gift,
+    permission: "contacts.view",
+  },
 ];
 
-const masterNav = [
-  { to: "/master/segmentation", label: "Segmentasi", icon: PieChart },
-  { to: "/master/areas", label: "Area", icon: MapPin },
-  { to: "/master/relation-status", label: "Status Relasi", icon: Network },
-  { to: "/master/products", label: "Produk", icon: Package },
-  { to: "/master/uoms", label: "Satuan", icon: Ruler },
+const masterNav: {
+  to: string;
+  label: string;
+  icon: typeof PieChart;
+  permission?: Permission;
+}[] = [
+  {
+    to: "/master/segmentation",
+    label: "Segmentasi",
+    icon: PieChart,
+    permission: "categories.view",
+  },
+  {
+    to: "/master/areas",
+    label: "Area",
+    icon: MapPin,
+    permission: "categories.view",
+  },
+  {
+    to: "/master/relation-status",
+    label: "Status Relasi",
+    icon: Network,
+    permission: "categories.view",
+  },
+  {
+    to: "/master/products",
+    label: "Produk",
+    icon: Package,
+    permission: "products.view",
+  },
+  { to: "/master/uoms", label: "Satuan", icon: Ruler, permission: "uoms.view" },
   {
     to: "/master/unit-conversions",
     label: "Konversi Satuan",
     icon: ArrowLeftRight,
+    permission: "unit_conversions.view" as Permission,
   },
 ];
 
-const settingsNav = [
-  { to: "/settings/profile", label: "Profil Bisnis", icon: Building2 },
+const settingsNav: {
+  to: string;
+  label: string;
+  icon: typeof Building2;
+  permission?: Permission;
+}[] = [
+  {
+    to: "/settings/profile",
+    label: "Profil Bisnis",
+    icon: Building2,
+    permission: "business_profiles.view",
+  },
   { to: "/settings/account", label: "Akun", icon: User },
-  { to: "/settings/roles", label: "Roles & Hak Akses", icon: ShieldCheck },
-  { to: "/settings/users", label: "Pengguna", icon: UserCog },
+  {
+    to: "/settings/roles",
+    label: "Roles & Hak Akses",
+    icon: ShieldCheck,
+    permission: "roles.view",
+  },
+  {
+    to: "/settings/users",
+    label: "Pengguna",
+    icon: UserCog,
+    permission: "users.view",
+  },
 ];
 
 export function DesktopSidebar() {
   const [masterOpen, setMasterOpen] = useState(true);
   const navigate = useNavigate();
   const location = useLocation();
+  const { data: me } = useMe();
+
+  function isAllowed(permission?: Permission) {
+    return !permission || (me?.permissions.includes(permission) ?? false);
+  }
 
   async function handleLogout() {
     await logout();
@@ -92,21 +187,26 @@ export function DesktopSidebar() {
         <SidebarGroup>
           <SidebarGroupContent>
             <SidebarMenu>
-              {mainNav.map(({ to, label, icon: Icon }) => {
+              {mainNav.map(({ to, label, icon: Icon, permission }) => {
                 const isActive =
                   to === "/projects"
                     ? location.pathname === "/projects" ||
                       (location.pathname.startsWith("/projects/") &&
                         location.pathname !== "/projects/map")
                     : location.pathname.startsWith(to);
+                const allowed = isAllowed(permission);
                 return (
                   <SidebarMenuItem key={to}>
                     <SidebarMenuButton asChild isActive={isActive}>
                       <NavLink
                         to={to}
+                        aria-disabled={!allowed}
+                        tabIndex={allowed ? undefined : -1}
+                        onClick={(e) => !allowed && e.preventDefault()}
                         className={cn(
                           "flex items-center gap-2",
                           isActive && "font-medium text-primary",
+                          !allowed && "pointer-events-none opacity-50",
                         )}
                       >
                         <Icon className="h-4 w-4" />
@@ -138,16 +238,21 @@ export function DesktopSidebar() {
               <SidebarMenu>
                 <SidebarMenuItem>
                   <SidebarMenuSub>
-                    {masterNav.map(({ to, label, icon: Icon }) => {
+                    {masterNav.map(({ to, label, icon: Icon, permission }) => {
                       const isActive = location.pathname.startsWith(to);
+                      const allowed = isAllowed(permission);
                       return (
                         <SidebarMenuSubItem key={to}>
                           <SidebarMenuSubButton asChild isActive={isActive}>
                             <NavLink
                               to={to}
+                              aria-disabled={!allowed}
+                              tabIndex={allowed ? undefined : -1}
+                              onClick={(e) => !allowed && e.preventDefault()}
                               className={cn(
                                 "flex items-center gap-2",
                                 isActive && "font-medium text-primary",
+                                !allowed && "pointer-events-none opacity-50",
                               )}
                             >
                               <Icon className="h-3.5 w-3.5" />
@@ -168,16 +273,21 @@ export function DesktopSidebar() {
           <SidebarGroupLabel>Pengaturan</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
-              {settingsNav.map(({ to, label, icon: Icon }) => {
+              {settingsNav.map(({ to, label, icon: Icon, permission }) => {
                 const isActive = location.pathname.startsWith(to);
+                const allowed = isAllowed(permission);
                 return (
                   <SidebarMenuItem key={to}>
                     <SidebarMenuButton asChild isActive={isActive}>
                       <NavLink
                         to={to}
+                        aria-disabled={!allowed}
+                        tabIndex={allowed ? undefined : -1}
+                        onClick={(e) => !allowed && e.preventDefault()}
                         className={cn(
                           "flex items-center gap-2",
                           isActive && "font-medium text-primary",
+                          !allowed && "pointer-events-none opacity-50",
                         )}
                       >
                         <Icon className="h-4 w-4" />

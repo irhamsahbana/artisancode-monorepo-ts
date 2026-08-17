@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Form } from "@/components/ui/form";
 import { Separator } from "@/components/ui/separator";
+import { useHasPermission } from "@/hooks/use-auth";
 import {
   useContact,
   useCreateContact,
@@ -28,6 +29,9 @@ export function ContactForm() {
   const [searchParams] = useSearchParams();
   const isEdit = !!id;
   const customerIdParam = searchParams.get("customerId") ?? "";
+  const canCreate = useHasPermission("contacts.create");
+  const canUpdate = useHasPermission("contacts.update");
+  const noPermission = isEdit ? !canUpdate : !canCreate;
 
   const { data: existing } = useContact(id ?? "");
   const customerId = isEdit ? (existing?.customerId ?? "") : customerIdParam;
@@ -159,7 +163,7 @@ export function ContactForm() {
                 >
                   Batal
                 </Button>
-                <Button type="submit" disabled={isPending}>
+                <Button type="submit" disabled={isPending || noPermission}>
                   {isPending ? "Menyimpan..." : "Simpan Perubahan"}
                 </Button>
               </div>

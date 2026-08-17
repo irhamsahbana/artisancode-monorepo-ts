@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Form } from "@/components/ui/form";
 import { Separator } from "@/components/ui/separator";
+import { useHasPermission } from "@/hooks/use-auth";
 import { useCategoryList } from "@/hooks/use-categories";
 import {
   useCreateCustomer,
@@ -24,6 +25,9 @@ export function CustomerForm() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const isEdit = !!id;
+  const canCreate = useHasPermission("customers.create");
+  const canUpdate = useHasPermission("customers.update");
+  const noPermission = isEdit ? !canUpdate : !canCreate;
 
   const { data: existing } = useCustomer(id ?? "");
   const { data: segmentationsData } = useCategoryList("segmentation");
@@ -134,7 +138,7 @@ export function CustomerForm() {
                 >
                   Batal
                 </Button>
-                <Button type="submit" disabled={isPending}>
+                <Button type="submit" disabled={isPending || noPermission}>
                   {isPending
                     ? "Menyimpan..."
                     : isEdit

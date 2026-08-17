@@ -8,6 +8,7 @@ import { DataTable } from "@/components/shared/data-table";
 import { PageHeader } from "@/components/shared/page-header";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { useHasPermission } from "@/hooks/use-auth";
 import { useDeleteRole } from "@/hooks/use-roles";
 import { useServerTable } from "@/hooks/use-server-table";
 import { queryKeys } from "@/lib/query-keys";
@@ -54,6 +55,9 @@ const columns: Column<Role>[] = [
 export function RoleList() {
   const navigate = useNavigate();
   const { mutate: deleteRole } = useDeleteRole();
+  const canCreate = useHasPermission("roles.create");
+  const canUpdate = useHasPermission("roles.update");
+  const canDelete = useHasPermission("roles.delete");
 
   const table = useServerTable<Role>({
     queryKey: (params) => queryKeys.roles.list(params),
@@ -75,7 +79,11 @@ export function RoleList() {
         title="Roles & Hak Akses"
         description="Kelola role pengguna dan hak akses tiap modul."
         action={
-          <Button size="sm" onClick={() => navigate("/settings/roles/new")}>
+          <Button
+            size="sm"
+            disabled={!canCreate}
+            onClick={() => navigate("/settings/roles/new")}
+          >
             <Plus className="mr-1 h-4 w-4" />
             Tambah Role
           </Button>
@@ -100,6 +108,7 @@ export function RoleList() {
             <Button
               variant="ghost"
               size="icon"
+              disabled={!canUpdate}
               onClick={() => navigate(`/settings/roles/${role.id}/edit`)}
             >
               <Pencil className="h-4 w-4" />
@@ -107,7 +116,7 @@ export function RoleList() {
             <Button
               variant="ghost"
               size="icon"
-              disabled={role.isSystem}
+              disabled={role.isSystem || !canDelete}
               onClick={() => handleDelete(role)}
             >
               <Trash2 className="h-4 w-4" />

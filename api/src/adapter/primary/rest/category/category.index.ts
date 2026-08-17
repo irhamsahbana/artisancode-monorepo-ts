@@ -2,6 +2,7 @@ import { Hono } from 'hono'
 
 import { createCategoryRepo } from '@/adapter/secondary/repository/category/category.repo'
 import { authenticate } from '@/common/middlewares/auth.middleware'
+import { requirePermission } from '@/common/middlewares/permission.middleware'
 import { validate, validateQuery } from '@/common/middlewares/validation.middleware'
 import { createCategoryUsecase } from '@/modules/category/category.usecase'
 
@@ -14,10 +15,28 @@ const handler = createCategoryHandlerDeps(usecase)
 
 const router = new Hono()
 
-router.post('/', authenticate, validate(Schema.createCategorySchema), handler.create)
-router.put('/:id', authenticate, validate(Schema.updateCategorySchema), handler.update)
-router.delete('/:id', authenticate, handler.delete)
-router.get('/:id', authenticate, handler.findById)
-router.get('/', authenticate, validateQuery(Schema.getCategoryListSchema), handler.findList)
+router.post(
+  '/',
+  authenticate,
+  requirePermission('categories.create'),
+  validate(Schema.createCategorySchema),
+  handler.create,
+)
+router.put(
+  '/:id',
+  authenticate,
+  requirePermission('categories.update'),
+  validate(Schema.updateCategorySchema),
+  handler.update,
+)
+router.delete('/:id', authenticate, requirePermission('categories.delete'), handler.delete)
+router.get('/:id', authenticate, requirePermission('categories.view'), handler.findById)
+router.get(
+  '/',
+  authenticate,
+  requirePermission('categories.view'),
+  validateQuery(Schema.getCategoryListSchema),
+  handler.findList,
+)
 
 export default router

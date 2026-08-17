@@ -1,7 +1,10 @@
+import type { Permission } from './role'
+
 export interface User {
   id: string
   name: string
   email: string
+  permissions: Permission[]
 }
 
 export interface LoginReq {

@@ -9,6 +9,7 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Form } from "@/components/ui/form";
+import { useHasPermission } from "@/hooks/use-auth";
 import { useCreateRole, useRole, useUpdateRole } from "@/hooks/use-roles";
 
 import { BasicFields } from "./basic-fields";
@@ -21,6 +22,7 @@ export function RoleForm() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const isEdit = !!id;
+  const canSubmit = useHasPermission(isEdit ? "roles.update" : "roles.create");
 
   const { data: existing } = useRole(id ?? "");
   const { mutateAsync: createRole, isPending: creating } = useCreateRole();
@@ -132,7 +134,10 @@ export function RoleForm() {
             >
               Batal
             </Button>
-            <Button type="submit" disabled={isPending || isSystem}>
+            <Button
+              type="submit"
+              disabled={isPending || isSystem || !canSubmit}
+            >
               {isPending
                 ? "Menyimpan..."
                 : isEdit

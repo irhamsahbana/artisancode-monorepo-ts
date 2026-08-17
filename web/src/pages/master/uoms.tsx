@@ -7,6 +7,7 @@ import { DataTable } from "@/components/shared/data-table";
 import { PageHeader } from "@/components/shared/page-header";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { useHasPermission } from "@/hooks/use-auth";
 import { useServerTable } from "@/hooks/use-server-table";
 import { useUpdateUom } from "@/hooks/use-uoms";
 import { queryKeys } from "@/lib/query-keys";
@@ -44,6 +45,9 @@ const categoryFilters: FilterOption[] = [
 ];
 
 export function Uoms() {
+  const canCreate = useHasPermission("uoms.create");
+  const canUpdate = useHasPermission("uoms.update");
+
   const { mutate: update } = useUpdateUom();
 
   const [open, setOpen] = useState(false);
@@ -113,7 +117,7 @@ export function Uoms() {
       <PageHeader
         title="Satuan"
         action={
-          <Button size="sm" onClick={openAdd}>
+          <Button size="sm" onClick={openAdd} disabled={!canCreate}>
             <Plus className="mr-1 h-4 w-4" />
             Tambah
           </Button>
@@ -137,7 +141,12 @@ export function Uoms() {
         hasMore={table.hasMore}
         onLoadMore={table.onLoadMore}
         actions={(item) => (
-          <Button variant="ghost" size="icon" onClick={() => openEdit(item)}>
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => openEdit(item)}
+            disabled={!canUpdate}
+          >
             <Pencil className="h-4 w-4" />
           </Button>
         )}

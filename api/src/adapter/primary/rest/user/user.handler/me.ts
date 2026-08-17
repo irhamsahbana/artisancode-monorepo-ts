@@ -9,6 +9,6 @@ export function getMeHandler(usecase: IUserUsecase) {
   return async (c: Context<AppEnv>) => {
     const user = getUserContext()
     const data = await usecase.findById(user?.id || '')
-    return c.json(responseSuccess(data))
+    return c.json(responseSuccess({ ...data, permissions: user?.permissions ?? [] }))
   }
 }

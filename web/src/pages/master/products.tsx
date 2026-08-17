@@ -7,6 +7,7 @@ import { DataTable } from "@/components/shared/data-table";
 import { PageHeader } from "@/components/shared/page-header";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { useHasPermission } from "@/hooks/use-auth";
 import { useUpdateProduct } from "@/hooks/use-products";
 import { useServerTable } from "@/hooks/use-server-table";
 import { queryKeys } from "@/lib/query-keys";
@@ -17,6 +18,9 @@ import { ProductDialog } from "./product-dialog";
 import type { Product } from "@artisancode/api-types";
 
 export function Products() {
+  const canCreate = useHasPermission("products.create");
+  const canUpdate = useHasPermission("products.update");
+
   const { mutate: update } = useUpdateProduct();
 
   const [open, setOpen] = useState(false);
@@ -79,7 +83,7 @@ export function Products() {
       <PageHeader
         title="Produk"
         action={
-          <Button size="sm" onClick={openAdd}>
+          <Button size="sm" onClick={openAdd} disabled={!canCreate}>
             <Plus className="mr-1 h-4 w-4" />
             Tambah
           </Button>
@@ -100,7 +104,12 @@ export function Products() {
         onLoadMore={table.onLoadMore}
         loading={table.loading}
         actions={(item) => (
-          <Button variant="ghost" size="icon" onClick={() => openEdit(item)}>
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => openEdit(item)}
+            disabled={!canUpdate}
+          >
             <Pencil className="h-4 w-4" />
           </Button>
         )}

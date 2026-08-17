@@ -31,6 +31,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { useHasPermission } from "@/hooks/use-auth";
 import { useRoles } from "@/hooks/use-roles";
 import { useCreateUser, useUpdateUser } from "@/hooks/use-users";
 
@@ -85,6 +86,9 @@ export function UserDialog({
   const { mutate: update, isPending: isUpdating } = useUpdateUser();
   const [showPassword, setShowPassword] = useState(false);
   const isEditing = !!editing;
+  const canSubmit = useHasPermission(
+    isEditing ? "users.update" : "users.create",
+  );
 
   const form = useForm<FormValues>({
     resolver: zodResolver(buildSchema(isEditing)),
@@ -351,7 +355,7 @@ export function UserDialog({
           <Button
             type="submit"
             form="user-form"
-            disabled={isCreating || isUpdating}
+            disabled={isCreating || isUpdating || !canSubmit}
           >
             {editing ? "Simpan" : "Tambah"}
           </Button>

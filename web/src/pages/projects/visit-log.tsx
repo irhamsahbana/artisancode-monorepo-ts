@@ -35,6 +35,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
+import { useHasPermission } from "@/hooks/use-auth";
 import { useContacts } from "@/hooks/use-contacts";
 import { useCreateProjectVisit } from "@/hooks/use-projects";
 
@@ -72,6 +73,7 @@ export function VisitLog({
   const { mutateAsync: addVisit, isPending } = useCreateProjectVisit(projectId);
   const { data: contacts } = useContacts(customerId);
   const [open, setOpen] = useState(false);
+  const canCreate = useHasPermission("project_visits.create");
 
   const form = useForm<VisitFormValues>({
     resolver: zodResolver(visitSchema),
@@ -107,7 +109,7 @@ export function VisitLog({
         <CardTitle className="text-sm">Log Kunjungan / Follow-up</CardTitle>
         <Dialog open={open} onOpenChange={setOpen}>
           <DialogTrigger asChild>
-            <Button size="sm" variant="outline">
+            <Button size="sm" variant="outline" disabled={!canCreate}>
               <Plus className="mr-1 h-4 w-4" />
               Tambah Log
             </Button>
@@ -227,7 +229,11 @@ export function VisitLog({
               </form>
             </Form>
             <DialogFooter showCloseButton>
-              <Button type="submit" form="visit-form" disabled={isPending}>
+              <Button
+                type="submit"
+                form="visit-form"
+                disabled={isPending || !canCreate}
+              >
                 {isPending ? "Menyimpan..." : "Simpan"}
               </Button>
             </DialogFooter>

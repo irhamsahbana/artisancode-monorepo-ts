@@ -7,6 +7,7 @@ import { DataTable } from "@/components/shared/data-table";
 import { PageHeader } from "@/components/shared/page-header";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { useHasPermission } from "@/hooks/use-auth";
 import { useCategoryList } from "@/hooks/use-categories";
 import { useServerTable } from "@/hooks/use-server-table";
 import { queryKeys } from "@/lib/query-keys";
@@ -82,6 +83,7 @@ type View = "company" | "person";
 export function CustomerList() {
   const navigate = useNavigate();
   const [view, setView] = useState<View>("company");
+  const canCreate = useHasPermission("customers.create");
 
   return (
     <div>
@@ -89,7 +91,11 @@ export function CustomerList() {
         title="Pelanggan"
         description="Kelola data pelanggan Anda."
         action={
-          <Button size="sm" onClick={() => navigate("/customers/new")}>
+          <Button
+            size="sm"
+            onClick={() => navigate("/customers/new")}
+            disabled={!canCreate}
+          >
             <Plus className="mr-1 h-4 w-4" />
             Tambah
           </Button>
@@ -144,6 +150,7 @@ function ViewToggle({
 
 function CompanyView() {
   const navigate = useNavigate();
+  const canEdit = useHasPermission("customers.update");
   const { data: segmentationsData } = useCategoryList("segmentation");
   const segmentations = segmentationsData?.items ?? [];
 
@@ -193,6 +200,7 @@ function CompanyView() {
             variant="ghost"
             size="icon"
             onClick={() => navigate(`/customers/${c.id}/edit`)}
+            disabled={!canEdit}
           >
             <Pencil className="h-4 w-4" />
           </Button>

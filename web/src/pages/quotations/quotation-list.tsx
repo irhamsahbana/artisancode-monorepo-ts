@@ -23,6 +23,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { useHasPermission } from "@/hooks/use-auth";
 import { useProjects } from "@/hooks/use-projects";
 import {
   useUpdateQuotationStatus,
@@ -57,6 +58,7 @@ const filters: FilterOption[] = [
 
 export function QuotationList() {
   const navigate = useNavigate();
+  const canUpdate = useHasPermission("quotations.update");
   const { data: projectsData } = useProjects();
   const { mutateAsync: updateStatus, isPending } = useUpdateQuotationStatus();
   const { mutateAsync: assignProject, isPending: isAssigning } =
@@ -234,6 +236,7 @@ export function QuotationList() {
             onValueChange={(v) =>
               handleStatusChange(q.id, v as QuotationStatus)
             }
+            disabled={!canUpdate}
           >
             <SelectTrigger className="h-7 w-fit">
               <SelectValue />
@@ -289,6 +292,7 @@ export function QuotationList() {
                 size="icon"
                 title="Assign ke Proyek"
                 onClick={() => setAssigningQuotation(q)}
+                disabled={!canUpdate}
               >
                 <LinkIcon className="h-4 w-4" />
               </Button>
@@ -393,7 +397,7 @@ export function QuotationList() {
               </Button>
               <Button
                 type="submit"
-                disabled={!selectedProjectId || isAssigning}
+                disabled={!selectedProjectId || isAssigning || !canUpdate}
               >
                 {isAssigning ? "Menyimpan..." : "Assign"}
               </Button>

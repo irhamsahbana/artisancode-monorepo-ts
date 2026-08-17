@@ -1,3 +1,4 @@
+import { PERMISSIONS } from "@artisancode/api-types";
 import { httpClient } from "@artisancode/http-client";
 
 import { env } from "@/config/env";
@@ -9,10 +10,12 @@ import type { RestResponse } from "@artisancode/types";
 
 // ponytail: demo session gated behind one fixed credential pair so
 // ProtectedRoute + useMe work without a backend. Flip DEMO_MODE to restore.
+// Demo user gets every permission — it stands in for an admin account.
 const DEMO_USER: User = {
   id: "u1",
   name: "Super Admin",
   email: "admin@wikabeton.id",
+  permissions: PERMISSIONS,
 };
 const DEMO_PASSWORD = "wikabeton123";
 const DEMO_TOKEN = "demo-token";

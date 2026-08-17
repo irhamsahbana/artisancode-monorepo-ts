@@ -15,6 +15,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { useHasPermission } from "@/hooks/use-auth";
 import { useServerTable } from "@/hooks/use-server-table";
 import { useUoms } from "@/hooks/use-uoms";
 import { queryKeys } from "@/lib/query-keys";
@@ -27,6 +28,9 @@ import type { UnitConversion } from "@artisancode/api-types";
 import type { ReactNode } from "react";
 
 export function UnitConversions() {
+  const canCreate = useHasPermission("unit_conversions.create");
+  const canUpdate = useHasPermission("unit_conversions.update");
+
   const { data: uomsData } = useUoms();
 
   const uoms = useMemo(() => uomsData?.items ?? [], [uomsData]);
@@ -95,7 +99,7 @@ export function UnitConversions() {
         title="Konversi Satuan"
         description="Kelola faktor konversi antar satuan ukur."
         action={
-          <Button size="sm" onClick={openAdd}>
+          <Button size="sm" onClick={openAdd} disabled={!canCreate}>
             <Plus className="mr-1 h-4 w-4" />
             Tambah
           </Button>
@@ -113,7 +117,12 @@ export function UnitConversions() {
         hasMore={table.hasMore}
         onLoadMore={table.onLoadMore}
         actions={(item) => (
-          <Button variant="ghost" size="icon" onClick={() => openEdit(item)}>
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => openEdit(item)}
+            disabled={!canUpdate}
+          >
             <Pencil className="h-4 w-4" />
           </Button>
         )}

@@ -1,9 +1,10 @@
 import { Plus, Phone, Mail, Star } from "lucide-react";
-import { Link } from "react-router";
+import { useNavigate } from "react-router";
 
 import { EmptyState } from "@/components/shared/empty-state";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { useHasPermission } from "@/hooks/use-auth";
 
 import type { Contact } from "@artisancode/api-types";
 
@@ -16,14 +17,20 @@ export function ContactsTab({
   contacts: Contact[];
   onOpenContact: (id: string) => void;
 }) {
+  const navigate = useNavigate();
+  const canCreate = useHasPermission("contacts.create");
+
   return (
     <div className="space-y-3">
       <div className="flex justify-end">
-        <Button size="sm" variant="outline" asChild>
-          <Link to={`/contacts/new?customerId=${customerId}`}>
-            <Plus className="mr-1 h-4 w-4" />
-            Tambah Key Person
-          </Link>
+        <Button
+          size="sm"
+          variant="outline"
+          onClick={() => navigate(`/contacts/new?customerId=${customerId}`)}
+          disabled={!canCreate}
+        >
+          <Plus className="mr-1 h-4 w-4" />
+          Tambah Key Person
         </Button>
       </div>
       {contacts.length === 0 ? (

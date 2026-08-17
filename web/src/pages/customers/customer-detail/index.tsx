@@ -1,9 +1,10 @@
 import { ArrowLeft, Pencil } from "lucide-react";
 import { useState } from "react";
-import { useParams, useNavigate, Link, useSearchParams } from "react-router";
+import { useParams, useNavigate, useSearchParams } from "react-router";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { useHasPermission } from "@/hooks/use-auth";
 import { useContacts } from "@/hooks/use-contacts";
 import { useCustomer } from "@/hooks/use-customers";
 import { useProjects } from "@/hooks/use-projects";
@@ -26,6 +27,7 @@ export function CustomerDetail() {
   const initialTab =
     searchParams.get("tab") === "kontak" ? "Kontak" : "Info Umum";
   const [activeTab, setActiveTab] = useState<Tab>(initialTab);
+  const canEdit = useHasPermission("customers.update");
 
   const { data: customer, isLoading } = useCustomer(id ?? "");
   const { data: contactsData } = useContacts(id ?? "");
@@ -70,11 +72,14 @@ export function CustomerDetail() {
             </span>
           </div>
         </div>
-        <Button size="sm" variant="outline" asChild>
-          <Link to={`/customers/${id}/edit`}>
-            <Pencil className="mr-1 h-4 w-4" />
-            Edit
-          </Link>
+        <Button
+          size="sm"
+          variant="outline"
+          onClick={() => navigate(`/customers/${id}/edit`)}
+          disabled={!canEdit}
+        >
+          <Pencil className="mr-1 h-4 w-4" />
+          Edit
         </Button>
       </div>
 

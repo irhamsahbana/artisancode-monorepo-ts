@@ -6,6 +6,7 @@ import { EmptyState } from "@/components/shared/empty-state";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { useHasPermission } from "@/hooks/use-auth";
 import { useContact, useContactSearch } from "@/hooks/use-contacts";
 import { useRatings } from "@/hooks/use-ratings";
 
@@ -14,6 +15,7 @@ import { riskLabel, riskVariant } from "../ratings/rating-status";
 export function ContactProfile() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const canEdit = useHasPermission("contacts.update");
 
   const { data: contact, isLoading } = useContact(id ?? "");
   const { data: allContacts } = useContactSearch(contact?.name ?? "");
@@ -67,11 +69,14 @@ export function ContactProfile() {
             )}
           </div>
         </div>
-        <Button size="sm" variant="outline" asChild>
-          <Link to={`/contacts/${id}/edit`}>
-            <Pencil className="mr-1 h-4 w-4" />
-            Edit
-          </Link>
+        <Button
+          size="sm"
+          variant="outline"
+          onClick={() => navigate(`/contacts/${id}/edit`)}
+          disabled={!canEdit}
+        >
+          <Pencil className="mr-1 h-4 w-4" />
+          Edit
         </Button>
       </div>
 
