@@ -1,3 +1,4 @@
+import { AppError } from "@artisancode/types";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router";
@@ -30,7 +31,15 @@ export function Login() {
   function onSubmit(values: FormValues) {
     doLogin(values, {
       onSuccess: () => navigate("/dashboard"),
-      onError: () => toast.error("Email atau password salah."),
+      onError: (error) => {
+        const isServerError =
+          error instanceof AppError && (error.httpCode ?? 0) >= 500;
+        toast.error(
+          isServerError
+            ? "Terjadi kesalahan pada server. Coba lagi nanti."
+            : "Email atau password salah.",
+        );
+      },
     });
   }
 
