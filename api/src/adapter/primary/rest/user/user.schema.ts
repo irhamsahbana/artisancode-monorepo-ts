@@ -36,5 +36,6 @@ export const updateAccountSchema = z.object({
 export const getUserListSchema = z.object({
   page: z.coerce.number().int().min(1).optional(),
   limit: z.coerce.number().int().min(1).max(100).optional(),
+  per_page: z.coerce.number().int().min(1).max(100).optional(),
   q: z.string().optional(),
 })

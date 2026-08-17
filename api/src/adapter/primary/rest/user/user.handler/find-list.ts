@@ -8,12 +8,17 @@ import * as Entity from '@/entities/user.entity'
 export function findUserListHandler(usecase: IUserUsecase) {
   return async (c: Context<AppEnv>) => {
     const query = c.get('body')?._query || c.req.query()
-    const { page, limit, q } = query as { page: number; limit: number; q: string }
+    const { page, limit, per_page, q } = query as {
+      page: number
+      limit: number
+      per_page?: number
+      q: string
+    }
 
     const payload: Entity.GetUserReq = {
       pagination: {
         page: Number(page) || 1,
-        per_page: Number(limit) || 10,
+        per_page: Number(per_page ?? limit) || 10,
       },
     }
 
