@@ -21,15 +21,17 @@ Third-party service integrations are separated from business logic using **Depen
 
 ```text
 src/
-  contracts/integration/       ← Interface contracts (provider-agnostic)
-    payment.contract.ts        ← IPaymentGateway
-    email.contract.ts          ← IEmailService
-    storage.contract.ts        ← IStorageService
-  integrations/                ← Concrete implementations
-    doku/                      ← DokuIntegration implements IPaymentGateway
-    email/                     ← MockEmailService implements IEmailService
-    storage/                   ← StorageIntegration (stub, not yet implemented)
-    index.ts                   ← Factory functions (createPaymentGateway, etc.)
+  contracts/integration/            ← Interface contracts (provider-agnostic)
+    payment.contract.ts             ← IPaymentGateway
+    email.contract.ts               ← IEmailService
+    storage.contract.ts             ← IStorageService
+  adapter/secondary/rest/           ← Outbound REST clients (alongside repository/ and cache/)
+    doku/                           ← DokuIntegration implements IPaymentGateway
+    pokemon/                        ← PokemonIntegration implements IPokemonService
+  integrations/                     ← Non-REST implementations (mocks, SDK-based clients)
+    email/                          ← MockEmailService implements IEmailService
+    storage/                        ← StorageIntegration (AWS SDK, not raw REST)
+    index.ts                        ← Factory functions (createPaymentGateway, etc.)
 ```
 
 ### File Split Pattern
@@ -37,7 +39,7 @@ src/
 Each integration uses a **functional split** — one file per operation instead of one large class:
 
 ```text
-src/integrations/doku/
+src/adapter/secondary/rest/doku/
   index.ts              ← Thin class wrapper (delegates to standalone functions)
   client.ts             ← Config type + factory (createDokuClientConfig)
   generate-payment.ts   ← generatePaymentLink(config, req)
@@ -66,6 +68,6 @@ export class DokuIntegration implements IPaymentGateway {
 
 - **Usecase layer** depends only on contract interfaces (`@/contracts/integration`), never concrete implementations.
 - **Module index files** call factory functions from `@/integrations` to create instances and inject them into usecases.
-- **New integrations**: Add a contract in `contracts/integration/`, implement in `integrations/`, export a factory function in `integrations/index.ts`.
+- **New integrations**: Add a contract in `contracts/integration/`. If it's an outbound REST client, implement it in `adapter/secondary/rest/`; otherwise (mock, SDK-based) implement it in `integrations/`. Either way, export a factory function from `integrations/index.ts`.
 - **New operations**: Add a function file in the integration directory, add a wrapper method in `index.ts`.
 - **Jobs** (cron scripts) also use factory functions from `@/integrations`.

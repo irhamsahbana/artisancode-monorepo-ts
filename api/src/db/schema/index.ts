@@ -33,6 +33,7 @@ export {
   unitConversions,
   uoms,
   users,
+  webhookLogs,
 } from './tables'
 
 // Row types (JSONB payloads)

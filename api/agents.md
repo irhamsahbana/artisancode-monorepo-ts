@@ -39,4 +39,4 @@ The technical details and guidelines for this project have been moved to the `do
 ## Quick Summary
 
 - **Architecture**: Modular Clean Architecture (`src/modules/[module_name]`)
-- **Integrations**: Contract interfaces in `src/contracts/integration/`, implementations in `src/integrations/`. Always depend on contracts, never concrete classes.
+- **Integrations**: Contract interfaces in `src/contracts/integration/`. Always depend on contracts, never concrete classes. Outbound REST clients (DOKU, PokeAPI, ...) live under `src/adapter/secondary/rest/`, alongside `adapter/secondary/repository/` (DB) and `adapter/secondary/cache/`. Non-REST integrations (mocks, SDK-based clients like S3) stay in `src/integrations/`.

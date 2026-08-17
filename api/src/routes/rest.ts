@@ -14,6 +14,7 @@ import ratingRouter from '@/adapter/primary/rest/rating/rating.index'
 import roleAndPermissionRouter from '@/adapter/primary/rest/role_and_permission/role_and_permission.index'
 import uomRouter, { unitConversionRouter } from '@/adapter/primary/rest/uom/uom.index'
 import userRouter from '@/adapter/primary/rest/user/user.index'
+import webhookRouter from '@/adapter/primary/rest/webhook/webhook.index'
 
 const router = new Hono()
 
@@ -42,5 +43,8 @@ router.route('/ratings', ratingRouter)
 
 // Marketing
 router.route('/broadcasts', broadcastRouter)
+
+// Payments
+router.route('/webhooks', webhookRouter)
 
 export default router

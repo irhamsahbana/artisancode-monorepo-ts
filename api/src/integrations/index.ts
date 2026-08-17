@@ -1,3 +1,5 @@
+import { DokuIntegration } from '@/adapter/secondary/rest/doku'
+import { PokemonIntegration } from '@/adapter/secondary/rest/pokemon'
 import {
   IEmailService,
   IPaymentGateway,
@@ -5,9 +7,7 @@ import {
   IStorageService,
 } from '@/contracts/integration'
 
-import { DokuIntegration } from './doku'
 import { MockEmailService } from './email'
-import { PokemonIntegration } from './pokemon'
 import { StorageIntegration } from './storage'
 
 // Factory functions — each module calls these to get integration instances
