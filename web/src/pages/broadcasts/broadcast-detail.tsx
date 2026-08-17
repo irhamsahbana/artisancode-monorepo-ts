@@ -106,7 +106,7 @@ export function BroadcastDetail() {
   const religions = useMemo(() => {
     const set = new Set<string>();
     for (const r of contactTable.loadedItems)
-      if (r.contact.religion) set.add(r.contact.religion);
+      if (r.customer.religion) set.add(r.customer.religion);
     return Array.from(set).sort();
   }, [contactTable.loadedItems]);
 
@@ -165,19 +165,24 @@ export function BroadcastDetail() {
   const segmentations = segmentationsData?.items ?? [];
 
   const contactColumns: Column<ContactSearchResult>[] = [
-    {
-      key: "select",
-      label: "Pilih",
-      render: (r) => (
-        <input
-          type="checkbox"
-          checked={selectedContactIds.has(r.contact.id)}
-          onChange={(e) => toggleContactId(r.contact.id, e.target.checked)}
-          className="h-4 w-4 rounded border-gray-300"
-          disabled={!isEditable}
-        />
-      ),
-    },
+    ...(isEditable
+      ? [
+          {
+            key: "select",
+            label: "Pilih",
+            render: (r: ContactSearchResult) => (
+              <input
+                type="checkbox"
+                checked={selectedContactIds.has(r.contact.id)}
+                onChange={(e) =>
+                  toggleContactId(r.contact.id, e.target.checked)
+                }
+                className="h-4 w-4 rounded border-gray-300"
+              />
+            ),
+          },
+        ]
+      : []),
     {
       key: "name",
       label: "Nama",
@@ -326,96 +331,92 @@ export function BroadcastDetail() {
           </CardContent>
         </Card>
 
-        {canEdit && (
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2 text-sm">
-                <Users className="h-4 w-4" />
-                Target Penerima ({contactTable.totalCount} key person)
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-                <Field label="Jenis Kelamin">
-                  <Select
-                    value={form.gender}
-                    onValueChange={(v) => setAudienceFilter("gender", v)}
-                    disabled={!canEdit}
-                  >
-                    <SelectTrigger className="w-full">
-                      <SelectValue placeholder="Semua" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="">Semua</SelectItem>
-                      <SelectItem value="male">Laki-laki</SelectItem>
-                      <SelectItem value="female">Perempuan</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </Field>
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-sm">
+              <Users className="h-4 w-4" />
+              Target Penerima ({contactTable.totalCount} key person)
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+              <Field label="Jenis Kelamin">
+                <Select
+                  value={form.gender}
+                  onValueChange={(v) => setAudienceFilter("gender", v)}
+                  disabled={!canEdit}
+                >
+                  <SelectTrigger className="w-full">
+                    <SelectValue placeholder="Semua" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="">Semua</SelectItem>
+                    <SelectItem value="male">Laki-laki</SelectItem>
+                    <SelectItem value="female">Perempuan</SelectItem>
+                  </SelectContent>
+                </Select>
+              </Field>
 
-                <Field label="Agama">
-                  <Select
-                    value={form.religion}
-                    onValueChange={(v) => setAudienceFilter("religion", v)}
-                    disabled={!canEdit}
-                  >
-                    <SelectTrigger className="w-full">
-                      <SelectValue placeholder="Semua" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="">Semua</SelectItem>
-                      {religions.map((r) => (
-                        <SelectItem key={r} value={r}>
-                          {r}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </Field>
+              <Field label="Agama">
+                <Select
+                  value={form.religion}
+                  onValueChange={(v) => setAudienceFilter("religion", v)}
+                  disabled={!canEdit}
+                >
+                  <SelectTrigger className="w-full">
+                    <SelectValue placeholder="Semua" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="">Semua</SelectItem>
+                    {religions.map((r) => (
+                      <SelectItem key={r} value={r}>
+                        {r}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </Field>
 
-                <Field label="Segmentasi Perusahaan">
-                  <Select
-                    value={form.segmentationId}
-                    onValueChange={(v) =>
-                      setAudienceFilter("segmentationId", v)
-                    }
-                    disabled={!canEdit}
-                  >
-                    <SelectTrigger className="w-full">
-                      <SelectValue placeholder="Semua" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="">Semua</SelectItem>
-                      {segmentations.map((s) => (
-                        <SelectItem key={s.id} value={s.id}>
-                          {s.name}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </Field>
+              <Field label="Segmentasi Perusahaan">
+                <Select
+                  value={form.segmentationId}
+                  onValueChange={(v) => setAudienceFilter("segmentationId", v)}
+                  disabled={!canEdit}
+                >
+                  <SelectTrigger className="w-full">
+                    <SelectValue placeholder="Semua" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="">Semua</SelectItem>
+                    {segmentations.map((s) => (
+                      <SelectItem key={s.id} value={s.id}>
+                        {s.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </Field>
 
-                <Field label="Status Pelanggan">
-                  <Select
-                    value={form.customerStatus}
-                    onValueChange={(v) =>
-                      setAudienceFilter("customerStatus", v)
-                    }
-                    disabled={!canEdit}
-                  >
-                    <SelectTrigger className="w-full">
-                      <SelectValue placeholder="Semua" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="">Semua</SelectItem>
-                      <SelectItem value="prospect">Prospek</SelectItem>
-                      <SelectItem value="active">Aktif</SelectItem>
-                      <SelectItem value="inactive">Tidak Aktif</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </Field>
-              </div>
+              <Field label="Status Pelanggan">
+                <Select
+                  value={form.customerStatus}
+                  onValueChange={(v) => setAudienceFilter("customerStatus", v)}
+                  disabled={!canEdit}
+                >
+                  <SelectTrigger className="w-full">
+                    <SelectValue placeholder="Semua" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="">Semua</SelectItem>
+                    <SelectItem value="prospect">Prospek</SelectItem>
+                    <SelectItem value="active">Aktif</SelectItem>
+                    <SelectItem value="inactive">Tidak Aktif</SelectItem>
+                  </SelectContent>
+                </Select>
+              </Field>
+            </div>
 
+            {isEditable && (
               <div className="flex items-center gap-2">
                 <input
                   type="checkbox"
@@ -438,24 +439,24 @@ export function BroadcastDetail() {
                   )
                 </span>
               </div>
+            )}
 
-              <DataTable
-                data={contactTable.items}
-                loadedData={contactTable.loadedItems}
-                columns={contactColumns}
-                searchPlaceholder="Cari nama key person / perusahaan..."
-                query={contactTable.query}
-                onQueryChange={contactTable.onQueryChange}
-                page={contactTable.page}
-                totalPages={contactTable.totalPages}
-                totalCount={contactTable.totalCount}
-                onPageChange={contactTable.onPageChange}
-                hasMore={contactTable.hasMore}
-                onLoadMore={contactTable.onLoadMore}
-              />
-            </CardContent>
-          </Card>
-        )}
+            <DataTable
+              data={contactTable.items}
+              loadedData={contactTable.loadedItems}
+              columns={contactColumns}
+              searchPlaceholder="Cari nama key person / perusahaan..."
+              query={contactTable.query}
+              onQueryChange={contactTable.onQueryChange}
+              page={contactTable.page}
+              totalPages={contactTable.totalPages}
+              totalCount={contactTable.totalCount}
+              onPageChange={contactTable.onPageChange}
+              hasMore={contactTable.hasMore}
+              onLoadMore={contactTable.onLoadMore}
+            />
+          </CardContent>
+        </Card>
       </div>
     </div>
   );
