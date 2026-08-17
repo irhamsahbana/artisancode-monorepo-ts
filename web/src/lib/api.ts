@@ -121,5 +121,7 @@ export const api = {
     call<T>(path, { method: "POST", body }),
   put: <T>(path: string, body: unknown) =>
     call<T>(path, { method: "PUT", body }),
+  patch: <T>(path: string, body: unknown) =>
+    call<T>(path, { method: "PATCH", body }),
   del: <T>(path: string) => call<T>(path, { method: "DELETE" }),
 };

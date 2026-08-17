@@ -45,6 +45,12 @@ export type {
   BroadcastList,
 } from './broadcast'
 export type {
+  BirthdayGreetingSettings,
+  UpdateBirthdayGreetingSettingsReq,
+  BirthdayGreetingRecipientLog,
+  BirthdayGreetingLog,
+} from './birthday-greeting'
+export type {
   Project,
   ProjectStatus,
   ProjectProductLine,

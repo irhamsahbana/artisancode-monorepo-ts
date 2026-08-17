@@ -19,6 +19,7 @@ export const PERMISSION_MODULES = [
   { key: 'customer_ratings', label: 'Penilaian' },
   { key: 'broadcast_templates', label: 'Template Broadcast' },
   { key: 'broadcast_logs', label: 'Log Broadcast' },
+  { key: 'birthday_greeting', label: 'Ucapan Ulang Tahun' },
   { key: 'uoms', label: 'Satuan' },
   { key: 'unit_conversions', label: 'Konversi Satuan' },
 ] as const

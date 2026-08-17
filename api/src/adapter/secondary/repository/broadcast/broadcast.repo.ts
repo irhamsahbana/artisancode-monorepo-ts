@@ -108,9 +108,8 @@ export function createBroadcastRepo(): IBroadcastRepo {
         .where(and(eq(broadcastTemplates.id, id), isNull(broadcastTemplates.deletedAt)))
     },
 
-    recordSend: async (templateId, recipientLogs, options) => {
+    recordSend: async (templateId, recipientLogs) => {
       const exec = getExecutor()
-      const markSent = options?.markSent ?? true
 
       const sentCount = recipientLogs.filter((l) => l.status === 'sent').length
       const failedCount = recipientLogs.filter((l) => l.status === 'failed').length
@@ -129,12 +128,10 @@ export function createBroadcastRepo(): IBroadcastRepo {
         })
         .returning()
 
-      if (markSent) {
-        await exec
-          .update(broadcastTemplates)
-          .set({ status: 'sent', sentAt: new Date() })
-          .where(eq(broadcastTemplates.id, templateId))
-      }
+      await exec
+        .update(broadcastTemplates)
+        .set({ status: 'sent', sentAt: new Date() })
+        .where(eq(broadcastTemplates.id, templateId))
 
       return logToEntity(logRow)
     },

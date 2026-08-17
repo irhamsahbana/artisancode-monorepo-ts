@@ -28,8 +28,6 @@ export function TemplateFields({
   watch: UseFormWatch<FormValues>;
 }) {
   const scheduleType = watch("scheduleType");
-  const occasion = watch("occasion");
-  const isBirthday = occasion === "birthday";
 
   return (
     <>
@@ -88,59 +86,44 @@ export function TemplateFields({
                 {...field}
               />
             </FormControl>
-            {isBirthday && (
-              <p className="text-muted-foreground text-xs">
-                Gunakan{" "}
-                <code className="bg-muted rounded px-1">{"{{nama}}"}</code>{" "}
-                untuk menyapa tiap penerima dengan namanya sendiri.
-              </p>
-            )}
             <FormMessage />
           </FormItem>
         )}
       />
 
-      {isBirthday ? (
-        <p className="text-muted-foreground text-sm">
-          Template ini terkirim otomatis tiap hari jam 08:00 WIB ke pelanggan
-          yang berulang tahun hari itu (sesuai filter penerima di bawah) — tidak
-          perlu dijadwalkan manual.
-        </p>
-      ) : (
-        <FormField
-          control={control}
-          name="scheduleType"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Jadwal Pengiriman</FormLabel>
-              <div className="flex gap-4">
-                <label className="flex items-center gap-2">
-                  <input
-                    type="radio"
-                    name="scheduleType"
-                    checked={field.value === "now"}
-                    onChange={() => field.onChange("now")}
-                    className="h-4 w-4"
-                  />
-                  <span className="text-sm">Kirim Sekarang</span>
-                </label>
-                <label className="flex items-center gap-2">
-                  <input
-                    type="radio"
-                    name="scheduleType"
-                    checked={field.value === "later"}
-                    onChange={() => field.onChange("later")}
-                    className="h-4 w-4"
-                  />
-                  <span className="text-sm">Jadwalkan</span>
-                </label>
-              </div>
-            </FormItem>
-          )}
-        />
-      )}
+      <FormField
+        control={control}
+        name="scheduleType"
+        render={({ field }) => (
+          <FormItem>
+            <FormLabel>Jadwal Pengiriman</FormLabel>
+            <div className="flex gap-4">
+              <label className="flex items-center gap-2">
+                <input
+                  type="radio"
+                  name="scheduleType"
+                  checked={field.value === "now"}
+                  onChange={() => field.onChange("now")}
+                  className="h-4 w-4"
+                />
+                <span className="text-sm">Kirim Sekarang</span>
+              </label>
+              <label className="flex items-center gap-2">
+                <input
+                  type="radio"
+                  name="scheduleType"
+                  checked={field.value === "later"}
+                  onChange={() => field.onChange("later")}
+                  className="h-4 w-4"
+                />
+                <span className="text-sm">Jadwalkan</span>
+              </label>
+            </div>
+          </FormItem>
+        )}
+      />
 
-      {!isBirthday && scheduleType === "later" && (
+      {scheduleType === "later" && (
         <FormField
           control={control}
           name="scheduledAt"

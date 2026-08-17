@@ -8,7 +8,6 @@ export type BroadcastOccasion =
   | 'national_day'
   | 'company_anniversary'
   | 'thank_you'
-  | 'birthday'
   | 'custom'
 
 // ponytail: broadcast targets Contacts (key persons), not Customer companies.

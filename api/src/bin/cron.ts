@@ -6,9 +6,10 @@ async function runCron(task: string): Promise<void> {
 
   try {
     switch (task) {
-      case 'birthday-broadcast': {
-        const { runBirthdayBroadcast } = await import('@/modules/broadcast/broadcast-birthday.cron')
-        await runBirthdayBroadcast()
+      case 'birthday-greeting': {
+        const { runBirthdayGreetingCron } =
+          await import('@/modules/birthday_greeting/birthday-greeting.cron')
+        await runBirthdayGreetingCron()
         break
       }
       default:

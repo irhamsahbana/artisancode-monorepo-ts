@@ -3,7 +3,7 @@ import { join } from 'path'
 import Baker, { FilePersistenceProvider } from 'cronbake'
 
 import logger from '@/config/logger'
-import { runBirthdayBroadcast } from '@/modules/broadcast/broadcast-birthday.cron'
+import { runBirthdayGreetingCron } from '@/modules/birthday_greeting/birthday-greeting.cron'
 
 let baker: ReturnType<typeof Baker.create> | null = null
 
@@ -34,16 +34,16 @@ export async function startScheduler(): Promise<void> {
   await baker.ready()
 
   baker.add({
-    name: 'birthday-broadcast',
+    name: 'birthday-greeting',
     cron: '@at_8:0',
     start: true,
     immediate: false,
     overrunProtection: true,
     callback: async () => {
-      await runBirthdayBroadcast()
+      await runBirthdayGreetingCron()
     },
     onError: (error) => {
-      logger.error('Birthday broadcast job error', {
+      logger.error('Birthday greeting job error', {
         label: 'SCHEDULER',
         data: { error: error.message },
       })
@@ -52,7 +52,7 @@ export async function startScheduler(): Promise<void> {
 
   logger.info('Scheduler started', {
     label: 'SCHEDULER',
-    data: { job: 'birthday-broadcast', cron: '@at_8:0', tz: process.env.TZ },
+    data: { job: 'birthday-greeting', cron: '@at_8:0', tz: process.env.TZ },
   })
 }
 

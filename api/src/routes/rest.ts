@@ -1,5 +1,6 @@
 import { Hono } from 'hono'
 
+import birthdayGreetingRouter from '@/adapter/primary/rest/birthday_greeting/birthday_greeting.index'
 import broadcastRouter from '@/adapter/primary/rest/broadcast/broadcast.index'
 import businessProfileRouter from '@/adapter/primary/rest/business_profile/business_profile.index'
 import categoryRouter from '@/adapter/primary/rest/category/category.index'
@@ -45,6 +46,7 @@ router.route('/ratings', ratingRouter)
 
 // Marketing
 router.route('/broadcasts', broadcastRouter)
+router.route('/birthday-greeting', birthdayGreetingRouter)
 
 // Payments
 router.route('/webhooks', webhookRouter)

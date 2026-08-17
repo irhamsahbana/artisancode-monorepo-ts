@@ -43,6 +43,13 @@
       "when": 1786975199959,
       "tag": "0005_parallel_katie_power",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1786977667243,
+      "tag": "0006_dusty_swordsman",
+      "breakpoints": true
     }
   ]
 }

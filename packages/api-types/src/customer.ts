@@ -6,8 +6,6 @@ export type CustomerPotential = 'high' | 'medium' | 'low'
 // generic UMKM/Korporat/Enterprise segmentation master values.
 export type CompanyType = 'bumn' | 'swasta_nasional' | 'swasta_asing'
 
-// Company-level data only. Personal data (gender, birth date, hobby, family,
-// profiling) lives on Contact (the key person), not here.
 export interface Customer {
   id: string
   name: string
@@ -17,6 +15,10 @@ export interface Customer {
   status: CustomerStatus
   potential: CustomerPotential
   primaryContactId?: string
+  gender?: 'male' | 'female' | null
+  birthPlace?: string | null
+  dateOfBirth?: string | null
+  religion?: string | null
   address?: string
   npwp?: string
   skt?: string

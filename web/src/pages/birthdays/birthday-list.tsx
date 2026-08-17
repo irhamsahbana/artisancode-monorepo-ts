@@ -1,6 +1,7 @@
-import { Clock, Gift, MessageSquarePlus } from "lucide-react";
-import { useMemo } from "react";
-import { Link, useNavigate } from "react-router";
+import { Clock, Gift } from "lucide-react";
+import { useMemo, useState } from "react";
+import { Link } from "react-router";
+import { toast } from "sonner";
 
 import type { Column } from "@/components/shared/data-table";
 import { DataTable } from "@/components/shared/data-table";
@@ -8,12 +9,26 @@ import { PageHeader } from "@/components/shared/page-header";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { useBroadcastLogs, useBroadcasts } from "@/hooks/use-broadcasts";
+import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Textarea } from "@/components/ui/textarea";
+import { useHasPermission } from "@/hooks/use-auth";
+import {
+  useBirthdayGreetingLogs,
+  useBirthdayGreetingSettings,
+  useUpdateBirthdayGreetingSettings,
+} from "@/hooks/use-birthday-greeting";
+import { useCategoryList } from "@/hooks/use-categories";
 import { useClientTable } from "@/hooks/use-client-table";
 import { useContactSearch } from "@/hooks/use-contacts";
 
-// Fixed daily fire time for the cronbake scheduler (jobs/scheduler.ts) — not
-// per-template, so it's informational text here, not an editable setting.
+// Fixed daily fire time for the cronbake scheduler (api/src/jobs/scheduler.ts)
 const BIRTHDAY_SEND_TIME = "08:00 WIB";
 
 interface UpcomingBirthday {
@@ -27,31 +42,93 @@ interface UpcomingBirthday {
   daysUntil: number;
 }
 
-export function BirthdayList() {
-  const navigate = useNavigate();
-  const { data: contactsData } = useContactSearch("");
-  const { data: broadcastsData } = useBroadcasts();
+interface SettingsForm {
+  message: string;
+  enabled: boolean;
+  gender: string;
+  religion: string;
+  segmentationId: string;
+  customerStatus: string;
+}
 
-  const birthdayTemplate = broadcastsData?.items.find(
-    (b) => b.occasion === "birthday",
-  );
-  const { data: templateLogs } = useBroadcastLogs(birthdayTemplate?.id);
+export function BirthdayList() {
+  const canUpdate = useHasPermission("birthday_greeting.update");
+  const { data: settings } = useBirthdayGreetingSettings();
+  const { mutateAsync: updateSettings, isPending: isSaving } =
+    useUpdateBirthdayGreetingSettings();
+  const { data: contactsData } = useContactSearch("");
+  const { data: segmentationsData } = useCategoryList("segmentation");
+  const { data: logs } = useBirthdayGreetingLogs();
+
+  const [form, setForm] = useState<SettingsForm>({
+    message: "",
+    enabled: false,
+    gender: "",
+    religion: "",
+    segmentationId: "",
+    customerStatus: "",
+  });
+
+  // Sync local form state whenever fresh settings arrive from the server —
+  // adjusted during render (React's recommended pattern) instead of an
+  // Effect, keyed off updatedAt so a save's own refetch doesn't clobber
+  // in-flight edits with stale-looking (but actually current) data.
+  const [syncedAt, setSyncedAt] = useState<string | null>(null);
+  if (settings && settings.updatedAt !== syncedAt) {
+    setSyncedAt(settings.updatedAt);
+    setForm({
+      message: settings.message,
+      enabled: settings.enabled,
+      gender: settings.audienceGender ?? "",
+      religion: settings.audienceReligion ?? "",
+      segmentationId: settings.audienceSegmentationId ?? "",
+      customerStatus: settings.audienceCustomerStatus ?? "",
+    });
+  }
+
+  function set<K extends keyof SettingsForm>(key: K, value: SettingsForm[K]) {
+    setForm((prev) => ({ ...prev, [key]: value }));
+  }
+
+  async function handleSave() {
+    try {
+      await updateSettings({
+        message: form.message,
+        enabled: form.enabled,
+        audienceGender: (form.gender as "male" | "female") || undefined,
+        audienceReligion: form.religion || undefined,
+        audienceSegmentationId: form.segmentationId || undefined,
+        audienceCustomerStatus: form.customerStatus || undefined,
+      });
+      toast.success("Pengaturan automasi berhasil disimpan.");
+    } catch {
+      toast.error("Gagal menyimpan pengaturan.");
+    }
+  }
 
   // The scheduler fires once daily — find the log from today's run, if any.
   const todayLog = useMemo(() => {
     const todayKey = new Date().toDateString();
-    return (templateLogs ?? [])
+    return (logs ?? [])
       .filter((l) => new Date(l.sentAt).toDateString() === todayKey)
       .sort((a, b) => b.sentAt.localeCompare(a.sentAt))[0];
-  }, [templateLogs]);
+  }, [logs]);
 
   const todayStatusByContact = useMemo(() => {
-    const map = new Map<string, "sent" | "failed" | "pending">();
+    const map = new Map<string, "sent" | "failed">();
     for (const r of todayLog?.recipientLogs ?? []) {
       map.set(r.contactId, r.status);
     }
     return map;
   }, [todayLog]);
+
+  const religions = useMemo(() => {
+    const set = new Set<string>();
+    for (const { customer } of contactsData ?? []) {
+      if (customer.religion) set.add(customer.religion);
+    }
+    return Array.from(set).sort();
+  }, [contactsData]);
 
   const upcomingList = useMemo(() => {
     const items: UpcomingBirthday[] = [];
@@ -60,9 +137,9 @@ export function BirthdayList() {
     now.setHours(0, 0, 0, 0);
 
     for (const { contact, customer } of contactsData ?? []) {
-      if (!contact.dateOfBirth) continue;
+      if (!customer.dateOfBirth) continue;
 
-      const dob = new Date(contact.dateOfBirth);
+      const dob = new Date(customer.dateOfBirth);
       const nextBirthday = new Date(
         now.getFullYear(),
         dob.getMonth(),
@@ -80,10 +157,10 @@ export function BirthdayList() {
       items.push({
         contactId: contact.id,
         contactName: contact.name,
-        gender: contact.gender,
+        gender: customer.gender ?? undefined,
         customerName: customer.name,
         position: contact.position ?? "-",
-        dateOfBirth: contact.dateOfBirth,
+        dateOfBirth: customer.dateOfBirth,
         nextBirthday,
         daysUntil,
       });
@@ -159,8 +236,8 @@ export function BirthdayList() {
             </span>
           );
         }
-        if (!birthdayTemplate) {
-          return <Badge variant="outline">Tidak ada template aktif</Badge>;
+        if (!settings?.enabled) {
+          return <Badge variant="outline">Automasi nonaktif</Badge>;
         }
         const status = todayStatusByContact.get(u.contactId);
         if (status === "sent") {
@@ -175,13 +252,15 @@ export function BirthdayList() {
         }
         if (todayLog) {
           // Job already ran today but this contact didn't match the
-          // template's audience filters (gender/religion/segmentasi/status).
-          return <Badge variant="outline">Di luar target template</Badge>;
+          // settings' audience filters (gender/religion/segmentasi/status).
+          return <Badge variant="outline">Di luar target</Badge>;
         }
         return <Badge variant="outline">Menunggu {BIRTHDAY_SEND_TIME}</Badge>;
       },
     },
   ];
+
+  const segmentations = segmentationsData?.items ?? [];
 
   return (
     <div>
@@ -198,11 +277,13 @@ export function BirthdayList() {
             </div>
             <div>
               <CardTitle className="text-base">
-                Template Automasi Ucapan
+                Automasi Ucapan Ulang Tahun
               </CardTitle>
-              {birthdayTemplate ? (
-                <div className="text-xs text-muted-foreground mt-1 flex items-center gap-1.5">
-                  Dikirim otomatis via WhatsApp setiap hari pukul
+              <div className="text-xs text-muted-foreground mt-1 flex items-center gap-1.5">
+                {form.enabled
+                  ? "Aktif — dikirim otomatis via WhatsApp setiap hari pukul"
+                  : "Nonaktif"}
+                {form.enabled && (
                   <Badge
                     variant="secondary"
                     className="px-1.5 py-0 h-5 font-medium flex items-center gap-1"
@@ -210,42 +291,126 @@ export function BirthdayList() {
                     <Clock className="h-3 w-3" />
                     {BIRTHDAY_SEND_TIME}
                   </Badge>
-                </div>
-              ) : (
-                <p className="mt-1 text-xs text-muted-foreground">
-                  Belum ada template aktif — ucapan ulang tahun tidak akan
-                  terkirim otomatis.
-                </p>
-              )}
+                )}
+              </div>
             </div>
           </div>
-          {birthdayTemplate ? (
-            <Button variant="outline" size="sm" asChild>
-              <Link to={`/broadcasts/${birthdayTemplate.id}`}>
-                Lihat Template
-              </Link>
-            </Button>
-          ) : (
-            <Button
-              size="sm"
-              onClick={() => navigate("/broadcasts/new?occasion=birthday")}
-            >
-              <MessageSquarePlus className="mr-1 h-4 w-4" />
-              Buat Template
-            </Button>
-          )}
+          <label className="flex items-center gap-2 text-sm">
+            <input
+              type="checkbox"
+              checked={form.enabled}
+              onChange={(e) => set("enabled", e.target.checked)}
+              disabled={!canUpdate}
+              className="h-4 w-4 rounded border-gray-300"
+            />
+            Aktifkan
+          </label>
         </CardHeader>
-        {birthdayTemplate && (
-          <CardContent>
-            <div className="rounded-md border bg-muted/30 p-4 text-sm whitespace-pre-wrap">
-              {birthdayTemplate.message}
-            </div>
-            <p className="mt-3 text-xs text-muted-foreground">
-              Gunakan <b>{`{{nama}}`}</b> di pesan untuk otomatis diganti nama
-              tiap penerima.
+        <CardContent className="space-y-4">
+          <div className="grid gap-1.5">
+            <Label>Pesan</Label>
+            <Textarea
+              rows={5}
+              value={form.message}
+              onChange={(e) => set("message", e.target.value)}
+              disabled={!canUpdate}
+              placeholder="Selamat Ulang Tahun {{nama}}! ..."
+            />
+            <p className="text-xs text-muted-foreground">
+              Gunakan <b>{`{{nama}}`}</b> untuk otomatis diganti nama tiap
+              penerima.
             </p>
-          </CardContent>
-        )}
+          </div>
+
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            <div className="grid gap-1.5">
+              <Label>Jenis Kelamin</Label>
+              <Select
+                value={form.gender}
+                onValueChange={(v) => set("gender", v)}
+                disabled={!canUpdate}
+              >
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder="Semua" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="">Semua</SelectItem>
+                  <SelectItem value="male">Laki-laki</SelectItem>
+                  <SelectItem value="female">Perempuan</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="grid gap-1.5">
+              <Label>Agama</Label>
+              <Select
+                value={form.religion}
+                onValueChange={(v) => set("religion", v)}
+                disabled={!canUpdate}
+              >
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder="Semua" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="">Semua</SelectItem>
+                  {religions.map((r) => (
+                    <SelectItem key={r} value={r}>
+                      {r}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="grid gap-1.5">
+              <Label>Segmentasi Perusahaan</Label>
+              <Select
+                value={form.segmentationId}
+                onValueChange={(v) => set("segmentationId", v)}
+                disabled={!canUpdate}
+              >
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder="Semua" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="">Semua</SelectItem>
+                  {segmentations.map((s) => (
+                    <SelectItem key={s.id} value={s.id}>
+                      {s.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="grid gap-1.5">
+              <Label>Status Pelanggan</Label>
+              <Select
+                value={form.customerStatus}
+                onValueChange={(v) => set("customerStatus", v)}
+                disabled={!canUpdate}
+              >
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder="Semua" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="">Semua</SelectItem>
+                  <SelectItem value="prospect">Prospek</SelectItem>
+                  <SelectItem value="active">Aktif</SelectItem>
+                  <SelectItem value="inactive">Tidak Aktif</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+
+          {canUpdate && (
+            <div className="flex justify-end">
+              <Button onClick={handleSave} disabled={isSaving}>
+                {isSaving ? "Menyimpan..." : "Simpan Pengaturan"}
+              </Button>
+            </div>
+          )}
+        </CardContent>
       </Card>
 
       <h2 className="mb-4 text-base font-semibold">

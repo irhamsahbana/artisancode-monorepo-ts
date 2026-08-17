@@ -12,7 +12,6 @@ export const schema = z
       "national_day",
       "company_anniversary",
       "thank_you",
-      "birthday",
       "custom",
     ]),
     gender: z.string().optional(),

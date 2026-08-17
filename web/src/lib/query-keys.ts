@@ -35,6 +35,11 @@ export const queryKeys = {
     list: (params?: Record<string, unknown>) =>
       ["broadcasts", "list", params] as const,
   },
+  birthdayGreeting: {
+    all: ["birthday-greeting"] as const,
+    settings: () => ["birthday-greeting", "settings"] as const,
+    logs: () => ["birthday-greeting", "logs"] as const,
+  },
   quotations: {
     all: ["quotations"] as const,
     list: (params?: Record<string, unknown>) =>

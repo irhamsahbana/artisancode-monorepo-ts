@@ -2,7 +2,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { ArrowLeft, Users } from "lucide-react";
 import { useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
-import { useNavigate, useSearchParams } from "react-router";
+import { useNavigate } from "react-router";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
@@ -15,7 +15,6 @@ import { useServerTable } from "@/hooks/use-server-table";
 import { queryKeys } from "@/lib/query-keys";
 import { contactService } from "@/services/contact";
 
-import { occasionLabel } from "../broadcast-status";
 import { AudienceFilters } from "./audience-filters";
 import { RecipientsTable } from "./recipients-table";
 import { schema, emptyValues, type FormValues } from "./schema";
@@ -25,7 +24,6 @@ import type { ContactSearchResult } from "@artisancode/api-types";
 
 export function BroadcastForm() {
   const navigate = useNavigate();
-  const [searchParams] = useSearchParams();
   const canCreateTemplate = useHasPermission("broadcast_templates.create");
   const { mutateAsync: create, isPending } = useCreateBroadcast();
   const { data: segmentationsData } = useCategoryList("segmentation");
@@ -34,15 +32,9 @@ export function BroadcastForm() {
     new Set(),
   );
 
-  const occasionParam = searchParams.get("occasion");
-  const initialOccasion =
-    occasionParam && occasionParam in occasionLabel
-      ? (occasionParam as FormValues["occasion"])
-      : emptyValues.occasion;
-
   const form = useForm<FormValues>({
     resolver: zodResolver(schema),
-    defaultValues: { ...emptyValues, occasion: initialOccasion },
+    defaultValues: emptyValues,
   });
 
   const contactTable = useServerTable<ContactSearchResult>({

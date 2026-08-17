@@ -81,7 +81,7 @@ export function createBroadcastUsecase(repo: IBroadcastRepo): IBroadcastUsecase 
 
       // 3. Enqueue: singletonKey = templateId dedupes a second send while one is running
       const provider = getWhatsAppProvider()
-      await enqueueWhatsAppSend({ templateId: req.templateId })
+      await enqueueWhatsAppSend({ kind: 'broadcast', templateId: req.templateId })
 
       // 4. Ack immediately with dispatch info
       return {

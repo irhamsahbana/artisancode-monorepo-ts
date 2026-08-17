@@ -8,7 +8,6 @@ export const occasionLabel: Record<BroadcastOccasion, string> = {
   national_day: "Hari Nasional",
   company_anniversary: "Hari Ulang Tahun Perusahaan",
   thank_you: "Terima Kasih",
-  birthday: "Ulang Tahun Pelanggan (otomatis harian)",
   custom: "Custom",
 };
 

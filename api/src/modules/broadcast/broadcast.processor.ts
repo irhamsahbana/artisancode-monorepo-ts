@@ -10,12 +10,14 @@ import * as Entity from '@/entities/broadcast.entity'
 import { getWhatsAppProvider } from '@/integrations/whatsapp'
 const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
 
+type BroadcastSendJobData = Extract<WhatsAppSendJobData, { kind: 'broadcast' }>
+
 /**
  * BullMQ worker body: sends a broadcast template to its audience sequentially
  * with throttling, then records per-contact results.
  */
-export async function processWhatsAppSend(
-  data: WhatsAppSendJobData,
+export async function processBroadcastSend(
+  data: BroadcastSendJobData,
   repo: IBroadcastRepo,
 ): Promise<void> {
   const exec = getExecutor()
@@ -27,49 +29,37 @@ export async function processWhatsAppSend(
     logger.warn('Broadcast template gone, skipping job', { templateId: data.templateId })
     return
   }
-
-  // Recurring per-occurrence jobs (e.g. birthday greetings) carry an explicit
-  // recipient list and fire again on a future date — the one-shot "already
-  // sent" guard and audience query below only apply to a normal campaign send.
-  const isRecurring = data.recipients !== undefined
-
-  if (!isRecurring && template.status === 'sent') {
+  if (template.status === 'sent') {
     // Already sent (e.g. job retried after recordSend succeeded)
     return
   }
 
-  let targetContacts: { contactId: string; contactName: string; whatsapp: string | null }[]
+  const conditions = [isNull(contacts.deletedAt), isNull(customers.deletedAt)]
 
-  if (data.recipients) {
-    targetContacts = data.recipients
-  } else {
-    const conditions = [isNull(contacts.deletedAt), isNull(customers.deletedAt)]
-
-    if (template.audienceGender) {
-      conditions.push(eq(customers.gender, template.audienceGender))
-    }
-    if (template.audienceReligion) {
-      conditions.push(eq(customers.religion, template.audienceReligion))
-    }
-    if (template.audienceSegmentationId) {
-      conditions.push(eq(customers.segmentationId, template.audienceSegmentationId))
-    }
-    if (template.audienceCustomerStatus) {
-      conditions.push(
-        eq(customers.status, template.audienceCustomerStatus as 'prospect' | 'active' | 'inactive'),
-      )
-    }
-
-    targetContacts = await exec
-      .select({
-        contactId: contacts.id,
-        contactName: contacts.name,
-        whatsapp: contacts.whatsapp,
-      })
-      .from(contacts)
-      .innerJoin(customers, eq(contacts.customerId, customers.id))
-      .where(and(...conditions))
+  if (template.audienceGender) {
+    conditions.push(eq(customers.gender, template.audienceGender))
   }
+  if (template.audienceReligion) {
+    conditions.push(eq(customers.religion, template.audienceReligion))
+  }
+  if (template.audienceSegmentationId) {
+    conditions.push(eq(customers.segmentationId, template.audienceSegmentationId))
+  }
+  if (template.audienceCustomerStatus) {
+    conditions.push(
+      eq(customers.status, template.audienceCustomerStatus as 'prospect' | 'active' | 'inactive'),
+    )
+  }
+
+  const targetContacts = await exec
+    .select({
+      contactId: contacts.id,
+      contactName: contacts.name,
+      whatsapp: contacts.whatsapp,
+    })
+    .from(contacts)
+    .innerJoin(customers, eq(contacts.customerId, customers.id))
+    .where(and(...conditions))
 
   const provider = getWhatsAppProvider()
   const { SEND_DELAY_MIN_MS, SEND_DELAY_MAX_MS } = env.WHATSAPP
@@ -88,12 +78,8 @@ export async function processWhatsAppSend(
       continue
     }
 
-    // {{nama}} lets a single recurring template (e.g. birthday) greet each
-    // recipient by name; harmless no-op for templates without the placeholder.
-    const message = template.message.replace(/\{\{\s*nama\s*\}\}/gi, contact.contactName)
-
     try {
-      await provider.sendTextMessage({ to: contact.whatsapp, message })
+      await provider.sendTextMessage({ to: contact.whatsapp, message: template.message })
       recipientLogs.push({
         contactId: contact.contactId,
         contactName: contact.contactName,
@@ -113,5 +99,5 @@ export async function processWhatsAppSend(
     await sleep(randomDelayMs())
   }
 
-  await repo.recordSend(data.templateId, recipientLogs, { markSent: !isRecurring })
+  await repo.recordSend(data.templateId, recipientLogs)
 }

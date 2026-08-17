@@ -11,16 +11,13 @@ export interface WhatsAppSendRecipient {
   whatsapp: string
 }
 
-export interface WhatsAppSendJobData {
-  templateId: string
-  /**
-   * Explicit per-occurrence recipients (e.g. today's birthdays). When set, the
-   * worker sends only to these contacts instead of re-querying the template's
-   * full audience, and skips the one-shot "already sent" guard/status flip —
-   * this is a recurring job, not a single campaign send.
-   */
-  recipients?: WhatsAppSendRecipient[]
-}
+// Both broadcast (one-shot campaign, audience resolved at send time from
+// templateId) and birthday-greeting (recurring, audience already resolved by
+// the scheduler into `recipients`) share one queue/worker process — they're
+// separate modules/tables, but the same "send WA messages, throttled" concern.
+export type WhatsAppSendJobData =
+  | { kind: 'broadcast'; templateId: string }
+  | { kind: 'birthday-greeting'; message: string; recipients: WhatsAppSendRecipient[] }
 
 const QUEUE_SCHEMA = 'bullmq'
 

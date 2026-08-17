@@ -16,6 +16,8 @@ export {
 
 // Tables
 export {
+  birthdayGreetingLogs,
+  birthdayGreetingSettings,
   broadcastLogs,
   businessProfiles,
   broadcastTemplates,
@@ -37,7 +39,7 @@ export {
 } from './tables'
 
 // Row types (JSONB payloads)
-export type { PerContactLogRow } from './tables'
+export type { PerContactLogRow, BirthdayGreetingRecipientLogRow } from './tables'
 export type { ProjectProductLineRow, QuotationProductLineRow } from './tables/project'
 
 // Relations
