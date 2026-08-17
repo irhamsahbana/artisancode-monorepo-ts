@@ -132,13 +132,17 @@ export function BroadcastDetail() {
     });
   }
 
-  // Build contact status map from logs
+  // Build contact status map from logs. broadcastLogs is ordered newest-first
+  // (desc sentAt), so keep only the first entry seen per contact — otherwise
+  // an older resend log processed later would overwrite the latest status.
   const contactStatusMap = useMemo(() => {
     const map = new Map<string, "pending" | "sent" | "failed">();
     for (const log of broadcastLogs ?? []) {
       if (log.recipientLogs) {
         for (const recipient of log.recipientLogs) {
-          map.set(recipient.contactId, recipient.status);
+          if (!map.has(recipient.contactId)) {
+            map.set(recipient.contactId, recipient.status);
+          }
         }
       }
     }
