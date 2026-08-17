@@ -1,7 +1,7 @@
 import { boolean, index, numeric, pgTable, text, unique, uuid } from 'drizzle-orm/pg-core'
 
 import { uomCategoryEnum } from '../enums'
-import { defaultId, timestamps } from './helpers'
+import { defaultId, softDelete, timestamps } from './helpers'
 
 // ---------------------------------------------------------------------------
 // UnitOfMeasurement (e.g. "sak", "kg", "m3")
@@ -15,8 +15,13 @@ export const uoms = pgTable(
     category: uomCategoryEnum('category').notNull().default('other'),
     isActive: boolean('is_active').notNull().default(true),
     ...timestamps,
+    ...softDelete,
   },
-  (t) => [unique('uoms_symbol_unique').on(t.symbol), index('uoms_category_idx').on(t.category)],
+  (t) => [
+    unique('uoms_symbol_unique').on(t.symbol),
+    index('uoms_category_idx').on(t.category),
+    index('uoms_deleted_at_idx').on(t.deletedAt),
+  ],
 )
 
 // Meaning: 1 fromUnitId = factor * toUnitId (e.g. from=sak, to=kg, factor=40).
@@ -32,6 +37,10 @@ export const unitConversions = pgTable(
       .references(() => uoms.id, { onDelete: 'cascade' }),
     factor: numeric('factor').notNull(),
     ...timestamps,
+    ...softDelete,
   },
-  (t) => [unique('unit_conversions_from_to_unique').on(t.fromUnitId, t.toUnitId)],
+  (t) => [
+    unique('unit_conversions_from_to_unique').on(t.fromUnitId, t.toUnitId),
+    index('unit_conversions_deleted_at_idx').on(t.deletedAt),
+  ],
 )

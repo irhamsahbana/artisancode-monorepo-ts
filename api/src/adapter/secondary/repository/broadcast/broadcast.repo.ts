@@ -1,4 +1,4 @@
-import { desc, eq, sql } from 'drizzle-orm'
+import { and, desc, eq, isNull, sql } from 'drizzle-orm'
 
 import { getExecutor } from '@/common/executor'
 import { IBroadcastRepo } from '@/contracts/broadcast.contract'
@@ -59,10 +59,14 @@ export function createBroadcastRepo(): IBroadcastRepo {
         exec
           .select()
           .from(broadcastTemplates)
+          .where(isNull(broadcastTemplates.deletedAt))
           .orderBy(desc(broadcastTemplates.createdAt))
           .limit(perPage)
           .offset((page - 1) * perPage),
-        exec.select({ count: sql<number>`count(*)::int` }).from(broadcastTemplates),
+        exec
+          .select({ count: sql<number>`count(*)::int` })
+          .from(broadcastTemplates)
+          .where(isNull(broadcastTemplates.deletedAt)),
       ])
 
       const total = countResult[0]?.count ?? 0
@@ -98,7 +102,10 @@ export function createBroadcastRepo(): IBroadcastRepo {
     },
 
     deleteTemplate: async (id) => {
-      await getExecutor().delete(broadcastTemplates).where(eq(broadcastTemplates.id, id))
+      await getExecutor()
+        .update(broadcastTemplates)
+        .set({ deletedAt: sql`now()` as unknown as Date })
+        .where(and(eq(broadcastTemplates.id, id), isNull(broadcastTemplates.deletedAt)))
     },
 
     recordSend: async (templateId, recipientLogs) => {

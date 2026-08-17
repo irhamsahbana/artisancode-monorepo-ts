@@ -7,7 +7,7 @@ import {
   genderEnum,
 } from '../enums'
 import { categories } from './category'
-import { defaultId, timestamps } from './helpers'
+import { defaultId, softDelete, timestamps } from './helpers'
 
 // ---------------------------------------------------------------------------
 // BroadcastTemplate (audience-filtered message for key persons)
@@ -27,8 +27,12 @@ export const broadcastTemplates = pgTable(
     sentAt: timestamp('sent_at', { withTimezone: true }),
     status: broadcastStatusEnum('status').notNull().default('draft'),
     ...timestamps,
+    ...softDelete,
   },
-  (t) => [index('broadcast_templates_status_idx').on(t.status)],
+  (t) => [
+    index('broadcast_templates_status_idx').on(t.status),
+    index('broadcast_templates_deleted_at_idx').on(t.deletedAt),
+  ],
 )
 
 export interface PerContactLogRow {

@@ -1,4 +1,4 @@
-import { and, asc, eq, ilike, or, sql } from 'drizzle-orm'
+import { and, asc, eq, ilike, isNull, or, sql } from 'drizzle-orm'
 
 import { getExecutor } from '@/common/executor'
 import { IUomRepo } from '@/contracts/uom.contract'
@@ -43,11 +43,11 @@ export function createUomRepo(): IUomRepo {
       const { page = 1, per_page = 100 } = pagination
       const offset = (page - 1) * per_page
 
-      const conditions = []
+      const conditions = [isNull(uoms.deletedAt)]
       if (q) conditions.push(ilike(uoms.name, `%${q}%`))
       if (category) conditions.push(eq(uoms.category, category))
       if (isActive !== undefined) conditions.push(eq(uoms.isActive, isActive))
-      const where = conditions.length ? and(...conditions) : undefined
+      const where = and(...conditions)
 
       const exec = getExecutor()
       const [items, countResult] = await Promise.all([
@@ -81,7 +81,7 @@ export function createUomRepo(): IUomRepo {
       const [row] = await getExecutor()
         .update(uoms)
         .set(updates)
-        .where(eq(uoms.id, req.id))
+        .where(and(eq(uoms.id, req.id), isNull(uoms.deletedAt)))
         .returning()
       return row ? uomToEntity(row) : null
     },
@@ -90,12 +90,20 @@ export function createUomRepo(): IUomRepo {
       const [result] = await getExecutor()
         .select({ count: sql<number>`count(*)::int` })
         .from(unitConversions)
-        .where(or(eq(unitConversions.fromUnitId, uomId), eq(unitConversions.toUnitId, uomId)))
+        .where(
+          and(
+            or(eq(unitConversions.fromUnitId, uomId), eq(unitConversions.toUnitId, uomId)),
+            isNull(unitConversions.deletedAt),
+          ),
+        )
       return result?.count ?? 0
     },
 
     deleteUom: async (id) => {
-      await getExecutor().delete(uoms).where(eq(uoms.id, id))
+      await getExecutor()
+        .update(uoms)
+        .set({ deletedAt: sql`now()` as unknown as Date })
+        .where(and(eq(uoms.id, id), isNull(uoms.deletedAt)))
     },
 
     createConversion: async (req) => {
@@ -120,10 +128,14 @@ export function createUomRepo(): IUomRepo {
         exec
           .select()
           .from(unitConversions)
+          .where(isNull(unitConversions.deletedAt))
           .orderBy(asc(unitConversions.createdAt))
           .limit(per_page)
           .offset(offset),
-        exec.select({ count: sql<number>`count(*)::int` }).from(unitConversions),
+        exec
+          .select({ count: sql<number>`count(*)::int` })
+          .from(unitConversions)
+          .where(isNull(unitConversions.deletedAt)),
       ])
 
       const total = countResult[0]?.count ?? 0
@@ -142,13 +154,16 @@ export function createUomRepo(): IUomRepo {
       const [row] = await getExecutor()
         .update(unitConversions)
         .set(updates)
-        .where(eq(unitConversions.id, req.id))
+        .where(and(eq(unitConversions.id, req.id), isNull(unitConversions.deletedAt)))
         .returning()
       return row ? conversionToEntity(row) : null
     },
 
     deleteConversion: async (id) => {
-      await getExecutor().delete(unitConversions).where(eq(unitConversions.id, id))
+      await getExecutor()
+        .update(unitConversions)
+        .set({ deletedAt: sql`now()` as unknown as Date })
+        .where(and(eq(unitConversions.id, id), isNull(unitConversions.deletedAt)))
     },
   }
 }

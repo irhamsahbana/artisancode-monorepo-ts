@@ -35,7 +35,7 @@ export function createBroadcastUsecase(repo: IBroadcastRepo): IBroadcastUsecase 
 
       // 1. Fetch template to get audience criteria
       const template = await exec.query.broadcastTemplates.findFirst({
-        where: (t, { eq }) => eq(t.id, req.templateId),
+        where: (t, { eq, and, isNull }) => and(eq(t.id, req.templateId), isNull(t.deletedAt)),
       })
 
       if (!template) {
