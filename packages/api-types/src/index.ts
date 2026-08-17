@@ -97,3 +97,10 @@ export type {
   PermissionAction,
 } from './role'
 export { PERMISSIONS, PERMISSION_MODULES, PERMISSION_ACTIONS } from './role'
+export type {
+  UserAccount,
+  UserAccountStatus,
+  CreateUserAccountReq,
+  GetUserAccountReq,
+  UserAccountList,
+} from './user'

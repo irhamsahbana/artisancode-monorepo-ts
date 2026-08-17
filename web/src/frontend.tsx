@@ -40,6 +40,7 @@ import { QuotationList } from "@/pages/quotations/quotation-list";
 import { RatingList } from "@/pages/ratings/rating-list";
 import { RoleForm } from "@/pages/settings/roles/role-form";
 import { RoleList } from "@/pages/settings/roles/role-list";
+import { UserList } from "@/pages/settings/users/user-list";
 import { registerPwa } from "@/register-sw";
 import "./index.css";
 
@@ -96,6 +97,7 @@ const router = createBrowserRouter([
           { path: "settings/roles", element: <RoleList /> },
           { path: "settings/roles/new", element: <RoleForm /> },
           { path: "settings/roles/:id/edit", element: <RoleForm /> },
+          { path: "settings/users", element: <UserList /> },
         ],
       },
     ],
