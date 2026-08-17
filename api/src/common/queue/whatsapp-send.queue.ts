@@ -9,6 +9,8 @@ export interface WhatsAppSendRecipient {
   contactId: string
   contactName: string
   whatsapp: string
+  // Used by birthday-greeting's {{sapaan}} placeholder; unused by broadcast.
+  gender?: 'male' | 'female'
 }
 
 // Both broadcast (one-shot campaign, audience resolved at send time from

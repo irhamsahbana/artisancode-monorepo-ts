@@ -7,7 +7,7 @@ import {
 import * as Entity from '@/entities/birthday_greeting.entity'
 
 const DEFAULT_MESSAGE =
-  'Selamat Ulang Tahun {{nama}}! 🎉\n\nSemoga selalu diberikan kesehatan, kebahagiaan, dan kesuksesan. Terima kasih atas kepercayaan Anda bersama kami.'
+  'Selamat Ulang Tahun {{sapaan}} {{nama}}! 🎉\n\nSemoga selalu diberikan kesehatan, kebahagiaan, dan kesuksesan. Terima kasih atas kepercayaan Anda bersama CRM Wika.'
 
 // Virtual defaults so the settings page always has something to render and
 // save against, even before the first PATCH ever creates the row.

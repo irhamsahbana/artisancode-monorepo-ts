@@ -314,11 +314,11 @@ export function BirthdayList() {
               value={form.message}
               onChange={(e) => set("message", e.target.value)}
               disabled={!canUpdate}
-              placeholder="Selamat Ulang Tahun {{nama}}! ..."
+              placeholder="Selamat Ulang Tahun {{sapaan}} {{nama}}! ..."
             />
             <p className="text-xs text-muted-foreground">
-              Gunakan <b>{`{{nama}}`}</b> untuk otomatis diganti nama tiap
-              penerima.
+              Gunakan <b>{`{{nama}}`}</b> untuk nama penerima, dan{" "}
+              <b>{`{{sapaan}}`}</b> untuk Bapak/Ibu berdasarkan gender.
             </p>
           </div>
 

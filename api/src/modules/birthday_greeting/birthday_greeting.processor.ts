@@ -23,7 +23,10 @@ export async function processBirthdayGreeting(
 
   const recipientLogs: Entity.BirthdayGreetingRecipientLog[] = []
   for (const contact of data.recipients) {
-    const message = data.message.replace(/\{\{\s*nama\s*\}\}/gi, contact.contactName)
+    const sapaan = contact.gender === 'female' ? 'Ibu' : 'Bapak'
+    const message = data.message
+      .replace(/\{\{\s*nama\s*\}\}/gi, contact.contactName)
+      .replace(/\{\{\s*sapaan\s*\}\}/gi, sapaan)
 
     try {
       await provider.sendTextMessage({ to: contact.whatsapp, message })

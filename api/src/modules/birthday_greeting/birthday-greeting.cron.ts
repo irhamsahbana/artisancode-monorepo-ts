@@ -48,16 +48,27 @@ export async function runBirthdayGreetingCron(): Promise<void> {
       contactName: contacts.name,
       whatsapp: contacts.whatsapp,
       dateOfBirth: customers.dateOfBirth,
+      gender: customers.gender,
     })
     .from(contacts)
     .innerJoin(customers, eq(contacts.customerId, customers.id))
     .where(and(...conditions))
 
   const todayMMDD = new Date().toISOString().slice(5, 10)
-  const recipients: { contactId: string; contactName: string; whatsapp: string }[] = []
+  const recipients: {
+    contactId: string
+    contactName: string
+    whatsapp: string
+    gender?: 'male' | 'female'
+  }[] = []
   for (const c of candidates) {
     if (c.whatsapp && c.dateOfBirth?.slice(5, 10) === todayMMDD) {
-      recipients.push({ contactId: c.contactId, contactName: c.contactName, whatsapp: c.whatsapp })
+      recipients.push({
+        contactId: c.contactId,
+        contactName: c.contactName,
+        whatsapp: c.whatsapp,
+        gender: c.gender ?? undefined,
+      })
     }
   }
 
