@@ -1,3 +1,4 @@
+import { CountryCodeSelect } from "@/components/shared/country-code-select";
 import {
   FormControl,
   FormField,
@@ -56,9 +57,25 @@ export function BasicInfoFields({ control }: { control: Control<FormValues> }) {
         render={({ field }) => (
           <FormItem>
             <FormLabel>WhatsApp</FormLabel>
-            <FormControl>
-              <Input placeholder="628xxxxxxxxxx" {...field} />
-            </FormControl>
+            <div className="flex gap-2">
+              <FormField
+                control={control}
+                name="countryCode"
+                render={({ field: countryField }) => (
+                  <CountryCodeSelect
+                    value={countryField.value}
+                    onValueChange={countryField.onChange}
+                  />
+                )}
+              />
+              <FormControl>
+                <Input
+                  placeholder="812xxxxxxxx"
+                  className="flex-1"
+                  {...field}
+                />
+              </FormControl>
+            </div>
             <FormMessage />
           </FormItem>
         )}

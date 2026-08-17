@@ -7,6 +7,7 @@ export interface Contact {
   name: string
   position?: string
   whatsapp?: string
+  countryCode?: string
   email?: string
   gender?: 'male' | 'female'
   birthPlace?: string
@@ -32,6 +33,7 @@ export interface CreateContactReq {
   name: string
   position?: string
   whatsapp?: string
+  countryCode?: string
   email?: string
   gender?: 'male' | 'female'
   birthPlace?: string
@@ -52,6 +54,7 @@ export interface UpdateContactReq {
   name?: string
   position?: string
   whatsapp?: string
+  countryCode?: string
   email?: string
   gender?: 'male' | 'female'
   birthPlace?: string

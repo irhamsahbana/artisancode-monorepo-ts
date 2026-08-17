@@ -1,3 +1,5 @@
+import { DEFAULT_COUNTRY_CODE } from "@artisancode/phone";
+
 import type { UserAccount } from "@artisancode/api-types";
 
 // ponytail: in-memory user catalog (Pengaturan > Pengguna), mirrors data/roles.ts.
@@ -8,7 +10,8 @@ export const mockUsers: UserAccount[] = [
     name: "Super Admin",
     username: "admin",
     email: "admin@wikabeton.id",
-    phone: "081234567890",
+    phone: "81234567890",
+    countryCode: DEFAULT_COUNTRY_CODE,
     status: "active",
     isProtected: true,
     createdAt: "2023-01-01T00:00:00.000Z",
@@ -20,7 +23,8 @@ export const mockUsers: UserAccount[] = [
     name: "Budi Santoso",
     username: "budi.santoso",
     email: "budi.santoso@wikabeton.id",
-    phone: "081234567891",
+    phone: "81234567891",
+    countryCode: DEFAULT_COUNTRY_CODE,
     status: "active",
     isProtected: false,
     createdAt: "2023-02-01T00:00:00.000Z",

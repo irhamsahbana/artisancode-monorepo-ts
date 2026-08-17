@@ -9,6 +9,7 @@ export interface UserAccount {
   username: string
   email: string
   phone: string
+  countryCode: string
   status: UserAccountStatus
   isProtected: boolean
   createdAt: string
@@ -21,6 +22,7 @@ export interface CreateUserAccountReq {
   email: string
   password: string
   phone: string
+  country_code: string
   role_id: string
 }
 
@@ -28,6 +30,7 @@ export interface UpdateUserAccountReq {
   name?: string
   email?: string
   phone?: string
+  country_code?: string
   role_id?: string
   status?: UserAccountStatus
 }

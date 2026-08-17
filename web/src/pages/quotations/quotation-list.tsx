@@ -1,3 +1,4 @@
+import { localPhoneDigits } from "@artisancode/phone";
 import { Eye, MessageCircle, Plus, Link as LinkIcon } from "lucide-react";
 import { useState } from "react";
 import { useNavigate, useSearchParams } from "react-router";
@@ -114,8 +115,7 @@ export function QuotationList() {
   }
 
   function formatWaLink(phone: string, message: string) {
-    const cleaned = phone.replace(/\D/g, "");
-    return `https://wa.me/${cleaned}?text=${encodeURIComponent(message)}`;
+    return `https://wa.me/${localPhoneDigits(phone)}?text=${encodeURIComponent(message)}`;
   }
 
   const waMessage = (name: string) =>

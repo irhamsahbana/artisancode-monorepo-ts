@@ -1,3 +1,4 @@
+import { DEFAULT_COUNTRY_CODE, localPhoneDigits } from "@artisancode/phone";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ArrowLeft } from "lucide-react";
 import { useEffect } from "react";
@@ -47,6 +48,7 @@ export function ContactForm() {
         name: existing.name,
         position: existing.position ?? "",
         whatsapp: existing.whatsapp ?? "",
+        countryCode: existing.countryCode || DEFAULT_COUNTRY_CODE,
         email: existing.email ?? "",
         gender: existing.gender ?? "",
         birthPlace: existing.birthPlace ?? "",
@@ -69,7 +71,8 @@ export function ContactForm() {
     const body = {
       name: values.name,
       position: values.position || undefined,
-      whatsapp: values.whatsapp || undefined,
+      whatsapp: values.whatsapp ? localPhoneDigits(values.whatsapp) : undefined,
+      countryCode: values.countryCode,
       email: values.email || undefined,
       gender: values.gender || undefined,
       birthPlace: values.birthPlace || undefined,

@@ -1,3 +1,4 @@
+import { DEFAULT_COUNTRY_CODE, localPhoneDigits } from "@artisancode/phone";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Eye, EyeOff, RefreshCw } from "lucide-react";
 import { useEffect, useState } from "react";
@@ -5,6 +6,7 @@ import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
 
+import { CountryCodeSelect } from "@/components/shared/country-code-select";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -42,6 +44,7 @@ function buildSchema(isEditing: boolean) {
       : z.string().min(3, "Username minimal 3 karakter"),
     email: z.email("Email tidak valid"),
     phone: z.string().min(1, "Nomor telepon wajib diisi"),
+    countryCode: z.string().min(1, "Kode negara wajib dipilih"),
     password: isEditing
       ? z.string().optional()
       : z.string().min(6, "Password minimal 6 karakter"),
@@ -57,6 +60,7 @@ const emptyValues: FormValues = {
   username: "",
   email: "",
   phone: "",
+  countryCode: DEFAULT_COUNTRY_CODE,
   password: "",
   roleId: "",
   status: "active",
@@ -96,6 +100,7 @@ export function UserDialog({
               username: editing.username,
               email: editing.email,
               phone: editing.phone,
+              countryCode: editing.countryCode || DEFAULT_COUNTRY_CODE,
               password: "",
               roleId: editing.roleId,
               status: editing.status,
@@ -115,7 +120,8 @@ export function UserDialog({
           id: editing.id,
           name: values.name,
           email: values.email,
-          phone: values.phone,
+          phone: localPhoneDigits(values.phone),
+          country_code: values.countryCode,
           role_id: values.roleId,
           status: values.status,
         },
@@ -134,7 +140,8 @@ export function UserDialog({
         name: values.name,
         username: values.username ?? "",
         email: values.email,
-        phone: values.phone,
+        phone: localPhoneDigits(values.phone),
+        country_code: values.countryCode,
         password: values.password ?? "",
         role_id: values.roleId,
       },
@@ -217,9 +224,25 @@ export function UserDialog({
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Nomor Telepon</FormLabel>
-                  <FormControl>
-                    <Input placeholder="08xxxxxxxxxx" {...field} />
-                  </FormControl>
+                  <div className="flex gap-2">
+                    <FormField
+                      control={form.control}
+                      name="countryCode"
+                      render={({ field: countryField }) => (
+                        <CountryCodeSelect
+                          value={countryField.value}
+                          onValueChange={countryField.onChange}
+                        />
+                      )}
+                    />
+                    <FormControl>
+                      <Input
+                        placeholder="812xxxxxxxx"
+                        className="flex-1"
+                        {...field}
+                      />
+                    </FormControl>
+                  </div>
                   <FormMessage />
                 </FormItem>
               )}

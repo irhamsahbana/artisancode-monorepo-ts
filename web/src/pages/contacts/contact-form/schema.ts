@@ -1,9 +1,11 @@
+import { DEFAULT_COUNTRY_CODE } from "@artisancode/phone";
 import { z } from "zod";
 
 export const schema = z.object({
   name: z.string().min(1, "Nama wajib diisi"),
   position: z.string().optional(),
   whatsapp: z.string().optional(),
+  countryCode: z.string().min(1, "Kode negara wajib dipilih"),
   email: z.email("Email tidak valid").optional().or(z.literal("")),
   gender: z.enum(["male", "female"]).optional().or(z.literal("")),
   birthPlace: z.string().optional(),
@@ -25,6 +27,7 @@ export const emptyValues: FormValues = {
   name: "",
   position: "",
   whatsapp: "",
+  countryCode: DEFAULT_COUNTRY_CODE,
   email: "",
   gender: "",
   birthPlace: "",
