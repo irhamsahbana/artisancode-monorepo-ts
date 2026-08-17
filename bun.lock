@@ -19,6 +19,7 @@
         "@artisancode/logger": "workspace:*",
         "@artisancode/logger-pino": "workspace:*",
         "@artisancode/observability": "workspace:*",
+        "@artisancode/phone": "workspace:*",
         "@artisancode/resilience": "workspace:*",
         "@artisancode/types": "workspace:*",
         "@aws-sdk/client-s3": "^3.1067.0",
@@ -127,6 +128,10 @@
         "@opentelemetry/semantic-conventions": "^1.38.0",
       },
     },
+    "packages/phone": {
+      "name": "@artisancode/phone",
+      "version": "0.1.0",
+    },
     "packages/resilience": {
       "name": "@artisancode/resilience",
       "version": "0.1.0",
@@ -145,6 +150,7 @@
       "dependencies": {
         "@artisancode/api-types": "workspace:*",
         "@artisancode/http-client": "workspace:*",
+        "@artisancode/phone": "workspace:*",
         "@artisancode/resilience": "workspace:*",
         "@artisancode/types": "workspace:*",
         "@hookform/resolvers": "^5.4.0",
@@ -211,6 +217,8 @@
     "@artisancode/logger-pino": ["@artisancode/logger-pino@workspace:packages/logger-pino"],
 
     "@artisancode/observability": ["@artisancode/observability@workspace:packages/observability"],
+
+    "@artisancode/phone": ["@artisancode/phone@workspace:packages/phone"],
 
     "@artisancode/resilience": ["@artisancode/resilience@workspace:packages/resilience"],
 

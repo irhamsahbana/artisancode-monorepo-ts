@@ -21,6 +21,7 @@
   "dependencies": {
     "@artisancode/api-types": "workspace:*",
     "@artisancode/http-client": "workspace:*",
+    "@artisancode/phone": "workspace:*",
     "@artisancode/resilience": "workspace:*",
     "@artisancode/types": "workspace:*",
     "@hookform/resolvers": "^5.4.0",
