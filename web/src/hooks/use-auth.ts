@@ -33,7 +33,7 @@ export function useMe() {
 // store needed, `/users/me` is already the single source of truth for it.
 export function useHasPermission(permission: Permission): boolean {
   const { data } = useMe();
-  return data?.permissions.includes(permission) ?? false;
+  return data?.permissions?.includes(permission) ?? false;
 }
 
 export { logout };
