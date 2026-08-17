@@ -10,6 +10,7 @@ export interface UserAccount {
   email: string
   phone: string
   status: UserAccountStatus
+  isProtected: boolean
   createdAt: string
   updatedAt: string
 }
@@ -21,6 +22,14 @@ export interface CreateUserAccountReq {
   password: string
   phone: string
   role_id: string
+}
+
+export interface UpdateUserAccountReq {
+  name?: string
+  email?: string
+  phone?: string
+  role_id?: string
+  status?: UserAccountStatus
 }
 
 export interface GetUserAccountReq {

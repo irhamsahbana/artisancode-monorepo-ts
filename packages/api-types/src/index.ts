@@ -101,6 +101,7 @@ export type {
   UserAccount,
   UserAccountStatus,
   CreateUserAccountReq,
+  UpdateUserAccountReq,
   GetUserAccountReq,
   UserAccountList,
 } from './user'

@@ -1,4 +1,6 @@
 import { zodResolver } from "@hookform/resolvers/zod";
+import { Eye, EyeOff, RefreshCw } from "lucide-react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
@@ -28,18 +30,27 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useRoles } from "@/hooks/use-roles";
-import { useCreateUser } from "@/hooks/use-users";
+import { useCreateUser, useUpdateUser } from "@/hooks/use-users";
 
-const schema = z.object({
-  name: z.string().min(3, "Nama minimal 3 karakter"),
-  username: z.string().min(3, "Username minimal 3 karakter"),
-  email: z.email("Email tidak valid"),
-  phone: z.string().min(1, "Nomor telepon wajib diisi"),
-  password: z.string().min(6, "Password minimal 6 karakter"),
-  roleId: z.string().min(1, "Role wajib dipilih"),
-});
+import type { UserAccount } from "@artisancode/api-types";
 
-type FormValues = z.infer<typeof schema>;
+function buildSchema(isEditing: boolean) {
+  return z.object({
+    name: z.string().min(3, "Nama minimal 3 karakter"),
+    username: isEditing
+      ? z.string().optional()
+      : z.string().min(3, "Username minimal 3 karakter"),
+    email: z.email("Email tidak valid"),
+    phone: z.string().min(1, "Nomor telepon wajib diisi"),
+    password: isEditing
+      ? z.string().optional()
+      : z.string().min(6, "Password minimal 6 karakter"),
+    roleId: z.string().min(1, "Role wajib dipilih"),
+    status: z.enum(["active", "inactive"]),
+  });
+}
+
+type FormValues = z.infer<ReturnType<typeof buildSchema>>;
 
 const emptyValues: FormValues = {
   name: "",
@@ -48,38 +59,97 @@ const emptyValues: FormValues = {
   phone: "",
   password: "",
   roleId: "",
+  status: "active",
 };
+
+function generatePassword() {
+  return crypto.randomUUID().replace(/-/g, "").slice(0, 12);
+}
 
 export function UserDialog({
   open,
   onOpenChange,
+  editing,
 }: {
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  editing: UserAccount | null;
 }) {
   const { data: rolesData } = useRoles();
   const roles = rolesData?.items ?? [];
-  const { mutate: create, isPending } = useCreateUser();
+  const { mutate: create, isPending: isCreating } = useCreateUser();
+  const { mutate: update, isPending: isUpdating } = useUpdateUser();
+  const [showPassword, setShowPassword] = useState(false);
+  const isEditing = !!editing;
 
   const form = useForm<FormValues>({
-    resolver: zodResolver(schema),
+    resolver: zodResolver(buildSchema(isEditing)),
     defaultValues: emptyValues,
   });
 
+  useEffect(() => {
+    if (open) {
+      form.reset(
+        editing
+          ? {
+              name: editing.name,
+              username: editing.username,
+              email: editing.email,
+              phone: editing.phone,
+              password: "",
+              roleId: editing.roleId,
+              status: editing.status,
+            }
+          : emptyValues,
+      );
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setShowPassword(false);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [open, editing]);
+
   function onSubmit(values: FormValues) {
+    if (editing) {
+      update(
+        {
+          id: editing.id,
+          name: values.name,
+          email: values.email,
+          phone: values.phone,
+          role_id: values.roleId,
+          status: values.status,
+        },
+        {
+          onSuccess: () => {
+            toast.success("Pengguna berhasil diperbarui.");
+            onOpenChange(false);
+          },
+        },
+      );
+      return;
+    }
+
     create(
       {
         name: values.name,
-        username: values.username,
+        username: values.username ?? "",
         email: values.email,
         phone: values.phone,
-        password: values.password,
+        password: values.password ?? "",
         role_id: values.roleId,
       },
       {
-        onSuccess: () => {
-          toast.success("Pengguna berhasil ditambahkan.");
-          form.reset(emptyValues);
+        onSuccess: async () => {
+          try {
+            await navigator.clipboard.writeText(
+              `Email: ${values.email}\nPassword: ${values.password}`,
+            );
+            toast.success(
+              "Pengguna ditambahkan, email & password disalin ke clipboard.",
+            );
+          } catch {
+            toast.success("Pengguna berhasil ditambahkan.");
+          }
           onOpenChange(false);
         },
       },
@@ -87,16 +157,12 @@ export function UserDialog({
   }
 
   return (
-    <Dialog
-      open={open}
-      onOpenChange={(next) => {
-        if (!next) form.reset(emptyValues);
-        onOpenChange(next);
-      }}
-    >
+    <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-sm">
         <DialogHeader>
-          <DialogTitle>Tambah Pengguna</DialogTitle>
+          <DialogTitle>
+            {editing ? "Edit Pengguna" : "Tambah Pengguna"}
+          </DialogTitle>
         </DialogHeader>
         <Form {...form}>
           <form
@@ -117,19 +183,21 @@ export function UserDialog({
                 </FormItem>
               )}
             />
-            <FormField
-              control={form.control}
-              name="username"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Username</FormLabel>
-                  <FormControl>
-                    <Input placeholder="Username" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+            {!editing && (
+              <FormField
+                control={form.control}
+                name="username"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Username</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Username" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            )}
             <FormField
               control={form.control}
               name="email"
@@ -156,19 +224,54 @@ export function UserDialog({
                 </FormItem>
               )}
             />
-            <FormField
-              control={form.control}
-              name="password"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Password</FormLabel>
-                  <FormControl>
-                    <Input type="password" placeholder="Password" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+            {!editing && (
+              <FormField
+                control={form.control}
+                name="password"
+                render={({ field }) => (
+                  <FormItem>
+                    <div className="flex items-center justify-between">
+                      <FormLabel>Password</FormLabel>
+                      <button
+                        type="button"
+                        className="flex items-center gap-1 text-xs text-primary hover:underline"
+                        onClick={() => {
+                          form.setValue("password", generatePassword(), {
+                            shouldValidate: true,
+                          });
+                          setShowPassword(true);
+                        }}
+                      >
+                        <RefreshCw className="h-3 w-3" />
+                        Generate
+                      </button>
+                    </div>
+                    <FormControl>
+                      <div className="relative">
+                        <Input
+                          type={showPassword ? "text" : "password"}
+                          placeholder="Password"
+                          className="pr-9"
+                          {...field}
+                        />
+                        <button
+                          type="button"
+                          className="absolute inset-y-0 right-0 flex items-center px-3 text-muted-foreground"
+                          onClick={() => setShowPassword((v) => !v)}
+                        >
+                          {showPassword ? (
+                            <EyeOff className="h-4 w-4" />
+                          ) : (
+                            <Eye className="h-4 w-4" />
+                          )}
+                        </button>
+                      </div>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            )}
             <FormField
               control={form.control}
               name="roleId"
@@ -193,14 +296,41 @@ export function UserDialog({
                 </FormItem>
               )}
             />
+            {editing && (
+              <FormField
+                control={form.control}
+                name="status"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Status</FormLabel>
+                    <Select value={field.value} onValueChange={field.onChange}>
+                      <FormControl>
+                        <SelectTrigger className="w-full">
+                          <SelectValue />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        <SelectItem value="active">Aktif</SelectItem>
+                        <SelectItem value="inactive">Nonaktif</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            )}
           </form>
         </Form>
         <DialogFooter>
           <Button variant="outline" onClick={() => onOpenChange(false)}>
             Batal
           </Button>
-          <Button type="submit" form="user-form" disabled={isPending}>
-            Tambah
+          <Button
+            type="submit"
+            form="user-form"
+            disabled={isCreating || isUpdating}
+          >
+            {editing ? "Simpan" : "Tambah"}
           </Button>
         </DialogFooter>
       </DialogContent>

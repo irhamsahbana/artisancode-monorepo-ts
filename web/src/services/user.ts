@@ -4,6 +4,7 @@ import { DEMO_MODE } from "@/lib/demo-mode";
 
 import type {
   CreateUserAccountReq,
+  UpdateUserAccountReq,
   UserAccount,
   UserAccountList,
 } from "@artisancode/api-types";
@@ -48,11 +49,39 @@ function mockCreate(body: CreateUserAccountReq): Promise<UserAccount> {
     email: body.email,
     phone: body.phone,
     status: "active",
+    isProtected: false,
     createdAt: now,
     updatedAt: now,
   };
   mockUsers.push(user);
   return Promise.resolve(user);
+}
+
+function mockUpdate(
+  id: string,
+  body: UpdateUserAccountReq,
+): Promise<UserAccount> {
+  const idx = mockUsers.findIndex((u) => u.id === id);
+  const existing = mockUsers[idx];
+  if (idx === -1 || !existing)
+    return Promise.reject(new Error("User not found"));
+  const updated: UserAccount = {
+    ...existing,
+    name: body.name ?? existing.name,
+    email: body.email ?? existing.email,
+    phone: body.phone ?? existing.phone,
+    roleId: body.role_id ?? existing.roleId,
+    status: body.status ?? existing.status,
+    updatedAt: new Date().toISOString(),
+  };
+  mockUsers[idx] = updated;
+  return Promise.resolve(updated);
+}
+
+function mockDelete(id: string): Promise<void> {
+  const idx = mockUsers.findIndex((u) => u.id === id);
+  if (idx !== -1) mockUsers.splice(idx, 1);
+  return Promise.resolve();
 }
 
 export const userService = {
@@ -66,4 +95,12 @@ export const userService = {
 
   create: (body: CreateUserAccountReq) =>
     DEMO_MODE ? mockCreate(body) : api.post<UserAccount>("/users", body),
+
+  update: (id: string, body: UpdateUserAccountReq) =>
+    DEMO_MODE
+      ? mockUpdate(id, body)
+      : api.put<UserAccount>(`/users/${id}`, body),
+
+  delete: (id: string) =>
+    DEMO_MODE ? mockDelete(id) : api.del(`/users/${id}`),
 };
