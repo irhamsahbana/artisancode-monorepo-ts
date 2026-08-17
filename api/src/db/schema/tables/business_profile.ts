@@ -10,6 +10,7 @@ export const businessProfiles = pgTable('business_profiles', {
   name: text('name').notNull(),
   businessType: text('business_type'),
   phone: text('phone'),
+  countryCode: text('country_code').notNull().default('62'),
   email: text('email'),
   address: text('address'),
   ...timestamps,

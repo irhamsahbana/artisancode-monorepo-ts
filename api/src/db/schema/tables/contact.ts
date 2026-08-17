@@ -13,6 +13,7 @@ export const contacts = pgTable(
     name: text('name').notNull(),
     position: text('position'),
     whatsapp: text('whatsapp'),
+    countryCode: text('country_code').notNull().default('62'),
     email: text('email'),
     notes: text('notes'),
     isPrimary: boolean('is_primary').notNull().default(false),

@@ -11,6 +11,7 @@ export interface CreateUserReq {
   email: string
   password: string
   phone: string
+  country_code: string
   role_id: string
   status?: UserStatus
 }
@@ -33,6 +34,7 @@ export interface UpdateUserReq {
   name?: string
   email?: string
   phone?: string
+  country_code?: string
   role_id?: string
   status?: UserStatus
 }
@@ -50,6 +52,7 @@ export interface User extends BaseEntity {
   username: string
   email: string
   phone: string
+  countryCode: string
   status: UserStatus
   isProtected: boolean
 }

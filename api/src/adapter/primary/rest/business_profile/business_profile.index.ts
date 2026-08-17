@@ -32,6 +32,7 @@ router.patch(
       name: body.name,
       businessType: body.business_type,
       phone: body.phone,
+      countryCode: body.country_code,
       email: body.email,
       address: body.address,
     }

@@ -15,6 +15,7 @@ export async function createContact(
       name: req.name,
       position: req.position,
       whatsapp: req.whatsapp,
+      countryCode: req.country_code,
       email: req.email,
       notes: req.notes,
       isPrimary: req.isPrimary ?? false,

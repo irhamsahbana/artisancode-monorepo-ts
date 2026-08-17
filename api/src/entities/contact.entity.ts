@@ -7,6 +7,7 @@ export interface Contact {
   name: string
   position: string | null
   whatsapp: string | null
+  countryCode: string
   email: string | null
   notes: string | null
   isPrimary: boolean
@@ -20,6 +21,7 @@ export interface CreateContactReq {
   name: string
   position?: string
   whatsapp?: string
+  country_code?: string
   email?: string
   notes?: string
   isPrimary?: boolean
@@ -31,6 +33,7 @@ export interface UpdateContactReq {
   name?: string
   position?: string
   whatsapp?: string
+  country_code?: string
   email?: string
   notes?: string
   isPrimary?: boolean

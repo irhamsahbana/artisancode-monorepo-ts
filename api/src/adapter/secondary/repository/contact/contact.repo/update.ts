@@ -17,6 +17,7 @@ export async function updateContact(
   if (req.name !== undefined) updates.name = req.name
   if (req.position !== undefined) updates.position = req.position
   if (req.whatsapp !== undefined) updates.whatsapp = req.whatsapp
+  if (req.country_code !== undefined) updates.countryCode = req.country_code
   if (req.email !== undefined) updates.email = req.email
   if (req.notes !== undefined) updates.notes = req.notes
   if (req.isPrimary !== undefined) updates.isPrimary = req.isPrimary

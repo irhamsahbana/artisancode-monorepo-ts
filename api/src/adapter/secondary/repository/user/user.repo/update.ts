@@ -11,9 +11,12 @@ export async function updateUser(
   deps: UserRepoDeps,
   req: Entity.UpdateUserReq,
 ): Promise<Entity.User> {
-  const { id, ...rest } = req
+  const { id, role_id, country_code, ...rest } = req
+  const updates: Partial<typeof users.$inferInsert> = { ...rest }
+  if (role_id !== undefined) updates.roleId = role_id
+  if (country_code !== undefined) updates.countryCode = country_code
 
-  await getExecutor().update(users).set(rest).where(eq(users.id, id))
+  await getExecutor().update(users).set(updates).where(eq(users.id, id))
 
   return findUserById(deps, id) as Promise<Entity.User>
 }

@@ -12,6 +12,7 @@ function toContactEntity(data: typeof contacts.$inferSelect): ContactEntity.Cont
     name: data.name,
     position: data.position,
     whatsapp: data.whatsapp,
+    countryCode: data.countryCode,
     email: data.email,
     notes: data.notes,
     isPrimary: data.isPrimary,

@@ -11,6 +11,7 @@ function toEntity(data: typeof businessProfiles.$inferSelect): Entity.BusinessPr
     name: data.name,
     businessType: data.businessType,
     phone: data.phone,
+    countryCode: data.countryCode,
     email: data.email,
     address: data.address,
   }
@@ -35,6 +36,7 @@ export function createBusinessProfileRepo(): IBusinessProfileRepo {
       if (req.name !== undefined) updates.name = req.name
       if (req.businessType !== undefined) updates.businessType = req.businessType
       if (req.phone !== undefined) updates.phone = req.phone
+      if (req.countryCode !== undefined) updates.countryCode = req.countryCode
       if (req.email !== undefined) updates.email = req.email
       if (req.address !== undefined) updates.address = req.address
 

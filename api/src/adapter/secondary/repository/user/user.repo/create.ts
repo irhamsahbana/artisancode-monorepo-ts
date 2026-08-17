@@ -16,6 +16,7 @@ export async function createUser(
       email: req.email,
       password: req.password,
       phone: req.phone,
+      countryCode: req.country_code,
       roleId: req.role_id,
       status: req.status || 'active',
     })

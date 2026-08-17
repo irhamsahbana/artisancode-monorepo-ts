@@ -14,9 +14,8 @@ export const users = pgTable('users', {
   email: text('email').notNull().unique(),
   password: text('password').notNull(),
   phone: text('phone').notNull().default(''),
+  countryCode: text('country_code').notNull().default('62'),
   status: statusEnum('status').notNull().default('active'),
-  // ponytail: protects seeded/system accounts from deletion — no admin UI to
-  // toggle it, set at creation time only.
   isProtected: boolean('is_protected').notNull().default(false),
   ...timestamps,
   ...softDelete,

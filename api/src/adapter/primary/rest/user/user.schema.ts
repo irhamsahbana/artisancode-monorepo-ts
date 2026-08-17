@@ -8,6 +8,7 @@ export const createUserSchema = z.object({
   password: z.string().min(6).max(100),
   email: z.email(),
   phone: z.string().max(20),
+  country_code: z.string().min(1).max(4),
   role_id: z.uuid(),
   status: z.enum(UserStatuses as [string, ...string[]]).optional(),
 })
@@ -16,6 +17,7 @@ export const updateUserSchema = z.object({
   name: z.string().min(3).max(100).optional(),
   email: z.email().optional(),
   phone: z.string().max(20).optional(),
+  country_code: z.string().min(1).max(4).optional(),
   role_id: z.uuid().optional(),
   status: z.enum(UserStatuses as [string, ...string[]]).optional(),
 })
