@@ -35,6 +35,7 @@ The technical details and guidelines for this project have been moved to the `do
 - [Development Workflow](docs/development_workflow.md)
 - [Commit Guidelines](docs/commit_guidelines.md)
 - [Database Seeding](docs/seeding.md)
+- [Deployment (Dokploy)](docs/deployment.md)
 
 ## Quick Summary
 
