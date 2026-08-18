@@ -3,10 +3,9 @@ import "leaflet.markercluster/dist/MarkerCluster.css";
 import "leaflet.markercluster/dist/MarkerCluster.Default.css";
 
 import L from "leaflet";
-import { useState } from "react";
 import { MapContainer, Marker, Popup, TileLayer } from "react-leaflet";
 import MarkerClusterGroup from "react-leaflet-cluster";
-import { useNavigate } from "react-router";
+import { useNavigate, useSearchParams } from "react-router";
 
 import { PageHeader } from "@/components/shared/page-header";
 import { Badge } from "@/components/ui/badge";
@@ -42,18 +41,66 @@ function statusIcon(status: ProjectStatus) {
   });
 }
 
+const ALL_STATUSES: ProjectStatus[] = [
+  "prospect",
+  "in_progress",
+  "won",
+  "lost",
+];
+
+function defaultDateRange() {
+  const year = new Date().getFullYear();
+  return { start: `${year}-01-01`, end: `${year}-12-31` };
+}
+
 export function ProjectMap() {
   const navigate = useNavigate();
   const { data } = useProjects();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const { start: defaultStart, end: defaultEnd } = defaultDateRange();
 
-  const [startDate, setStartDate] = useState("");
-  const [endDate, setEndDate] = useState("");
-  const [activeStatuses, setActiveStatuses] = useState<ProjectStatus[]>([
-    "prospect",
-    "in_progress",
-    "won",
-    "lost",
-  ]);
+  const startDate = searchParams.get("start") ?? defaultStart;
+  const endDate = searchParams.get("end") ?? defaultEnd;
+  const statusParam = searchParams.get("status");
+  const activeStatuses =
+    statusParam !== null
+      ? ALL_STATUSES.filter((s) => statusParam.split(",").includes(s))
+      : ALL_STATUSES;
+
+  function updateParams(mutate: (params: URLSearchParams) => void) {
+    setSearchParams(
+      (prev) => {
+        const next = new URLSearchParams(prev);
+        mutate(next);
+        return next;
+      },
+      { replace: true },
+    );
+  }
+
+  function setStartDate(value: string) {
+    updateParams((params) => {
+      if (value) params.set("start", value);
+      else params.delete("start");
+    });
+  }
+
+  function setEndDate(value: string) {
+    updateParams((params) => {
+      if (value) params.set("end", value);
+      else params.delete("end");
+    });
+  }
+
+  function toggleStatus(status: ProjectStatus) {
+    const next = activeStatuses.includes(status)
+      ? activeStatuses.filter((s) => s !== status)
+      : [...activeStatuses, status];
+    updateParams((params) => {
+      if (next.length === ALL_STATUSES.length) params.delete("status");
+      else params.set("status", next.join(","));
+    });
+  }
 
   const points = (data?.items ?? []).filter(
     (p): p is Project & { latitude: number; longitude: number } =>
@@ -62,12 +109,9 @@ export function ProjectMap() {
 
   const filteredPoints = points.filter((p) => {
     if (!activeStatuses.includes(p.status)) return false;
-    if (startDate && new Date(p.createdAt) < new Date(startDate)) return false;
-
-    // endDate comparison - include the whole day by adding 1 day if we just compare to string directly
-    // but a standard yyyy-MM-dd is midnight. let's just do simple compare
-    if (endDate && p.createdAt.split("T")[0] > endDate) return false;
-    if (startDate && p.createdAt.split("T")[0] < startDate) return false;
+    const createdDate = p.createdAt.split("T")[0] ?? "";
+    if (endDate && createdDate > endDate) return false;
+    if (startDate && createdDate < startDate) return false;
 
     return true;
   });
@@ -120,13 +164,7 @@ export function ProjectMap() {
           return (
             <button
               key={s}
-              onClick={() => {
-                setActiveStatuses((prev) =>
-                  prev.includes(s)
-                    ? prev.filter((st) => st !== s)
-                    : [...prev, s],
-                );
-              }}
+              onClick={() => toggleStatus(s)}
               className={`flex items-center gap-2 rounded-md border px-3 py-1.5 transition-colors ${
                 isActive
                   ? "bg-muted/50 border-border"
@@ -164,7 +202,7 @@ export function ProjectMap() {
         })}
       </div>
 
-      <div className="h-[600px] w-full overflow-hidden rounded-md border">
+      <div className="h-150 w-full overflow-hidden rounded-md border">
         <MapContainer
           center={INDONESIA_CENTER}
           zoom={5}
