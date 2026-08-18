@@ -1,30 +1,72 @@
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
+import { useSearchParams } from "react-router";
 
 interface UseClientTableOptions<T> {
   searchFn?: (row: T, query: string) => boolean;
   filterFn?: (row: T, filters: Record<string, string>) => boolean;
   pageSize?: number;
-  initialFilters?: Record<string, string>;
 }
+
+const FILTER_PREFIX = "f_";
 
 // Same client-side search/filter/paginate behavior <DataTable> used to do
 // internally, now lifted into a hook so pages that aren't on server
 // pagination yet can keep working unchanged against the now-controlled
-// <DataTable>. Prefer useServerTable for anything fetching from the API.
+// <DataTable>. State lives in the URL ("page", "q", "f_<key>") so the
+// current view is a copy-pasteable link, same as useServerTable.
+// Prefer useServerTable for anything fetching from the API.
 export function useClientTable<T>(
   data: T[],
-  {
-    searchFn,
-    filterFn,
-    pageSize = 10,
-    initialFilters,
-  }: UseClientTableOptions<T> = {},
+  { searchFn, filterFn, pageSize = 10 }: UseClientTableOptions<T> = {},
 ) {
-  const [query, setQuery] = useState("");
-  const [activeFilters, setActiveFilters] = useState<Record<string, string>>(
-    initialFilters ?? {},
-  );
-  const [page, setPage] = useState(1);
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  const query = searchParams.get("q") ?? "";
+  const page = Math.max(1, Number(searchParams.get("page")) || 1);
+  const activeFilters = useMemo(() => {
+    const filters: Record<string, string> = {};
+    for (const [key, value] of searchParams.entries()) {
+      if (key.startsWith(FILTER_PREFIX)) {
+        filters[key.slice(FILTER_PREFIX.length)] = value;
+      }
+    }
+    return filters;
+  }, [searchParams]);
+
+  function updateParams(mutate: (params: URLSearchParams) => void) {
+    setSearchParams(
+      (prev) => {
+        const next = new URLSearchParams(prev);
+        mutate(next);
+        return next;
+      },
+      { replace: true },
+    );
+  }
+
+  function setPage(next: number | ((p: number) => number)) {
+    const value = typeof next === "function" ? next(page) : next;
+    updateParams((params) => {
+      if (value <= 1) params.delete("page");
+      else params.set("page", String(value));
+    });
+  }
+
+  function handleQueryChange(value: string) {
+    updateParams((params) => {
+      if (value) params.set("q", value);
+      else params.delete("q");
+      params.delete("page");
+    });
+  }
+
+  function handleFilterChange(key: string, value: string) {
+    updateParams((params) => {
+      if (value === "all") params.delete(`${FILTER_PREFIX}${key}`);
+      else params.set(`${FILTER_PREFIX}${key}`, value);
+      params.delete("page");
+    });
+  }
 
   const filtered = useMemo(() => {
     let rows = data;
@@ -38,23 +80,6 @@ export function useClientTable<T>(
   const pageData = filtered.slice((page - 1) * pageSize, page * pageSize);
   const loadedData = filtered.slice(0, page * pageSize);
 
-  function handleQueryChange(value: string) {
-    setQuery(value);
-    setPage(1);
-  }
-
-  function handleFilterChange(key: string, value: string) {
-    setPage(1);
-    setActiveFilters((prev) => {
-      if (value === "all") {
-        return Object.fromEntries(
-          Object.entries(prev).filter(([k]) => k !== key),
-        );
-      }
-      return { ...prev, [key]: value };
-    });
-  }
-
   return {
     data: pageData,
     loadedData,
@@ -67,6 +92,6 @@ export function useClientTable<T>(
     activeFilters,
     onFilterChange: handleFilterChange,
     hasMore: loadedData.length < filtered.length,
-    onLoadMore: () => setPage((p) => p + 1),
+    onLoadMore: () => setPage((p: number) => p + 1),
   };
 }

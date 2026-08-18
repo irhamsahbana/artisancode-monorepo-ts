@@ -1,6 +1,12 @@
 export const TABS = ["Info Umum", "Kontak", "Riwayat Kontrak"] as const;
 export type Tab = (typeof TABS)[number];
 
+export const TAB_SLUGS: Record<Tab, string> = {
+  "Info Umum": "info",
+  Kontak: "kontak",
+  "Riwayat Kontrak": "riwayat",
+};
+
 export const statusLabel: Record<string, string> = {
   active: "Aktif",
   prospect: "Prospek",

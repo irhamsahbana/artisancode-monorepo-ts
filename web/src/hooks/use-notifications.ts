@@ -33,7 +33,7 @@ export function useNotifications() {
         type: "quotation",
         title: "Penawaran Baru",
         description: `Permintaan dari ${q.requesterName} belum direspon.`,
-        href: `/quotations?status=new`,
+        href: `/quotations?f_status=new`,
       });
     }
 

@@ -1,7 +1,7 @@
 import { localPhoneDigits } from "@artisancode/phone";
 import { Eye, MessageCircle, Plus, Link as LinkIcon } from "lucide-react";
 import { useState } from "react";
-import { useNavigate, useSearchParams } from "react-router";
+import { useNavigate } from "react-router";
 import { toast } from "sonner";
 
 import { Combobox } from "@/components/shared/combobox";
@@ -63,20 +63,15 @@ export function QuotationList() {
   const { mutateAsync: updateStatus, isPending } = useUpdateQuotationStatus();
   const { mutateAsync: assignProject, isPending: isAssigning } =
     useAssignQuotation();
-  const [searchParams] = useSearchParams();
   const [selected, setSelected] = useState<QuotationRequest | null>(null);
   const [assigningQuotation, setAssigningQuotation] =
     useState<QuotationRequest | null>(null);
   const [selectedProjectId, setSelectedProjectId] = useState<string>("");
 
-  const initialStatus = searchParams.get("status");
-  const initialFilters = initialStatus ? { status: initialStatus } : undefined;
-
   const table = useServerTable<QuotationRequest>({
     queryKey: (params) => queryKeys.quotations.list(params),
     fetcher: (params) => quotationService.list(params),
     pageSize: 10,
-    initialFilters,
   });
 
   const selectedProducts = selected?.products ?? [];

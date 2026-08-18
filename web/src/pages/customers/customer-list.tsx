@@ -1,6 +1,6 @@
 import { Plus, Eye, Pencil, Users, Building2 } from "lucide-react";
-import { useState, type ReactNode } from "react";
-import { Link, useNavigate } from "react-router";
+import { type ReactNode } from "react";
+import { Link, useNavigate, useSearchParams } from "react-router";
 
 import type { Column, FilterOption } from "@/components/shared/data-table";
 import { DataTable } from "@/components/shared/data-table";
@@ -82,7 +82,19 @@ type View = "company" | "person";
 
 export function CustomerList() {
   const navigate = useNavigate();
-  const [view, setView] = useState<View>("company");
+  const [searchParams, setSearchParams] = useSearchParams();
+  const view: View =
+    searchParams.get("view") === "person" ? "person" : "company";
+  const setView = (next: View) =>
+    setSearchParams(
+      (prev) => {
+        const params = new URLSearchParams(prev);
+        if (next === "company") params.delete("view");
+        else params.set("view", next);
+        return params;
+      },
+      { replace: true },
+    );
   const canCreate = useHasPermission("customers.create");
 
   return (
@@ -158,6 +170,7 @@ function CompanyView() {
     queryKey: (params) => queryKeys.customers.list(params),
     fetcher: (params) => customerService.list(params),
     pageSize: 10,
+    namespace: "company",
   });
 
   const allFilters: FilterOption[] = [
@@ -220,6 +233,7 @@ function PersonView() {
     queryKey: (params) => queryKeys.contacts.searchPersons(params),
     fetcher: (params) => contactService.searchPersons(params),
     pageSize: 10,
+    namespace: "person",
   });
 
   const columns: Column<ContactPersonGroup>[] = [

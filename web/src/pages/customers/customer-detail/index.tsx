@@ -1,5 +1,4 @@
 import { ArrowLeft, Pencil } from "lucide-react";
-import { useState } from "react";
 import { useParams, useNavigate, useSearchParams } from "react-router";
 
 import { Badge } from "@/components/ui/badge";
@@ -14,6 +13,7 @@ import { ContractHistoryTab } from "./contract-history-tab";
 import { InfoTab } from "./info-tab";
 import {
   TABS,
+  TAB_SLUGS,
   type Tab,
   statusLabel,
   statusVariant,
@@ -23,10 +23,20 @@ import {
 export function CustomerDetail() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const [searchParams] = useSearchParams();
-  const initialTab =
-    searchParams.get("tab") === "kontak" ? "Kontak" : "Info Umum";
-  const [activeTab, setActiveTab] = useState<Tab>(initialTab);
+  const [searchParams, setSearchParams] = useSearchParams();
+  const activeTab: Tab =
+    TABS.find((tab) => TAB_SLUGS[tab] === searchParams.get("tab")) ??
+    "Info Umum";
+  const setActiveTab = (tab: Tab) =>
+    setSearchParams(
+      (prev) => {
+        const params = new URLSearchParams(prev);
+        if (tab === "Info Umum") params.delete("tab");
+        else params.set("tab", TAB_SLUGS[tab]);
+        return params;
+      },
+      { replace: true },
+    );
   const canEdit = useHasPermission("customers.update");
 
   const { data: customer, isLoading } = useCustomer(id ?? "");
