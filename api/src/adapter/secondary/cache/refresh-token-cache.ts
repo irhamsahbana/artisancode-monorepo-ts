@@ -1,13 +1,13 @@
 import { Cacheable } from 'cacheable'
 
 import { hashToken } from '@/adapter/secondary/cache/hash-token'
-import { redisSecondary } from '@/adapter/secondary/cache/redis-secondary'
+import { createRedisSecondary } from '@/adapter/secondary/cache/redis-secondary'
 import { env } from '@/config/env'
 
 // ponytail: TTL mirrors refresh token expiry so entries self-expire.
 const cache = new Cacheable({
   ttl: env.JWT.REFRESH_EXPIRES_IN,
-  secondary: redisSecondary,
+  secondary: createRedisSecondary(),
   namespace: 'refresh-token',
 })
 
