@@ -82,10 +82,14 @@ export function TemplateFields({
             <FormControl>
               <Textarea
                 rows={4}
-                placeholder="Isi pesan yang akan dikirim..."
+                placeholder="Halo {{sapaan}} {{nama}}, ..."
                 {...field}
               />
             </FormControl>
+            <p className="text-xs text-muted-foreground">
+              Gunakan <b>{`{{nama}}`}</b> untuk nama penerima, dan{" "}
+              <b>{`{{sapaan}}`}</b> untuk Bapak/Ibu berdasarkan gender.
+            </p>
             <FormMessage />
           </FormItem>
         )}

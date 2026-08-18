@@ -327,6 +327,10 @@ export function BroadcastDetail() {
 
             <Field label="Pesan Template">
               <Textarea rows={4} value={form.message} disabled={!canEdit} />
+              <p className="text-xs text-muted-foreground">
+                Gunakan <b>{`{{nama}}`}</b> untuk nama penerima, dan{" "}
+                <b>{`{{sapaan}}`}</b> untuk Bapak/Ibu berdasarkan gender.
+              </p>
             </Field>
 
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
