@@ -90,4 +90,6 @@ export const env = {
     PUBLIC_BASE_URL: process.env.S3_PUBLIC_BASE_URL || '',
   },
   API_BASE_URL: process.env.API_BASE_URL || 'http://localhost:3000/api',
+  // Shared cache secondary store. Unset = in-memory only (per-process).
+  REDIS_URL: process.env.REDIS_URL || undefined,
 }

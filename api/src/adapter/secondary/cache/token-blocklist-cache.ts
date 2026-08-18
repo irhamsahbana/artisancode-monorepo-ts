@@ -1,8 +1,8 @@
 import { Cacheable } from 'cacheable'
 
-// ponytail: in-memory cache, per-process. Fine for a single-instance API;
-// switch to a shared secondary store (Redis) if this ever runs multi-instance.
-const cache = new Cacheable()
+import { redisSecondary } from '@/adapter/secondary/cache/redis-secondary'
+
+const cache = new Cacheable({ secondary: redisSecondary })
 
 const GRACE_MS = 60_000
 
