@@ -125,10 +125,10 @@ export function BroadcastForm() {
         <h1 className="text-xl font-semibold">Template Broadcast Baru</h1>
       </div>
 
-      <div className="grid gap-6">
-        <Card>
-          <CardContent className="pt-6">
-            <Form {...form}>
+      <Form {...form}>
+        <div className="grid gap-6">
+          <Card>
+            <CardContent className="pt-6">
               <form
                 onSubmit={form.handleSubmit(onSubmit)}
                 className="grid gap-5"
@@ -151,34 +151,34 @@ export function BroadcastForm() {
                   </Button>
                 </div>
               </form>
-            </Form>
-          </CardContent>
-        </Card>
+            </CardContent>
+          </Card>
 
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-sm">
-              <Users className="h-4 w-4" />
-              Target Penerima ({contactTable.totalCount} key person)
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <AudienceFilters
-              control={form.control}
-              onFilterChange={onFilterChange}
-              segmentations={segmentations}
-              religions={religions}
-            />
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2 text-sm">
+                <Users className="h-4 w-4" />
+                Target Penerima ({contactTable.totalCount} key person)
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <AudienceFilters
+                control={form.control}
+                onFilterChange={onFilterChange}
+                segmentations={segmentations}
+                religions={religions}
+              />
 
-            <RecipientsTable
-              contactTable={contactTable}
-              selectedContactIds={selectedContactIds}
-              onSelectAll={handleSelectAll}
-              onToggleContact={toggleContactId}
-            />
-          </CardContent>
-        </Card>
-      </div>
+              <RecipientsTable
+                contactTable={contactTable}
+                selectedContactIds={selectedContactIds}
+                onSelectAll={handleSelectAll}
+                onToggleContact={toggleContactId}
+              />
+            </CardContent>
+          </Card>
+        </div>
+      </Form>
     </div>
   );
 }
