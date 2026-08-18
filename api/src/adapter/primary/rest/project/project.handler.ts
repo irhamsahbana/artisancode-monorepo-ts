@@ -30,6 +30,11 @@ export function createProjectHandler(usecase: IProjectUsecase) {
       return c.json(responseSuccess(data))
     },
 
+    findMapMarkers: async (c: Context<AppEnv>) => {
+      const data = await usecase.findMapMarkers()
+      return c.json(responseSuccess(data))
+    },
+
     update: async (c: Context<AppEnv>) => {
       const data = await usecase.update({ ...c.get('body'), id: c.req.param('id') as string })
       return c.json(responseSuccess(data, 'Project updated successfully'))

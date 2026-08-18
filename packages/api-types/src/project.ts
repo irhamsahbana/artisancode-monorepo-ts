@@ -79,6 +79,17 @@ export interface ProjectList {
   pagination: PaginationMetadata
 }
 
+export interface ProjectMapMarker {
+  id: string
+  name: string
+  status: ProjectStatus
+  location?: string
+  estimatedValue?: number
+  latitude: number
+  longitude: number
+  createdAt: string
+}
+
 export interface ProjectVisit {
   id: string
   projectId: string

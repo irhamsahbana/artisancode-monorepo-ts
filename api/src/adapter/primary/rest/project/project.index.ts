@@ -30,6 +30,7 @@ router.get(
   handler.findList,
 )
 router.get('/visits', authenticate, requirePermission('project_visits.view'), handler.findAllVisits)
+router.get('/map', authenticate, requirePermission('projects.view'), handler.findMapMarkers)
 router.post(
   '/visits',
   authenticate,

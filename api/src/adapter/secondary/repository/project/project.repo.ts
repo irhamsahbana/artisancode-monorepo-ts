@@ -1,4 +1,4 @@
-import { and, desc, eq, ilike, isNull, or, sql } from 'drizzle-orm'
+import { and, desc, eq, ilike, isNotNull, isNull, or, sql } from 'drizzle-orm'
 
 import { getExecutor } from '@/common/executor'
 import { IProjectRepo } from '@/contracts/project.contract'
@@ -122,6 +122,40 @@ export function createProjectRepo(): IProjectRepo {
         items: items.map(toEntity),
         pagination: { total, page, per_page, last_page: Math.ceil(total / per_page) },
       }
+    },
+
+    findMapMarkers: async () => {
+      const rows = await getExecutor()
+        .select({
+          id: projects.id,
+          name: projects.name,
+          status: projects.status,
+          location: projects.location,
+          estimatedValue: projects.estimatedValue,
+          latitude: projects.latitude,
+          longitude: projects.longitude,
+          createdAt: projects.createdAt,
+        })
+        .from(projects)
+        .where(
+          and(
+            isNull(projects.deletedAt),
+            isNotNull(projects.latitude),
+            isNotNull(projects.longitude),
+          ),
+        )
+        .orderBy(sql`${projects.createdAt} desc`)
+
+      return rows.map((row) => ({
+        id: row.id,
+        name: row.name,
+        status: row.status,
+        location: row.location,
+        estimatedValue: row.estimatedValue ? Number(row.estimatedValue) : null,
+        latitude: Number(row.latitude),
+        longitude: Number(row.longitude),
+        createdAt: row.createdAt,
+      }))
     },
 
     update: async (req) => {

@@ -38,6 +38,8 @@ export function createProjectUsecase(repo: IProjectRepo): IProjectUsecase {
 
     findList: (req) => deps.repo.findList(req),
 
+    findMapMarkers: () => deps.repo.findMapMarkers(),
+
     update: async (req) => {
       const existing = await deps.repo.findById(req.id)
       if (!existing) throw new AppError(ErrorCode.NOT_FOUND, 'Project not found')

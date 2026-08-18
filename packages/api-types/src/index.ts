@@ -59,6 +59,7 @@ export type {
   UpdateProjectReq,
   GetProjectReq,
   ProjectList,
+  ProjectMapMarker,
   CreateProjectVisitReq,
 } from './project'
 export type {

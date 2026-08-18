@@ -7,6 +7,7 @@ import type {
   CreateProjectVisitReq,
   Project,
   ProjectList,
+  ProjectMapMarker,
   ProjectVisit,
   UpdateProjectReq,
 } from "@artisancode/api-types";
@@ -56,6 +57,11 @@ export const projectService = {
       ? Promise.resolve(mockList(params))
       : api.get<ProjectList>("/projects", params as Record<string, string>),
 
+  listMapMarkers: () =>
+    DEMO_MODE
+      ? Promise.resolve(mockMapMarkers())
+      : api.get<ProjectMapMarker[]>("/projects/map"),
+
   get: (id: string) =>
     DEMO_MODE ? mockGet(id) : api.get<Project>(`/projects/${id}`),
 
@@ -87,6 +93,24 @@ export const projectService = {
       ? mockCreateVisit(body)
       : api.post<ProjectVisit>(`/projects/visits`, body),
 };
+
+function mockMapMarkers(): ProjectMapMarker[] {
+  return mockProjects
+    .filter(
+      (p): p is Project & { latitude: number; longitude: number } =>
+        p.latitude != null && p.longitude != null,
+    )
+    .map((p) => ({
+      id: p.id,
+      name: p.name,
+      status: p.status,
+      location: p.location,
+      estimatedValue: p.estimatedValue,
+      latitude: p.latitude,
+      longitude: p.longitude,
+      createdAt: p.createdAt,
+    }));
+}
 
 function mockGet(id: string): Promise<Project> {
   const p = mockProjects.find((x) => x.id === id);

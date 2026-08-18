@@ -34,6 +34,7 @@ export const queryKeys = {
     detail: (id: string) => ["projects", "detail", id] as const,
     visits: (projectId: string) => ["projects", "visits", projectId] as const,
     allVisits: () => ["projects", "visits"] as const,
+    mapMarkers: () => ["projects", "map-markers"] as const,
   },
   broadcasts: {
     all: ["broadcasts"] as const,

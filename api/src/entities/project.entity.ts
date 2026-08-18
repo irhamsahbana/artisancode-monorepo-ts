@@ -82,6 +82,19 @@ export interface ProjectList {
   pagination: PaginationMetadata
 }
 
+// Minimal fields for the project-map view: every geotagged project, no
+// pagination — a full Project[] would over-fetch fields the map never uses.
+export interface ProjectMapMarker {
+  id: string
+  name: string
+  status: ProjectStatus
+  location: string | null
+  estimatedValue: number | null
+  latitude: number
+  longitude: number
+  createdAt: Date
+}
+
 export interface ProjectVisit {
   id: string
   projectId: string

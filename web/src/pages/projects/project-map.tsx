@@ -10,7 +10,7 @@ import { useNavigate, useSearchParams } from "react-router";
 import { PageHeader } from "@/components/shared/page-header";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
-import { useProjects } from "@/hooks/use-projects";
+import { useProjectMapMarkers } from "@/hooks/use-projects";
 
 import {
   formatRupiah,
@@ -18,7 +18,7 @@ import {
   projectStatusVariant,
 } from "./project-status";
 
-import type { Project, ProjectStatus } from "@artisancode/api-types";
+import type { ProjectStatus } from "@artisancode/api-types";
 
 const INDONESIA_CENTER: [number, number] = [-2.5, 118];
 
@@ -55,7 +55,7 @@ function defaultDateRange() {
 
 export function ProjectMap() {
   const navigate = useNavigate();
-  const { data } = useProjects();
+  const { data: points } = useProjectMapMarkers();
   const [searchParams, setSearchParams] = useSearchParams();
   const { start: defaultStart, end: defaultEnd } = defaultDateRange();
 
@@ -102,12 +102,7 @@ export function ProjectMap() {
     });
   }
 
-  const points = (data?.items ?? []).filter(
-    (p): p is Project & { latitude: number; longitude: number } =>
-      p.latitude != null && p.longitude != null,
-  );
-
-  const filteredPoints = points.filter((p) => {
+  const filteredPoints = (points ?? []).filter((p) => {
     if (!activeStatuses.includes(p.status)) return false;
     const createdDate = p.createdAt.split("T")[0] ?? "";
     if (endDate && createdDate > endDate) return false;

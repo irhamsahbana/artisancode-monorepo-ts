@@ -16,6 +16,13 @@ export function useProjects(params?: ProjectQuery, enabled = true) {
   });
 }
 
+export function useProjectMapMarkers() {
+  return useQuery({
+    queryKey: queryKeys.projects.mapMarkers(),
+    queryFn: projectService.listMapMarkers,
+  });
+}
+
 export function useProject(id: string) {
   return useQuery({
     queryKey: queryKeys.projects.detail(id),
