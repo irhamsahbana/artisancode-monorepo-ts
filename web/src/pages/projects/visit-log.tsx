@@ -36,6 +36,7 @@ import {
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { useHasPermission } from "@/hooks/use-auth";
+import { useCategoryList } from "@/hooks/use-categories";
 import { useContacts } from "@/hooks/use-contacts";
 import { useCreateProjectVisit } from "@/hooks/use-projects";
 
@@ -72,6 +73,7 @@ export function VisitLog({
 }) {
   const { mutateAsync: addVisit, isPending } = useCreateProjectVisit(projectId);
   const { data: contacts } = useContacts(customerId);
+  const { data: visitTopics } = useCategoryList("visit_topic");
   const [open, setOpen] = useState(false);
   const canCreate = useHasPermission("project_visits.create");
 
@@ -197,13 +199,9 @@ export function VisitLog({
                         <Combobox
                           value={field.value ?? ""}
                           onChange={field.onChange}
-                          options={[
-                            { value: "Follow up" },
-                            { value: "Presentasi" },
-                            { value: "Penjajakan Kebutuhan" },
-                            { value: "Negosiasi Harga" },
-                            { value: "Kunjungan Lapangan" },
-                          ]}
+                          options={(visitTopics?.items ?? []).map((t) => ({
+                            value: t.name,
+                          }))}
                           placeholder="Pilih atau ketik topik..."
                         />
                         <FormMessage />

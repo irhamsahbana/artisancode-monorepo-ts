@@ -31,6 +31,7 @@ import { RelationStatus } from "@/pages/master/relation-status";
 import { Segmentation } from "@/pages/master/segmentation";
 import { UnitConversions } from "@/pages/master/unit-conversions";
 import { Uoms } from "@/pages/master/uoms";
+import { VisitTopics } from "@/pages/master/visit-topics";
 import { ProjectDetail } from "@/pages/projects/project-detail";
 import { ProjectForm } from "@/pages/projects/project-form";
 import { ProjectList } from "@/pages/projects/project-list";
@@ -92,6 +93,7 @@ const router = createBrowserRouter([
           { path: "master/products", element: <Products /> },
           { path: "master/uoms", element: <Uoms /> },
           { path: "master/unit-conversions", element: <UnitConversions /> },
+          { path: "master/visit-topics", element: <VisitTopics /> },
           { path: "settings/profile", element: <BusinessProfile /> },
           { path: "settings/account", element: <AccountSettings /> },
           { path: "settings/roles", element: <RoleList /> },

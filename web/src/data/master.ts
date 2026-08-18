@@ -115,4 +115,41 @@ export const mockMasterData: Record<string, MasterItem[]> = {
       updatedAt: "2023-01-01T00:00:00.000Z",
     },
   ],
+  visit_topic: [
+    {
+      id: "vt1",
+      name: "Follow up",
+      isActive: true,
+      createdAt: "2023-01-01T00:00:00.000Z",
+      updatedAt: "2023-01-01T00:00:00.000Z",
+    },
+    {
+      id: "vt2",
+      name: "Presentasi",
+      isActive: true,
+      createdAt: "2023-01-01T00:00:00.000Z",
+      updatedAt: "2023-01-01T00:00:00.000Z",
+    },
+    {
+      id: "vt3",
+      name: "Penjajakan Kebutuhan",
+      isActive: true,
+      createdAt: "2023-01-01T00:00:00.000Z",
+      updatedAt: "2023-01-01T00:00:00.000Z",
+    },
+    {
+      id: "vt4",
+      name: "Negosiasi Harga",
+      isActive: true,
+      createdAt: "2023-01-01T00:00:00.000Z",
+      updatedAt: "2023-01-01T00:00:00.000Z",
+    },
+    {
+      id: "vt5",
+      name: "Kunjungan Lapangan",
+      isActive: true,
+      createdAt: "2023-01-01T00:00:00.000Z",
+      updatedAt: "2023-01-01T00:00:00.000Z",
+    },
+  ],
 };

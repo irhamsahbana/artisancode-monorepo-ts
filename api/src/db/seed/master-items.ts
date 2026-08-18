@@ -26,6 +26,13 @@ const MASTER_DATA = {
     { id: 'rs3', name: 'Tidak Aktif', status: 'active' },
     { id: 'rs4', name: 'Blacklist', status: 'inactive' },
   ],
+  visit_topic: [
+    { id: 'vt1', name: 'Follow up', status: 'active' },
+    { id: 'vt2', name: 'Presentasi', status: 'active' },
+    { id: 'vt3', name: 'Penjajakan Kebutuhan', status: 'active' },
+    { id: 'vt4', name: 'Negosiasi Harga', status: 'active' },
+    { id: 'vt5', name: 'Kunjungan Lapangan', status: 'active' },
+  ],
 } as const
 
 // Maps the demo IDs above (e.g. "seg2") to the real UUIDs generated on insert,

@@ -13,6 +13,7 @@ import {
   Package,
   Ruler,
   ArrowLeftRight,
+  MessageSquare,
   Building2,
   User,
   LogOut,
@@ -132,6 +133,12 @@ const masterNav: {
     label: "Konversi Satuan",
     icon: ArrowLeftRight,
     permission: "unit_conversions.view" as Permission,
+  },
+  {
+    to: "/master/visit-topics",
+    label: "Topik Kunjungan",
+    icon: MessageSquare,
+    permission: "categories.view",
   },
 ];
 

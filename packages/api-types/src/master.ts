@@ -33,3 +33,4 @@ export type CustomerCategory = MasterItem
 export type Segmentation = MasterItem
 export type Area = MasterItem
 export type RelationStatus = MasterItem
+export type VisitTopic = MasterItem
