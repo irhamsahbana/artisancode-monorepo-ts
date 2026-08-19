@@ -18,6 +18,7 @@ import { BroadcastDetail } from "@/pages/broadcasts/broadcast-detail";
 import { BroadcastForm } from "@/pages/broadcasts/broadcast-form";
 import { BroadcastList } from "@/pages/broadcasts/broadcast-list";
 import { BusinessProfile } from "@/pages/business-profile";
+import { ComingSoon } from "@/pages/coming-soon";
 import { ContactForm } from "@/pages/contacts/contact-form";
 import { ContactProfile } from "@/pages/contacts/contact-profile";
 import { CustomerDetail } from "@/pages/customers/customer-detail";
@@ -38,7 +39,6 @@ import { ProjectList } from "@/pages/projects/project-list";
 import { ProjectMap } from "@/pages/projects/project-map";
 import { QuotationForm } from "@/pages/public/quotation-form";
 import { QuotationList } from "@/pages/quotations/quotation-list";
-import { RatingList } from "@/pages/ratings/rating-list";
 import { RoleForm } from "@/pages/settings/roles/role-form";
 import { RoleList } from "@/pages/settings/roles/role-list";
 import { UserList } from "@/pages/settings/users/user-list";
@@ -80,7 +80,7 @@ const router = createBrowserRouter([
           { path: "projects/map", element: <ProjectMap /> },
           { path: "projects/:id", element: <ProjectDetail /> },
           { path: "projects/:id/edit", element: <ProjectForm /> },
-          { path: "ratings", element: <RatingList /> },
+          { path: "ratings", element: <ComingSoon title="Penilaian" /> },
           { path: "quotations", element: <QuotationList /> },
           { path: "quotations/new", element: <QuotationForm /> },
           { path: "broadcasts", element: <BroadcastList /> },
