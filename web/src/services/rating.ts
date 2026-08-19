@@ -1,6 +1,4 @@
-import { mockRatings } from "@/data/ratings";
 import { api } from "@/lib/api";
-import { DEMO_MODE } from "@/lib/demo-mode";
 
 import type {
   CreateCustomerRatingReq,
@@ -9,44 +7,13 @@ import type {
   GetCustomerRatingReq,
 } from "@artisancode/api-types";
 
-function mockList(params?: GetCustomerRatingReq): CustomerRatingList {
-  let items = mockRatings;
-  if (params?.customerId)
-    items = items.filter((r) => r.customerId === params.customerId);
-  if (params?.contactId)
-    items = items.filter((r) => r.contactId === params.contactId);
-  // ponytail: newest first, in-place sort fine for demo dataset
-  items = [...items].sort((a, b) => b.ratingDate.localeCompare(a.ratingDate));
-  return {
-    items,
-    pagination: { total: items.length, page: 1, per_page: 100, last_page: 1 },
-  };
-}
-
 export const ratingService = {
   list: (params?: GetCustomerRatingReq) =>
-    DEMO_MODE
-      ? Promise.resolve(mockList(params))
-      : api.get<CustomerRatingList>(
-          "/ratings",
-          params as Record<string, string>,
-        ),
+    api.get<CustomerRatingList>("/ratings", params as Record<string, string>),
 
   create: (body: CreateCustomerRatingReq) =>
-    DEMO_MODE ? mockCreate(body) : api.post<CustomerRating>("/ratings", body),
+    api.post<CustomerRating>("/ratings", body),
 };
-
-function mockCreate(body: CreateCustomerRatingReq): Promise<CustomerRating> {
-  const now = new Date().toISOString();
-  const r: CustomerRating = {
-    id: `r${crypto.randomUUID()}`,
-    ...body,
-    createdAt: now,
-    updatedAt: now,
-  };
-  mockRatings.push(r);
-  return Promise.resolve(r);
-}
 
 // Helpers for derived UI data (kept here, close to the data source).
 
