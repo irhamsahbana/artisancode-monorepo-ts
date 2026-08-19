@@ -74,6 +74,9 @@ export const env = {
     // Random delay range between messages to reduce ban risk on unofficial API
     SEND_DELAY_MIN_MS: parseNumber(process.env.WHATSAPP_SEND_DELAY_MIN_MS, 10_000),
     SEND_DELAY_MAX_MS: parseNumber(process.env.WHATSAPP_SEND_DELAY_MAX_MS, 30_000),
+    // Random "typing..." duration before each send, so traffic looks human
+    TYPING_DELAY_MIN_MS: parseNumber(process.env.WHATSAPP_TYPING_DELAY_MIN_MS, 1_500),
+    TYPING_DELAY_MAX_MS: parseNumber(process.env.WHATSAPP_TYPING_DELAY_MAX_MS, 4_000),
   },
   GOWA: {
     BASE_URL: process.env.GOWA_BASE_URL || '',

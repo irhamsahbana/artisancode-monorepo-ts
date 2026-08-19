@@ -9,6 +9,10 @@ class NoopWhatsAppProvider implements IWhatsAppProvider {
   async sendTextMessage() {
     return { messageId: `noop-${crypto.randomUUID()}` }
   }
+
+  async sendChatPresence() {
+    return Promise.resolve()
+  }
 }
 
 /**
