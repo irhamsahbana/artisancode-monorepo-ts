@@ -6,7 +6,6 @@ import { Link } from "react-router";
 import { toast } from "sonner";
 import { z } from "zod";
 
-import { Combobox } from "@/components/shared/combobox";
 import { EmptyState } from "@/components/shared/empty-state";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -104,6 +103,7 @@ export function VisitLog({
   );
 
   const contactItems = contacts?.items ?? [];
+  const visitTopicItems = visitTopics?.items ?? [];
 
   return (
     <Card>
@@ -116,7 +116,7 @@ export function VisitLog({
               Tambah Log
             </Button>
           </DialogTrigger>
-          <DialogContent>
+          <DialogContent className="sm:max-w-3xl">
             <DialogHeader>
               <DialogTitle>Tambah Log Kunjungan</DialogTitle>
             </DialogHeader>
@@ -196,14 +196,48 @@ export function VisitLog({
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel>Topik</FormLabel>
-                        <Combobox
-                          value={field.value ?? ""}
-                          onChange={field.onChange}
-                          options={(visitTopics?.items ?? []).map((t) => ({
-                            value: t.name,
-                          }))}
-                          placeholder="Pilih atau ketik topik..."
-                        />
+                        {visitTopicItems.length > 0 ? (
+                          <Select
+                            value={field.value}
+                            onValueChange={field.onChange}
+                          >
+                            <FormControl>
+                              <SelectTrigger className="w-full">
+                                <SelectValue placeholder="Pilih topik..." />
+                              </SelectTrigger>
+                            </FormControl>
+                            <SelectContent>
+                              {visitTopicItems.map((t) => (
+                                <SelectItem key={t.id} value={t.name}>
+                                  {t.name}
+                                </SelectItem>
+                              ))}
+                              <div className="border-t px-2 py-1.5">
+                                <Link
+                                  to="/master/visit-topics"
+                                  className="text-xs text-muted-foreground hover:text-foreground hover:underline"
+                                >
+                                  + Tambah topik baru
+                                </Link>
+                              </div>
+                            </SelectContent>
+                          </Select>
+                        ) : (
+                          <>
+                            <FormControl>
+                              <Input
+                                placeholder="Topik kunjungan..."
+                                {...field}
+                              />
+                            </FormControl>
+                            <Link
+                              to="/master/visit-topics"
+                              className="text-xs text-muted-foreground hover:underline"
+                            >
+                              + Tambah topik di halaman master data
+                            </Link>
+                          </>
+                        )}
                         <FormMessage />
                       </FormItem>
                     )}
