@@ -57,6 +57,7 @@ export function Uoms() {
     queryKey: (params) => queryKeys.uoms.list(params),
     fetcher: (params) => uomService.list(params),
     pageSize: 10,
+    filterKeys: categoryFilters.map((f) => f.key),
   });
 
   function openAdd() {

@@ -73,6 +73,7 @@ export function ProjectList() {
       queryKeys.projects.list(params as Record<string, unknown>),
     fetcher: (params) => projectService.list(params),
     pageSize: 10,
+    filterKeys: filters.map((f) => f.key),
   });
 
   const columns: Column<Project>[] = [

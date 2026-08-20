@@ -20,6 +20,7 @@ import { BroadcastList } from "@/pages/broadcasts/broadcast-list";
 import { BusinessProfile } from "@/pages/business-profile";
 import { ComingSoon } from "@/pages/coming-soon";
 import { ContactForm } from "@/pages/contacts/contact-form";
+import { ContactList } from "@/pages/contacts/contact-list";
 import { ContactProfile } from "@/pages/contacts/contact-profile";
 import { CustomerDetail } from "@/pages/customers/customer-detail";
 import { CustomerForm } from "@/pages/customers/customer-form";
@@ -72,6 +73,7 @@ const router = createBrowserRouter([
           { path: "customers/new", element: <CustomerForm /> },
           { path: "customers/:id", element: <CustomerDetail /> },
           { path: "customers/:id/edit", element: <CustomerForm /> },
+          { path: "contacts", element: <ContactList /> },
           { path: "contacts/new", element: <ContactForm /> },
           { path: "contacts/:id", element: <ContactProfile /> },
           { path: "contacts/:id/edit", element: <ContactForm /> },

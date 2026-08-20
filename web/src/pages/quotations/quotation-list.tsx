@@ -72,6 +72,7 @@ export function QuotationList() {
     queryKey: (params) => queryKeys.quotations.list(params),
     fetcher: (params) => quotationService.list(params),
     pageSize: 10,
+    filterKeys: filters.map((f) => f.key),
   });
 
   const selectedProducts = selected?.products ?? [];

@@ -20,46 +20,41 @@ interface UseServerTableOptions<T> {
     pagination: PaginationMetadata;
   }>;
   pageSize?: number;
-  // Prefixes this table's URL keys (e.g. "person" -> "person_q") so two
-  // tables that can appear at the same URL (like a tab switcher) don't
-  // read/write each other's page/q/filters.
-  namespace?: string;
+  // Filter keys this table owns (e.g. ["status", "potential"]) — read
+  // straight off the URL with no prefix, so the URL matches the API 1:1.
+  // Needed because other reserved keys ("page", "q") share the same query
+  // string and must not be picked up as filters.
+  filterKeys?: string[];
 }
 
-const FILTER_PREFIX = "f_";
-
 // Drives <DataTable> with real server pagination: owns page/search-debounce/
-// filter state in the URL query string ("page", "q", "f_<key>") instead of
-// local useState, so the current view is a copy-pasteable link. Re-fetches
-// whenever any of them change. Pages 1..page are each their own react-query
-// cache entry (fetched via useQueries), which gives us both the current page
-// (desktop) and the accumulated list for mobile "load more" without a
-// separate effect/state to keep them in sync.
+// filter state in the URL query string ("page", "q", "<filter-key>") instead
+// of local useState, so the current view is a copy-pasteable link that reads
+// the same as the API params. Re-fetches whenever any of them change. Pages
+// 1..page are each their own react-query cache entry (fetched via
+// useQueries), which gives us both the current page (desktop) and the
+// accumulated list for mobile "load more" without a separate effect/state to
+// keep them in sync.
 export function useServerTable<T>({
   queryKey,
   fetcher,
   pageSize = 10,
-  namespace,
+  filterKeys = [],
 }: UseServerTableOptions<T>) {
   const [searchParams, setSearchParams] = useSearchParams();
-  const prefix = namespace ? `${namespace}_` : "";
-  const pageKey = `${prefix}page`;
-  const qKey = `${prefix}q`;
-  const filterPrefix = `${prefix}${FILTER_PREFIX}`;
 
-  const page = Math.max(1, Number(searchParams.get(pageKey)) || 1);
-  const queryInput = searchParams.get(qKey) ?? "";
+  const page = Math.max(1, Number(searchParams.get("page")) || 1);
+  const queryInput = searchParams.get("q") ?? "";
   const debouncedQuery = useDebouncedValue(queryInput, 350);
 
   const activeFilters = useMemo(() => {
     const filters: Record<string, string> = {};
-    for (const [key, value] of searchParams.entries()) {
-      if (key.startsWith(filterPrefix)) {
-        filters[key.slice(filterPrefix.length)] = value;
-      }
+    for (const key of filterKeys) {
+      const value = searchParams.get(key);
+      if (value) filters[key] = value;
     }
     return filters;
-  }, [searchParams, filterPrefix]);
+  }, [searchParams, filterKeys]);
 
   function updateParams(mutate: (params: URLSearchParams) => void) {
     setSearchParams(
@@ -75,24 +70,24 @@ export function useServerTable<T>({
   function setPage(next: number | ((p: number) => number)) {
     const value = typeof next === "function" ? next(page) : next;
     updateParams((params) => {
-      if (value <= 1) params.delete(pageKey);
-      else params.set(pageKey, String(value));
+      if (value <= 1) params.delete("page");
+      else params.set("page", String(value));
     });
   }
 
   function setQueryInput(value: string) {
     updateParams((params) => {
-      if (value) params.set(qKey, value);
-      else params.delete(qKey);
-      params.delete(pageKey);
+      if (value) params.set("q", value);
+      else params.delete("q");
+      params.delete("page");
     });
   }
 
   function handleFilterChange(key: string, value: string) {
     updateParams((params) => {
-      if (!value || value === "all") params.delete(`${filterPrefix}${key}`);
-      else params.set(`${filterPrefix}${key}`, value);
-      params.delete(pageKey);
+      if (!value || value === "all") params.delete(key);
+      else params.set(key, value);
+      params.delete("page");
     });
   }
 

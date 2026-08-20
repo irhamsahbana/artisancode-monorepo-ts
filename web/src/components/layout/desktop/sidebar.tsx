@@ -1,6 +1,7 @@
 import {
   LayoutDashboard,
   Users,
+  Contact,
   Briefcase,
   Star,
   FileText,
@@ -58,6 +59,12 @@ const mainNav: {
     label: "Pelanggan",
     icon: Users,
     permission: "customers.view",
+  },
+  {
+    to: "/contacts",
+    label: "Kontak",
+    icon: Contact,
+    permission: "contacts.view",
   },
   {
     to: "/projects",

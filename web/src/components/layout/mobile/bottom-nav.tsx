@@ -1,6 +1,7 @@
 import {
   LayoutDashboard,
   Users,
+  Contact,
   Briefcase,
   Menu,
   Star,
@@ -43,6 +44,12 @@ const menuItems: {
   icon: typeof Star;
   permission?: Permission;
 }[] = [
+  {
+    to: "/contacts",
+    label: "Kontak",
+    icon: Contact,
+    permission: "contacts.view",
+  },
   {
     to: "/projects/map",
     label: "Peta Proyek",
@@ -148,6 +155,7 @@ const settingsItems: {
 ];
 
 const moreActivePrefixes = [
+  "/contacts",
   "/projects/map",
   "/ratings",
   "/quotations",
