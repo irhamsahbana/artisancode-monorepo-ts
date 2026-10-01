@@ -1,5 +1,6 @@
 # files
 .env
+docker-compose.override.yml
 
 # folders
 .DS_Store

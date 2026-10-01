@@ -12,7 +12,7 @@ COPY packages/observability/package.json ./packages/observability/
 COPY packages/phone/package.json ./packages/phone/
 COPY packages/resilience/package.json ./packages/resilience/
 COPY packages/types/package.json ./packages/types/
-RUN bun install --frozen-lockfile
+RUN --mount=type=cache,target=/root/.bun/install/cache bun install --frozen-lockfile
 
 COPY packages ./packages
 COPY web ./web
