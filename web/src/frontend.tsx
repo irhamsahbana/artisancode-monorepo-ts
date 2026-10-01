@@ -43,6 +43,7 @@ import { QuotationList } from "@/pages/quotations/quotation-list";
 import { RoleForm } from "@/pages/settings/roles/role-form";
 import { RoleList } from "@/pages/settings/roles/role-list";
 import { UserList } from "@/pages/settings/users/user-list";
+import { WhatsappConnection } from "@/pages/settings/whatsapp";
 import { registerPwa } from "@/register-sw";
 import "./index.css";
 
@@ -102,6 +103,7 @@ const router = createBrowserRouter([
           { path: "settings/roles/new", element: <RoleForm /> },
           { path: "settings/roles/:id/edit", element: <RoleForm /> },
           { path: "settings/users", element: <UserList /> },
+          { path: "settings/whatsapp", element: <WhatsappConnection /> },
         ],
       },
     ],

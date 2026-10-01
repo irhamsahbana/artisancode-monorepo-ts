@@ -83,6 +83,9 @@ export const env = {
     // "user:password" (matches APP_BASIC_AUTH on the gowa server)
     BASIC_AUTH: process.env.GOWA_BASIC_AUTH || '',
     DEVICE_ID: process.env.GOWA_DEVICE_ID || '',
+    // Must match WHATSAPP_WEBHOOK_SECRET configured on the gowa server —
+    // verifies the X-Hub-Signature-256 header on incoming message webhooks.
+    WEBHOOK_SECRET: process.env.GOWA_WEBHOOK_SECRET || '',
   },
   S3: {
     BUCKET: process.env.S3_BUCKET || '',

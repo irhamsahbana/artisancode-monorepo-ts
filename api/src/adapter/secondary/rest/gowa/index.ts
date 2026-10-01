@@ -5,9 +5,15 @@ import {
   SendChatPresenceReq,
   SendWhatsAppTextReq,
   SendWhatsAppTextRes,
+  WhatsAppConnectionStatus,
+  WhatsAppLoginRes,
 } from '@/contracts/integration/whatsapp.contract'
 
 import { createGowaClientConfig, GowaClientConfig } from './client'
+import { getStatus } from './get-status'
+import { login } from './login'
+import { logout } from './logout'
+import { reconnect } from './reconnect'
 import { sendChatPresence } from './send-chat-presence'
 import { sendMessage } from './send-message'
 
@@ -40,5 +46,21 @@ export class GowaIntegration implements IWhatsAppProvider {
 
   sendChatPresence(req: SendChatPresenceReq): Promise<void> {
     return sendChatPresence(this.config, req)
+  }
+
+  getConnectionStatus(): Promise<WhatsAppConnectionStatus> {
+    return getStatus(this.config)
+  }
+
+  login(): Promise<WhatsAppLoginRes> {
+    return login(this.config)
+  }
+
+  logout(): Promise<void> {
+    return logout(this.config)
+  }
+
+  reconnect(): Promise<void> {
+    return reconnect(this.config)
   }
 }

@@ -1,6 +1,14 @@
+import { AppError, ErrorCode } from '@artisancode/types'
+
 import { GowaIntegration } from '@/adapter/secondary/rest/gowa'
 import { env } from '@/config/env'
 import { IWhatsAppProvider } from '@/contracts/integration/whatsapp.contract'
+
+const notApplicable = () =>
+  new AppError(
+    ErrorCode.NOT_IMPLEMENTED,
+    'WHATSAPP_PROVIDER is "noop" — set it to "gowa" to connect a real device',
+  )
 
 /** Dev fallback: simulates a successful send without hitting any provider */
 class NoopWhatsAppProvider implements IWhatsAppProvider {
@@ -12,6 +20,22 @@ class NoopWhatsAppProvider implements IWhatsAppProvider {
 
   async sendChatPresence() {
     return Promise.resolve()
+  }
+
+  async getConnectionStatus() {
+    return { isConnected: true, isLoggedIn: true, jid: 'noop' }
+  }
+
+  login(): never {
+    throw notApplicable()
+  }
+
+  logout(): never {
+    throw notApplicable()
+  }
+
+  reconnect(): never {
+    throw notApplicable()
   }
 }
 

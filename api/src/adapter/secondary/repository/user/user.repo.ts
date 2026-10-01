@@ -6,6 +6,7 @@ import { checkExistingUser } from './user.repo/check-existing-user'
 import { createUser } from './user.repo/create'
 import { deleteUser } from './user.repo/delete'
 import { findUserById } from './user.repo/find-by-id'
+import { findUserByPhone } from './user.repo/find-by-phone'
 import { findUserByUsername } from './user.repo/find-by-username'
 import { findUserByUsernameForLogin } from './user.repo/find-by-username-for-login'
 import { findUserList } from './user.repo/find-list'
@@ -31,6 +32,7 @@ export function createUserRepo(): IUserRepo {
     findList: (req) => findUserList(deps, req),
     findById: (id) => findUserById(deps, id),
     findByUsername: (username) => findUserByUsername(deps, username),
+    findByPhone: (phone) => findUserByPhone(deps, phone),
     findByUsernameForLogin: (username) => findUserByUsernameForLogin(username),
     update: (req) => updateUser(deps, req),
     delete: (id) => deleteUser(id),

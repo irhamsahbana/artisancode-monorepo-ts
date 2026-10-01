@@ -18,6 +18,8 @@ import roleRouter, {
 import uomRouter, { unitConversionRouter } from '@/adapter/primary/rest/uom/uom.index'
 import userRouter from '@/adapter/primary/rest/user/user.index'
 import webhookRouter from '@/adapter/primary/rest/webhook/webhook.index'
+import whatsappRouter from '@/adapter/primary/rest/whatsapp/whatsapp.index'
+import whatsappLoginRouter from '@/adapter/primary/rest/whatsapp_login/whatsapp_login.index'
 
 const router = new Hono()
 
@@ -28,6 +30,8 @@ router.route('/health', healthRouter)
 router.route('/users', userRouter)
 router.route('/roles', roleRouter)
 router.route('/permissions', permissionRouter)
+router.route('/auth/whatsapp-login', whatsappLoginRouter)
+router.route('/whatsapp', whatsappRouter)
 
 // Core CRM
 router.route('/business-profile', businessProfileRouter)

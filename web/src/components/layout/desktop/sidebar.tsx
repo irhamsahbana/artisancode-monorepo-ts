@@ -15,6 +15,7 @@ import {
   Ruler,
   ArrowLeftRight,
   MessageSquare,
+  MessageCircle,
   Building2,
   User,
   LogOut,
@@ -173,6 +174,11 @@ const settingsNav: {
     label: "Pengguna",
     icon: UserCog,
     permission: "users.view",
+  },
+  {
+    to: "/settings/whatsapp",
+    label: "Koneksi WhatsApp",
+    icon: MessageCircle,
   },
 ];
 

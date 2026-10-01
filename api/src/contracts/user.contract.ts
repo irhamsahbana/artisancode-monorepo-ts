@@ -17,6 +17,7 @@ export interface IUserRepo {
   findList(req: Entity.GetUserReq): Promise<Entity.UserList>
   findById(id: string): Promise<Entity.User | null>
   findByUsername(username: string): Promise<Entity.User | null>
+  findByPhone(phone: string): Promise<Entity.User | null>
   findByUsernameForLogin(username: string): Promise<(Entity.User & { password: string }) | null>
   update(req: Entity.UpdateUserReq): Promise<Entity.User>
   delete(id: string): Promise<void>

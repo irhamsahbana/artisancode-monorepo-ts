@@ -36,6 +36,7 @@ export {
   uoms,
   users,
   webhookLogs,
+  whatsappLoginRequests,
 } from './tables'
 
 // Row types (JSONB payloads)
