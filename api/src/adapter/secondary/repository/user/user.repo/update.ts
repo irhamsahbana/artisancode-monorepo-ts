@@ -1,3 +1,4 @@
+import { localPhoneDigits } from '@artisancode/phone'
 import { eq } from 'drizzle-orm'
 
 import { getExecutor } from '@/common/executor'
@@ -15,6 +16,8 @@ export async function updateUser(
   const updates: Partial<typeof users.$inferInsert> = { ...rest }
   if (role_id !== undefined) updates.roleId = role_id
   if (country_code !== undefined) updates.countryCode = country_code
+  // Always store without the local trunk "0" — see find-by-phone.ts.
+  if (updates.phone !== undefined) updates.phone = localPhoneDigits(updates.phone)
 
   await getExecutor().update(users).set(updates).where(eq(users.id, id))
 

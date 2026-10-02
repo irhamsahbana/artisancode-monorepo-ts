@@ -1,7 +1,5 @@
-import { toFullPhone } from '@artisancode/phone'
 import { AppError, ErrorCode } from '@artisancode/types'
 
-import { IBusinessProfileRepo } from '@/contracts/business_profile.contract'
 import { IUserRepo } from '@/contracts/user.contract'
 import { IWhatsAppLoginRepo, IWhatsAppLoginUsecase } from '@/contracts/whatsapp_login.contract'
 import { getWhatsAppProvider } from '@/integrations/whatsapp'
@@ -15,10 +13,14 @@ function generateConfirmToken(): string {
   return crypto.randomUUID().replace(/-/g, '').slice(0, 8).toUpperCase()
 }
 
+/** "6281234567890@s.whatsapp.net" (or "...:1@s.whatsapp.net") -> "6281234567890" */
+function jidToPhone(jid: string): string {
+  return jid.split('@')[0]?.split(':')[0] ?? ''
+}
+
 export function createWhatsAppLoginUsecase(
   repo: IWhatsAppLoginRepo,
   userRepo: IUserRepo,
-  businessProfileRepo: IBusinessProfileRepo,
 ): IWhatsAppLoginUsecase {
   return {
     request: async (req) => {
@@ -34,18 +36,19 @@ export function createWhatsAppLoginUsecase(
         expiresAt: new Date(Date.now() + REQUEST_TTL_MS),
       })
 
-      const profile = await businessProfileRepo.find()
-      if (!profile?.phone) {
+      const devices = await getWhatsAppProvider().listDevices()
+      const primary = devices.find((d) => d.isPrimary && d.isLoggedIn)
+      if (!primary?.jid) {
         throw new AppError(
           ErrorCode.INTERNAL_ERROR,
-          'Nomor WhatsApp perusahaan belum diatur di Business Profile',
+          'Device WhatsApp utama belum terhubung — cek Settings > Koneksi WhatsApp',
         )
       }
 
       return {
         requestId: row.id,
         confirmMessage: `${WA_LOGIN_KEYWORD} ${confirmToken}`,
-        businessWhatsapp: toFullPhone(profile.countryCode, profile.phone),
+        businessWhatsapp: jidToPhone(primary.jid),
       }
     },
 

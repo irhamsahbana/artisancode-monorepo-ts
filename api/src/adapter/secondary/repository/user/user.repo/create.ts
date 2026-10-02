@@ -1,3 +1,5 @@
+import { localPhoneDigits } from '@artisancode/phone'
+
 import { getExecutor } from '@/common/executor'
 import { users } from '@/db/schema'
 import * as Entity from '@/entities/user.entity'
@@ -15,7 +17,8 @@ export async function createUser(
       username: req.username,
       email: req.email,
       password: req.password,
-      phone: req.phone,
+      // Always store without the local trunk "0" — see find-by-phone.ts.
+      phone: localPhoneDigits(req.phone),
       countryCode: req.country_code,
       roleId: req.role_id,
       status: req.status || 'active',

@@ -1,6 +1,5 @@
 import { Hono } from 'hono'
 
-import { createBusinessProfileRepo } from '@/adapter/secondary/repository/business_profile/business_profile.repo'
 import { createUserRepo } from '@/adapter/secondary/repository/user/user.repo'
 import { createWhatsAppLoginRepo } from '@/adapter/secondary/repository/whatsapp_login/whatsapp_login.repo'
 import { validate } from '@/common/middlewares/validation.middleware'
@@ -9,11 +8,7 @@ import { createWhatsAppLoginUsecase } from '@/modules/whatsapp_login/whatsapp_lo
 import { createWhatsAppLoginHandler } from './whatsapp_login.handler'
 import * as Schema from './whatsapp_login.schema'
 
-const whatsAppLoginUsecase = createWhatsAppLoginUsecase(
-  createWhatsAppLoginRepo(),
-  createUserRepo(),
-  createBusinessProfileRepo(),
-)
+const whatsAppLoginUsecase = createWhatsAppLoginUsecase(createWhatsAppLoginRepo(), createUserRepo())
 const handler = createWhatsAppLoginHandler(whatsAppLoginUsecase)
 
 const router = new Hono()

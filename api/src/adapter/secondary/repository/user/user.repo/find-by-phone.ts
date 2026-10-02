@@ -17,6 +17,10 @@ export async function findUserByPhone(
     .from(users)
     .where(
       and(
+        // Invariant: phone is stored WITHOUT the local trunk "0" (e.g. "812...",
+        // not "0812..."), so it concatenates directly with country_code into the
+        // same full-digit format toFullPhone() produces. Enforced at the write
+        // sites (user.schema.ts, user-dialog.tsx), not here.
         sql`${users.countryCode} || ${users.phone} = ${fullPhone}`,
         eq(users.status, 'active'),
         isNull(users.deletedAt),

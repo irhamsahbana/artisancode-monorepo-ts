@@ -1,3 +1,4 @@
+import { localPhoneDigits } from '@artisancode/phone'
 import { and, eq, isNull, sql } from 'drizzle-orm'
 
 import { getExecutor } from '@/common/executor'
@@ -36,7 +37,8 @@ export function createBusinessProfileRepo(): IBusinessProfileRepo {
 
       if (req.name !== undefined) updates.name = req.name
       if (req.businessType !== undefined) updates.businessType = req.businessType
-      if (req.phone !== undefined) updates.phone = req.phone
+      // Always store without the local trunk "0" — see user.repo/find-by-phone.ts.
+      if (req.phone !== undefined) updates.phone = localPhoneDigits(req.phone)
       if (req.countryCode !== undefined) updates.countryCode = req.countryCode
       if (req.email !== undefined) updates.email = req.email
       if (req.address !== undefined) updates.address = req.address

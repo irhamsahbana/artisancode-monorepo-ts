@@ -16,7 +16,7 @@ export async function upsertBusinessProfile() {
     .values({
       name: BUSINESS_NAME,
       businessType: 'Konstruksi & Infrastruktur',
-      phone: '02150123456',
+      phone: '2150123456',
       email: 'info@wika.demo',
       address: 'Jl. Gatot Subroto No. 40, Jakarta Selatan',
     })

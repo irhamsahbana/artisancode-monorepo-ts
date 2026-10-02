@@ -30,7 +30,7 @@ export async function upsertAdminUser(roleId: string) {
       username: ADMIN_USERNAME,
       email: ADMIN_EMAIL,
       password: await hashPassword(ADMIN_PASSWORD),
-      phone: '081200000000',
+      phone: '82188449289',
       countryCode: '62',
       isProtected: true,
     })

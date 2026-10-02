@@ -9,11 +9,7 @@ import { createWhatsAppLoginUsecase } from '@/modules/whatsapp_login/whatsapp_lo
 import { createWhatsappHandler } from './whatsapp.handler'
 
 const businessProfileRepo = createBusinessProfileRepo()
-const whatsAppLoginUsecase = createWhatsAppLoginUsecase(
-  createWhatsAppLoginRepo(),
-  createUserRepo(),
-  businessProfileRepo,
-)
+const whatsAppLoginUsecase = createWhatsAppLoginUsecase(createWhatsAppLoginRepo(), createUserRepo())
 const handler = createWhatsappHandler(whatsAppLoginUsecase, businessProfileRepo)
 
 const router = new Hono()
