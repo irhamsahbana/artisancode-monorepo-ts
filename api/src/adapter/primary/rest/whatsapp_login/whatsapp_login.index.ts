@@ -2,6 +2,7 @@ import { Hono } from 'hono'
 
 import { createUserRepo } from '@/adapter/secondary/repository/user/user.repo'
 import { createWhatsAppLoginRepo } from '@/adapter/secondary/repository/whatsapp_login/whatsapp_login.repo'
+import { rateLimit } from '@/common/middlewares/rate_limit.middleware'
 import { validate } from '@/common/middlewares/validation.middleware'
 import { createWhatsAppLoginUsecase } from '@/modules/whatsapp_login/whatsapp_login.usecase'
 
@@ -13,8 +14,20 @@ const handler = createWhatsAppLoginHandler(whatsAppLoginUsecase)
 
 const router = new Hono()
 
-// Public — unauthenticated by design, this IS the login flow.
-router.post('/', validate(Schema.requestWhatsAppLoginSchema), handler.request)
-router.get('/:id/status', handler.status)
+// Public — unauthenticated by design, this IS the login flow. Rate-limited
+// per IP since both routes are unauthenticated: the POST writes to the DB
+// and looks up users by phone on every call, the GET is polled every ~3s by
+// a legitimate client for up to the request's 5-minute TTL.
+router.post(
+  '/',
+  rateLimit({ windowMs: 5 * 60 * 1000, max: 5, keyPrefix: 'wa-login:request' }),
+  validate(Schema.requestWhatsAppLoginSchema),
+  handler.request,
+)
+router.get(
+  '/:id/status',
+  rateLimit({ windowMs: 60 * 1000, max: 60, keyPrefix: 'wa-login:status' }),
+  handler.status,
+)
 
 export default router
