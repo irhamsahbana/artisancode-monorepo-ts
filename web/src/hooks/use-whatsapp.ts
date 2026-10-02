@@ -3,11 +3,40 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { queryKeys } from "@/lib/query-keys";
 import { whatsappService } from "@/services/whatsapp";
 
-export function useWhatsappStatus() {
+export function useWhatsappDevices() {
   return useQuery({
-    queryKey: queryKeys.whatsapp.status(),
-    queryFn: whatsappService.getStatus,
+    queryKey: queryKeys.whatsapp.devices(),
+    queryFn: whatsappService.listDevices,
     refetchInterval: 5000,
+  });
+}
+
+function useInvalidateDevices() {
+  const qc = useQueryClient();
+  return () => qc.invalidateQueries({ queryKey: queryKeys.whatsapp.devices() });
+}
+
+export function useAddWhatsappDevice() {
+  const invalidate = useInvalidateDevices();
+  return useMutation({
+    mutationFn: whatsappService.addDevice,
+    onSuccess: invalidate,
+  });
+}
+
+export function useRemoveWhatsappDevice() {
+  const invalidate = useInvalidateDevices();
+  return useMutation({
+    mutationFn: whatsappService.removeDevice,
+    onSuccess: invalidate,
+  });
+}
+
+export function useSetPrimaryWhatsappDevice() {
+  const invalidate = useInvalidateDevices();
+  return useMutation({
+    mutationFn: whatsappService.setPrimary,
+    onSuccess: invalidate,
   });
 }
 
@@ -16,19 +45,17 @@ export function useWhatsappLogin() {
 }
 
 export function useWhatsappLogout() {
-  const qc = useQueryClient();
+  const invalidate = useInvalidateDevices();
   return useMutation({
     mutationFn: whatsappService.logout,
-    onSuccess: () =>
-      qc.invalidateQueries({ queryKey: queryKeys.whatsapp.status() }),
+    onSuccess: invalidate,
   });
 }
 
 export function useWhatsappReconnect() {
-  const qc = useQueryClient();
+  const invalidate = useInvalidateDevices();
   return useMutation({
     mutationFn: whatsappService.reconnect,
-    onSuccess: () =>
-      qc.invalidateQueries({ queryKey: queryKeys.whatsapp.status() }),
+    onSuccess: invalidate,
   });
 }

@@ -26,6 +26,18 @@ class NoopWhatsAppProvider implements IWhatsAppProvider {
     return { isConnected: true, isLoggedIn: true, jid: 'noop' }
   }
 
+  async listDevices() {
+    return [{ id: 'noop', isConnected: true, isLoggedIn: true, jid: 'noop', isPrimary: true }]
+  }
+
+  addDevice(): never {
+    throw notApplicable()
+  }
+
+  removeDevice(): never {
+    throw notApplicable()
+  }
+
   login(): never {
     throw notApplicable()
   }

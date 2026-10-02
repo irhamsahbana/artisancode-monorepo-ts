@@ -2,7 +2,7 @@ import { AppError, ErrorCode } from '@artisancode/types'
 
 import { WhatsAppConnectionStatus } from '@/contracts/integration/whatsapp.contract'
 
-import { GowaClientConfig } from './client'
+import { authHeader, GowaClientConfig } from './client'
 
 interface GowaStatusResponse {
   code: string
@@ -14,11 +14,14 @@ interface GowaStatusResponse {
   }
 }
 
-export async function getStatus(config: GowaClientConfig): Promise<WhatsAppConnectionStatus> {
+export async function getStatus(
+  config: GowaClientConfig,
+  deviceId: string,
+): Promise<WhatsAppConnectionStatus> {
   const response = await fetch(`${config.baseUrl}/app/status`, {
     headers: {
-      Authorization: `Basic ${Buffer.from(config.basicAuth).toString('base64')}`,
-      'X-Device-Id': config.deviceId,
+      Authorization: authHeader(config),
+      'X-Device-Id': deviceId,
     },
   })
 

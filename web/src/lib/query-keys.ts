@@ -82,7 +82,7 @@ export const queryKeys = {
       ["users", "list", params] as const,
   },
   whatsapp: {
-    status: () => ["whatsapp", "status"] as const,
+    devices: () => ["whatsapp", "devices"] as const,
   },
   whatsappLogin: {
     status: (id: string) => ["whatsapp-login", "status", id] as const,

@@ -14,6 +14,7 @@ function toEntity(data: typeof businessProfiles.$inferSelect): Entity.BusinessPr
     countryCode: data.countryCode,
     email: data.email,
     address: data.address,
+    whatsappDeviceId: data.whatsappDeviceId,
   }
 }
 
@@ -39,6 +40,7 @@ export function createBusinessProfileRepo(): IBusinessProfileRepo {
       if (req.countryCode !== undefined) updates.countryCode = req.countryCode
       if (req.email !== undefined) updates.email = req.email
       if (req.address !== undefined) updates.address = req.address
+      if (req.whatsappDeviceId !== undefined) updates.whatsappDeviceId = req.whatsappDeviceId
 
       // Upsert against the single row
       const [existing] = await getExecutor()

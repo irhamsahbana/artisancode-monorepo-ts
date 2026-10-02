@@ -6,6 +6,7 @@ export interface BusinessProfile {
   countryCode: string
   email: string | null
   address: string | null
+  whatsappDeviceId: string | null
 }
 
 export interface UpdateBusinessProfileReq {
@@ -15,4 +16,5 @@ export interface UpdateBusinessProfileReq {
   countryCode?: string
   email?: string
   address?: string
+  whatsappDeviceId?: string | null
 }

@@ -1,6 +1,6 @@
 import { AppError, type RestResponse } from "@artisancode/types";
-import { Loader2 } from "lucide-react";
-import { useEffect, useState } from "react";
+import { Plus } from "lucide-react";
+import { useState } from "react";
 import { toast } from "sonner";
 
 import { PageHeader } from "@/components/shared/page-header";
@@ -8,11 +8,17 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import {
-  useWhatsappLogin,
+  useAddWhatsappDevice,
+  useRemoveWhatsappDevice,
+  useSetPrimaryWhatsappDevice,
+  useWhatsappDevices,
   useWhatsappLogout,
   useWhatsappReconnect,
-  useWhatsappStatus,
 } from "@/hooks/use-whatsapp";
+
+import { WhatsappQrDialog } from "./qr-dialog";
+
+import type { WhatsappDevice } from "@artisancode/api-types";
 
 function errorMessage(error: unknown, fallback: string) {
   if (error instanceof AppError && (error.httpCode ?? 0) < 500) {
@@ -22,42 +28,24 @@ function errorMessage(error: unknown, fallback: string) {
   return fallback;
 }
 
-export function WhatsappConnection() {
-  const { data: status, isLoading } = useWhatsappStatus();
-  const login = useWhatsappLogin();
-  const logout = useWhatsappLogout();
-  const reconnect = useWhatsappReconnect();
-  const [secondsLeft, setSecondsLeft] = useState(0);
-
-  async function handleLogin() {
-    try {
-      await login.mutateAsync();
-    } catch (error) {
-      toast.error(errorMessage(error, "Gagal memulai koneksi WhatsApp."));
-    }
-  }
-
-  useEffect(() => {
-    if (login.data) {
-      // eslint-disable-next-line react-hooks/set-state-in-effect
-      setSecondsLeft(login.data.qrDuration);
-    }
-  }, [login.data]);
-
-  // Just ticks the countdown down — does NOT auto-refetch. Each /app/login
-  // call is a real pairing attempt against WhatsApp's servers; looping it
-  // unattended risks tripping WhatsApp's own anti-abuse rate limit (seen
-  // firsthand: repeated rapid refreshes got "can't link new device right
-  // now"). Expiry just shows a manual "Muat Ulang QR" button instead.
-  useEffect(() => {
-    if (secondsLeft <= 0 || status?.isLoggedIn) return;
-    const timer = setTimeout(() => setSecondsLeft((s) => s - 1), 1000);
-    return () => clearTimeout(timer);
-  }, [secondsLeft, status?.isLoggedIn]);
-
+function DeviceCard({
+  device,
+  logout,
+  reconnect,
+  setPrimary,
+  remove,
+  onConnect,
+}: {
+  device: WhatsappDevice;
+  logout: ReturnType<typeof useWhatsappLogout>;
+  reconnect: ReturnType<typeof useWhatsappReconnect>;
+  setPrimary: ReturnType<typeof useSetPrimaryWhatsappDevice>;
+  remove: ReturnType<typeof useRemoveWhatsappDevice>;
+  onConnect: (deviceId: string) => void;
+}) {
   async function handleLogout() {
     try {
-      await logout.mutateAsync();
+      await logout.mutateAsync(device.id);
       toast.success("WhatsApp berhasil diputuskan.");
     } catch (error) {
       toast.error(errorMessage(error, "Gagal memutuskan WhatsApp."));
@@ -66,100 +54,192 @@ export function WhatsappConnection() {
 
   async function handleReconnect() {
     try {
-      await reconnect.mutateAsync();
+      await reconnect.mutateAsync(device.id);
       toast.success("Mencoba menyambungkan ulang...");
     } catch (error) {
       toast.error(errorMessage(error, "Gagal menyambungkan ulang WhatsApp."));
     }
   }
 
+  async function handleSetPrimary() {
+    try {
+      await setPrimary.mutateAsync(device.id);
+      toast.success("Device utama diperbarui.");
+    } catch (error) {
+      toast.error(errorMessage(error, "Gagal menjadikan device ini utama."));
+    }
+  }
+
+  async function handleRemove() {
+    if (!confirm("Hapus device WhatsApp ini?")) return;
+    try {
+      await remove.mutateAsync(device.id);
+      toast.success("Device dihapus.");
+    } catch (error) {
+      toast.error(errorMessage(error, "Gagal menghapus device."));
+    }
+  }
+
+  return (
+    <Card>
+      <CardContent className="grid gap-3 pt-6">
+        <div className="flex items-start justify-between gap-2">
+          <div className="min-w-0">
+            <p className="truncate text-sm font-medium">
+              {device.jid || "Belum terhubung"}
+            </p>
+            <p className="truncate text-xs text-muted-foreground">
+              {device.id}
+            </p>
+          </div>
+          {device.isPrimary && <Badge className="shrink-0">Utama</Badge>}
+        </div>
+
+        <Badge
+          variant={device.isLoggedIn ? "default" : "secondary"}
+          className="w-fit"
+        >
+          {device.isLoggedIn ? "Terhubung" : "Belum Terhubung"}
+        </Badge>
+
+        <div className="flex flex-wrap gap-2">
+          {!device.isLoggedIn && (
+            <Button size="sm" onClick={() => onConnect(device.id)}>
+              Hubungkan
+            </Button>
+          )}
+          {device.isLoggedIn && (
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleReconnect}
+              disabled={reconnect.isPending}
+            >
+              Sambungkan Ulang
+            </Button>
+          )}
+          {device.isLoggedIn && (
+            <Button
+              variant="destructive"
+              size="sm"
+              onClick={handleLogout}
+              disabled={logout.isPending}
+            >
+              Putuskan
+            </Button>
+          )}
+          {!device.isPrimary && (
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleSetPrimary}
+              disabled={setPrimary.isPending}
+            >
+              Jadikan Utama
+            </Button>
+          )}
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={handleRemove}
+            disabled={remove.isPending}
+          >
+            Hapus
+          </Button>
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
+
+export function WhatsappConnection() {
+  const { data: devices, isLoading } = useWhatsappDevices();
+  const addDevice = useAddWhatsappDevice();
+  const logout = useWhatsappLogout();
+  const reconnect = useWhatsappReconnect();
+  const setPrimary = useSetPrimaryWhatsappDevice();
+  const remove = useRemoveWhatsappDevice();
+
+  const [qrDeviceId, setQrDeviceId] = useState<string | null>(null);
+  // Set only for a device just created via "Tambah" — hidden from the grid
+  // until it's actually paired, so an abandoned QR scan never leaves a
+  // dangling empty row behind (cleaned up on dialog close instead).
+  const [pendingNewDeviceId, setPendingNewDeviceId] = useState<string | null>(
+    null,
+  );
+
+  async function handleAddDevice() {
+    try {
+      const device = await addDevice.mutateAsync();
+      setPendingNewDeviceId(device.id);
+      setQrDeviceId(device.id);
+    } catch (error) {
+      toast.error(errorMessage(error, "Gagal menambah device."));
+    }
+  }
+
+  const activeDevice = devices?.find((d) => d.id === qrDeviceId);
+  const visibleDevices = devices?.filter((d) => d.id !== pendingNewDeviceId);
+
+  function handleCloseQr() {
+    const wasAbandonedNewDevice =
+      qrDeviceId &&
+      qrDeviceId === pendingNewDeviceId &&
+      !activeDevice?.isLoggedIn;
+
+    if (wasAbandonedNewDevice) {
+      remove.mutate(qrDeviceId);
+    }
+    if (qrDeviceId === pendingNewDeviceId) {
+      setPendingNewDeviceId(null);
+    }
+    setQrDeviceId(null);
+  }
+
   return (
     <div>
       <PageHeader
         title="Koneksi WhatsApp"
-        description="Status koneksi nomor WhatsApp yang dipakai untuk mengirim pesan otomatis."
+        description="Kelola nomor-nomor WhatsApp yang terhubung. Satu nomor ditandai sebagai utama untuk mengirim pesan otomatis (login, broadcast, dll)."
+        action={
+          <Button
+            size="sm"
+            onClick={handleAddDevice}
+            disabled={addDevice.isPending}
+          >
+            <Plus className="mr-1 h-4 w-4" />
+            Tambah
+          </Button>
+        }
       />
-      <Card>
-        <CardContent className="grid gap-5 pt-6">
-          {isLoading ? (
-            <p className="text-sm text-muted-foreground">Memuat status...</p>
-          ) : (
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium">Status</p>
-                <p className="text-sm text-muted-foreground">
-                  {status?.jid || "Belum terhubung"}
-                </p>
-              </div>
-              <Badge variant={status?.isLoggedIn ? "default" : "secondary"}>
-                {status?.isLoggedIn ? "Terhubung" : "Belum Terhubung"}
-              </Badge>
-            </div>
-          )}
 
-          {!status?.isLoggedIn && (
-            <div className="grid gap-3">
-              <Button onClick={handleLogin} disabled={login.isPending}>
-                {login.isPending ? "Memuat QR..." : "Hubungkan WhatsApp"}
-              </Button>
-              {login.data && (
-                <div className="flex flex-col items-center gap-2 rounded-md border p-4">
-                  {login.isError ? (
-                    <p className="text-xs text-destructive">Gagal memuat QR.</p>
-                  ) : secondsLeft <= 0 ? (
-                    <p className="text-xs text-muted-foreground">
-                      QR sudah kedaluwarsa.
-                    </p>
-                  ) : (
-                    <>
-                      <img
-                        src={login.data.qrLink}
-                        alt="QR code WhatsApp"
-                        className="h-56 w-56"
-                      />
-                      <p className="flex items-center gap-2 text-xs text-muted-foreground">
-                        <Loader2 className="h-3.5 w-3.5 animate-spin" />
-                        Scan dengan aplikasi WhatsApp di HP Anda (berlaku{" "}
-                        {secondsLeft} detik)
-                      </p>
-                    </>
-                  )}
-                  {(login.isError || secondsLeft <= 0) && (
-                    <Button
-                      type="button"
-                      variant="outline"
-                      size="sm"
-                      onClick={handleLogin}
-                      disabled={login.isPending}
-                    >
-                      Muat Ulang QR
-                    </Button>
-                  )}
-                </div>
-              )}
-            </div>
-          )}
+      {isLoading ? (
+        <p className="text-sm text-muted-foreground">Memuat device...</p>
+      ) : visibleDevices && visibleDevices.length > 0 ? (
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+          {visibleDevices.map((device) => (
+            <DeviceCard
+              key={device.id}
+              device={device}
+              logout={logout}
+              reconnect={reconnect}
+              setPrimary={setPrimary}
+              remove={remove}
+              onConnect={setQrDeviceId}
+            />
+          ))}
+        </div>
+      ) : (
+        <p className="text-sm text-muted-foreground">
+          Belum ada device WhatsApp.
+        </p>
+      )}
 
-          {status?.isLoggedIn && (
-            <div className="flex flex-col gap-3 sm:flex-row">
-              <Button
-                variant="outline"
-                onClick={handleReconnect}
-                disabled={reconnect.isPending}
-              >
-                Sambungkan Ulang
-              </Button>
-              <Button
-                variant="destructive"
-                onClick={handleLogout}
-                disabled={logout.isPending}
-              >
-                Putuskan
-              </Button>
-            </div>
-          )}
-        </CardContent>
-      </Card>
+      <WhatsappQrDialog
+        deviceId={qrDeviceId}
+        isLoggedIn={activeDevice?.isLoggedIn ?? false}
+        onClose={handleCloseQr}
+      />
     </div>
   );
 }

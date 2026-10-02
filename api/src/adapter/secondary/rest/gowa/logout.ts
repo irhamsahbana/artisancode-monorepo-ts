@@ -1,12 +1,12 @@
 import { AppError, ErrorCode } from '@artisancode/types'
 
-import { GowaClientConfig } from './client'
+import { authHeader, GowaClientConfig } from './client'
 
-export async function logout(config: GowaClientConfig): Promise<void> {
+export async function logout(config: GowaClientConfig, deviceId: string): Promise<void> {
   const response = await fetch(`${config.baseUrl}/app/logout`, {
     headers: {
-      Authorization: `Basic ${Buffer.from(config.basicAuth).toString('base64')}`,
-      'X-Device-Id': config.deviceId,
+      Authorization: authHeader(config),
+      'X-Device-Id': deviceId,
     },
   })
 

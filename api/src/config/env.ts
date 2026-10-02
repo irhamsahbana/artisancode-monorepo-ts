@@ -80,9 +80,13 @@ export const env = {
   },
   GOWA: {
     BASE_URL: process.env.GOWA_BASE_URL || '',
+    // Browser-reachable origin for links gowa returns (QR image). Only
+    // needed when gowa sits behind a hostname the API resolves but the
+    // browser can't (e.g. a docker-compose service name) — falls back to
+    // BASE_URL when unset.
+    PUBLIC_URL: process.env.GOWA_PUBLIC_URL || '',
     // "user:password" (matches APP_BASIC_AUTH on the gowa server)
     BASIC_AUTH: process.env.GOWA_BASIC_AUTH || '',
-    DEVICE_ID: process.env.GOWA_DEVICE_ID || '',
     // Must match WHATSAPP_WEBHOOK_SECRET configured on the gowa server —
     // verifies the X-Hub-Signature-256 header on incoming message webhooks.
     WEBHOOK_SECRET: process.env.GOWA_WEBHOOK_SECRET || '',

@@ -5,6 +5,7 @@ import { verifyWebhookSignature } from '@/adapter/secondary/rest/gowa/verify-web
 import { responseSuccess } from '@/common/rest_response'
 import { env } from '@/config/env'
 import logger from '@/config/logger'
+import { IBusinessProfileRepo } from '@/contracts/business_profile.contract'
 import { IWhatsAppLoginUsecase } from '@/contracts/whatsapp_login.contract'
 import { getWhatsAppProvider } from '@/integrations/whatsapp'
 
@@ -13,25 +14,48 @@ interface GowaMessageWebhookBody {
   payload?: { from?: string; chat_id?: string; body?: string; is_from_me?: boolean }
 }
 
-export function createWhatsappHandler(whatsAppLoginUsecase: IWhatsAppLoginUsecase) {
+export function createWhatsappHandler(
+  whatsAppLoginUsecase: IWhatsAppLoginUsecase,
+  businessProfileRepo: IBusinessProfileRepo,
+) {
   return {
-    status: async (c: Context<AppEnv>) => {
-      const data = await getWhatsAppProvider().getConnectionStatus()
+    listDevices: async (c: Context<AppEnv>) => {
+      const data = await getWhatsAppProvider().listDevices()
       return c.json(responseSuccess(data))
     },
 
+    addDevice: async (c: Context<AppEnv>) => {
+      const data = await getWhatsAppProvider().addDevice()
+      return c.json(responseSuccess(data))
+    },
+
+    removeDevice: async (c: Context<AppEnv>) => {
+      const deviceId = c.req.param('id') ?? ''
+      await getWhatsAppProvider().removeDevice(deviceId)
+      return c.json(responseSuccess(null, 'Device dihapus'))
+    },
+
+    setPrimaryDevice: async (c: Context<AppEnv>) => {
+      const deviceId = c.req.param('id') ?? ''
+      await businessProfileRepo.update({ whatsappDeviceId: deviceId })
+      return c.json(responseSuccess(null, 'Device utama diperbarui'))
+    },
+
     login: async (c: Context<AppEnv>) => {
-      const data = await getWhatsAppProvider().login()
+      const deviceId = c.req.param('id') ?? ''
+      const data = await getWhatsAppProvider().login(deviceId)
       return c.json(responseSuccess(data))
     },
 
     logout: async (c: Context<AppEnv>) => {
-      await getWhatsAppProvider().logout()
+      const deviceId = c.req.param('id') ?? ''
+      await getWhatsAppProvider().logout(deviceId)
       return c.json(responseSuccess(null, 'WhatsApp device logged out'))
     },
 
     reconnect: async (c: Context<AppEnv>) => {
-      await getWhatsAppProvider().reconnect()
+      const deviceId = c.req.param('id') ?? ''
+      await getWhatsAppProvider().reconnect(deviceId)
       return c.json(responseSuccess(null, 'Reconnecting WhatsApp device'))
     },
 

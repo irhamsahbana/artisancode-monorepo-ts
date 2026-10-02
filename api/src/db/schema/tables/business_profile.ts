@@ -13,6 +13,10 @@ export const businessProfiles = pgTable('business_profiles', {
   countryCode: text('country_code').notNull().default('62'),
   email: text('email'),
   address: text('address'),
+  // Which gowa device (X-Device-Id) sends outbound system messages (login
+  // confirmation, broadcasts, birthday greetings) when multiple devices are
+  // connected. Null until an admin picks one in Settings > Koneksi WhatsApp.
+  whatsappDeviceId: text('whatsapp_device_id'),
   ...timestamps,
   ...softDelete,
 })

@@ -117,7 +117,7 @@ export type {
   GetUserAccountReq,
   UserAccountList,
 } from './user'
-export type { WhatsappStatus, WhatsappLoginRes } from './whatsapp'
+export type { WhatsappDevice, WhatsappLoginRes } from './whatsapp'
 export type {
   RequestWhatsAppLoginReq,
   RequestWhatsAppLoginRes,

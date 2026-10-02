@@ -1,10 +1,16 @@
 import { api } from "@/lib/api";
 
-import type { WhatsappLoginRes, WhatsappStatus } from "@artisancode/api-types";
+import type { WhatsappDevice, WhatsappLoginRes } from "@artisancode/api-types";
 
 export const whatsappService = {
-  getStatus: () => api.get<WhatsappStatus>("/whatsapp/status"),
-  login: () => api.get<WhatsappLoginRes>("/whatsapp/login"),
-  logout: () => api.post<null>("/whatsapp/logout", {}),
-  reconnect: () => api.post<null>("/whatsapp/reconnect", {}),
+  listDevices: () => api.get<WhatsappDevice[]>("/whatsapp/devices"),
+  addDevice: () => api.post<WhatsappDevice>("/whatsapp/devices", {}),
+  removeDevice: (id: string) => api.del<null>(`/whatsapp/devices/${id}`),
+  setPrimary: (id: string) =>
+    api.post<null>(`/whatsapp/devices/${id}/primary`, {}),
+  login: (id: string) =>
+    api.post<WhatsappLoginRes>(`/whatsapp/devices/${id}/login`, {}),
+  logout: (id: string) => api.post<null>(`/whatsapp/devices/${id}/logout`, {}),
+  reconnect: (id: string) =>
+    api.post<null>(`/whatsapp/devices/${id}/reconnect`, {}),
 };

@@ -8,18 +8,22 @@ import { createWhatsAppLoginUsecase } from '@/modules/whatsapp_login/whatsapp_lo
 
 import { createWhatsappHandler } from './whatsapp.handler'
 
+const businessProfileRepo = createBusinessProfileRepo()
 const whatsAppLoginUsecase = createWhatsAppLoginUsecase(
   createWhatsAppLoginRepo(),
   createUserRepo(),
-  createBusinessProfileRepo(),
+  businessProfileRepo,
 )
-const handler = createWhatsappHandler(whatsAppLoginUsecase)
+const handler = createWhatsappHandler(whatsAppLoginUsecase, businessProfileRepo)
 
 const router = new Hono()
-router.get('/status', authenticate, handler.status)
-router.get('/login', authenticate, handler.login)
-router.post('/logout', authenticate, handler.logout)
-router.post('/reconnect', authenticate, handler.reconnect)
+router.get('/devices', authenticate, handler.listDevices)
+router.post('/devices', authenticate, handler.addDevice)
+router.delete('/devices/:id', authenticate, handler.removeDevice)
+router.post('/devices/:id/primary', authenticate, handler.setPrimaryDevice)
+router.post('/devices/:id/login', authenticate, handler.login)
+router.post('/devices/:id/logout', authenticate, handler.logout)
+router.post('/devices/:id/reconnect', authenticate, handler.reconnect)
 // Public: called by the gowa server, signature-verified inside the handler
 router.post('/webhook', handler.webhook)
 

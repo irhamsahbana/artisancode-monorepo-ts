@@ -2,7 +2,7 @@ import { AppError, ErrorCode } from '@artisancode/types'
 
 import { WhatsAppLoginRes } from '@/contracts/integration/whatsapp.contract'
 
-import { GowaClientConfig } from './client'
+import { authHeader, GowaClientConfig } from './client'
 
 interface GowaLoginResponse {
   code: string
@@ -13,11 +13,11 @@ interface GowaLoginResponse {
   }
 }
 
-export async function login(config: GowaClientConfig): Promise<WhatsAppLoginRes> {
+export async function login(config: GowaClientConfig, deviceId: string): Promise<WhatsAppLoginRes> {
   const response = await fetch(`${config.baseUrl}/app/login`, {
     headers: {
-      Authorization: `Basic ${Buffer.from(config.basicAuth).toString('base64')}`,
-      'X-Device-Id': config.deviceId,
+      Authorization: authHeader(config),
+      'X-Device-Id': deviceId,
     },
   })
 
@@ -30,5 +30,8 @@ export async function login(config: GowaClientConfig): Promise<WhatsAppLoginRes>
     )
   }
 
-  return { qrLink: body.results.qr_link, qrDuration: body.results.qr_duration }
+  return {
+    qrLink: body.results.qr_link.replace(config.baseUrl, config.publicUrl),
+    qrDuration: body.results.qr_duration,
+  }
 }
