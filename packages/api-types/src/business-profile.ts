@@ -5,6 +5,11 @@ export interface BusinessProfile {
   countryCode?: string
   email?: string
   address?: string
+  iconFilename?: string | null
 }
 
 export type UpdateBusinessProfileReq = Partial<BusinessProfile>
+
+export interface BusinessBranding {
+  name: string
+}

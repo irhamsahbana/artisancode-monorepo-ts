@@ -80,6 +80,9 @@ services:
       GOWA_PUBLIC_URL: http://localhost:${GOWA_PORT:-3001}
       GOWA_BASIC_AUTH: ${GOWA_BASIC_AUTH:-admin:admin}
       GOWA_WEBHOOK_SECRET: ${GOWA_WEBHOOK_SECRET:-change-me}
+      BRANDING_STORAGE_DIR: /app/storage/branding
+    volumes:
+      - branding_assets:/app/storage/branding
     depends_on:
       postgres:
         condition: service_healthy
@@ -97,6 +100,10 @@ services:
       NODE_ENV: production
       PORT: 3000
       BUN_PUBLIC_API_URL: ${BUN_PUBLIC_API_URL:-http://localhost:3002}
+      INTERNAL_API_URL: http://api:3002
+      BRANDING_STORAGE_DIR: /app/storage/branding
+    volumes:
+      - branding_assets:/app/storage/branding:ro
     depends_on:
       - api
 
@@ -104,3 +111,4 @@ volumes:
   postgres_data:
   redis_data:
   gowa_storages:
+  branding_assets:

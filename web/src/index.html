@@ -3,7 +3,8 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="icon" type="image/svg+xml" href="./logo.svg" />
+    <!-- Favicon is a server route (/favicon), not a bundled asset — injected
+         at runtime in register-sw.ts, same reason manifest.json isn't here. -->
     <link rel="apple-touch-icon" href="./apple-touch-icon.png" />
     <!-- apple-touch-startup-image requires an exact device-width/height/
          pixel-ratio match to be picked up on real iOS hardware — a bare
@@ -32,8 +33,10 @@
     <meta name="theme-color" content="#141414" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-    <meta name="apple-mobile-web-app-title" content="CRM Wika" />
-    <title>CRM Wika</title>
+    <meta name="apple-mobile-web-app-title" content="CRM App" />
+    <!-- Static fallback for pre-JS paint; BrandingSync overwrites this with
+         the business profile's name once the branding query resolves. -->
+    <title>CRM App</title>
     <script>
       if (typeof process === "undefined") {
         globalThis.process = { env: {}, stdout: { isTTY: false } };

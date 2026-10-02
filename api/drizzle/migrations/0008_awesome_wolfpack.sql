@@ -1,0 +1,1 @@
+ALTER TABLE "business_profiles" ADD COLUMN "icon_filename" text;

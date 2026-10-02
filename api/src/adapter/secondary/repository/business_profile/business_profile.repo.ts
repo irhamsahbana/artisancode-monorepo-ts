@@ -16,6 +16,7 @@ function toEntity(data: typeof businessProfiles.$inferSelect): Entity.BusinessPr
     email: data.email,
     address: data.address,
     whatsappDeviceId: data.whatsappDeviceId,
+    iconFilename: data.iconFilename,
   }
 }
 
@@ -43,6 +44,7 @@ export function createBusinessProfileRepo(): IBusinessProfileRepo {
       if (req.email !== undefined) updates.email = req.email
       if (req.address !== undefined) updates.address = req.address
       if (req.whatsappDeviceId !== undefined) updates.whatsappDeviceId = req.whatsappDeviceId
+      if (req.iconFilename !== undefined) updates.iconFilename = req.iconFilename
 
       // Upsert against the single row
       const [existing] = await getExecutor()

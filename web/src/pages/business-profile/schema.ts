@@ -11,10 +11,10 @@ export const schema = z.object({
 
 export type FormValues = z.infer<typeof schema>;
 
-export const initialValues: FormValues = {
-  name: "CV Wika Sejahtera",
-  phone: "8001234567",
+export const emptyValues: FormValues = {
+  name: "",
+  phone: "",
   countryCode: DEFAULT_COUNTRY_CODE,
-  email: "info@wika.co.id",
-  address: "Jl. Merdeka No. 10, Jakarta Selatan",
+  email: "",
+  address: "",
 };

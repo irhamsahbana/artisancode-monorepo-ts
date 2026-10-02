@@ -1,7 +1,11 @@
 export type { PaginationQuery, PaginationMetadata } from './common'
 export type { ActivityLog, GetActivityLogReq, ActivityLogList } from './activity-log'
 export type { LoginReq, LoginRes, User, UpdateAccountReq } from './auth'
-export type { BusinessProfile, UpdateBusinessProfileReq } from './business-profile'
+export type {
+  BusinessProfile,
+  UpdateBusinessProfileReq,
+  BusinessBranding,
+} from './business-profile'
 export type {
   Contact,
   CreateContactReq,

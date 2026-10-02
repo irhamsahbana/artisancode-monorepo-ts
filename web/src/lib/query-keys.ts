@@ -87,4 +87,8 @@ export const queryKeys = {
   whatsappLogin: {
     status: (id: string) => ["whatsapp-login", "status", id] as const,
   },
+  businessProfile: {
+    all: ["business-profile"] as const,
+    branding: () => ["business-profile", "branding"] as const,
+  },
 } as const;

@@ -7,6 +7,7 @@ export interface BusinessProfile {
   email: string | null
   address: string | null
   whatsappDeviceId: string | null
+  iconFilename: string | null
 }
 
 export interface UpdateBusinessProfileReq {
@@ -17,4 +18,9 @@ export interface UpdateBusinessProfileReq {
   email?: string
   address?: string
   whatsappDeviceId?: string | null
+  iconFilename?: string | null
+}
+
+export interface BusinessBranding {
+  name: string
 }

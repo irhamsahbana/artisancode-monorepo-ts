@@ -8,4 +8,6 @@ export interface IBusinessProfileRepo {
 export interface IBusinessProfileUsecase {
   find(): Promise<Entity.BusinessProfile>
   update(req: Entity.UpdateBusinessProfileReq): Promise<Entity.BusinessProfile>
+  /** Public, unauthenticated — just enough for the login page's tab title. */
+  branding(): Promise<Entity.BusinessBranding>
 }

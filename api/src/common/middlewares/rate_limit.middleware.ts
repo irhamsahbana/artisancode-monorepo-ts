@@ -9,6 +9,7 @@ import { responseError } from '@/common/rest_response'
 export const RateLimitKey = {
   WA_LOGIN_REQUEST: 'wa-login:request',
   WA_LOGIN_STATUS: 'wa-login:status',
+  BUSINESS_BRANDING: 'business-branding',
 } as const
 export type RateLimitKey = (typeof RateLimitKey)[keyof typeof RateLimitKey]
 

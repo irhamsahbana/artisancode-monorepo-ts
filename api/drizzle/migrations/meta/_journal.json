@@ -57,6 +57,13 @@
       "when": 1790908302429,
       "tag": "0007_premium_skreet",
       "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1790915253981,
+      "tag": "0008_awesome_wolfpack",
+      "breakpoints": true
     }
   ]
 }

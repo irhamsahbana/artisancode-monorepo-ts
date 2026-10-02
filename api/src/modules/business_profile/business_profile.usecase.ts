@@ -18,5 +18,10 @@ export function createBusinessProfileUsecase(repo: IBusinessProfileRepo): IBusin
       if (!item) throw new AppError(ErrorCode.NOT_FOUND, 'Business profile not found')
       return item
     },
+
+    branding: async () => {
+      const item = await repo.find()
+      return { name: item?.name || 'CRM App' }
+    },
   }
 }
