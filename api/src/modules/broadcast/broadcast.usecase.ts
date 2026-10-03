@@ -50,10 +50,10 @@ export function createBroadcastUsecase(repo: IBroadcastRepo): IBroadcastUsecase 
       const conditions = [isNull(contacts.deletedAt), isNull(customers.deletedAt)]
 
       if (template.audienceGender) {
-        conditions.push(eq(customers.gender, template.audienceGender))
+        conditions.push(eq(contacts.gender, template.audienceGender))
       }
       if (template.audienceReligion) {
-        conditions.push(eq(customers.religion, template.audienceReligion))
+        conditions.push(eq(contacts.religion, template.audienceReligion))
       }
       if (template.audienceSegmentationId) {
         conditions.push(eq(customers.segmentationId, template.audienceSegmentationId))

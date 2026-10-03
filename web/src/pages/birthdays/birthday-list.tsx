@@ -124,8 +124,8 @@ export function BirthdayList() {
 
   const religions = useMemo(() => {
     const set = new Set<string>();
-    for (const { customer } of contactsData ?? []) {
-      if (customer.religion) set.add(customer.religion);
+    for (const { contact } of contactsData ?? []) {
+      if (contact.religion) set.add(contact.religion);
     }
     return Array.from(set).sort();
   }, [contactsData]);
@@ -137,9 +137,9 @@ export function BirthdayList() {
     now.setHours(0, 0, 0, 0);
 
     for (const { contact, customer } of contactsData ?? []) {
-      if (!customer.dateOfBirth) continue;
+      if (!contact.dateOfBirth) continue;
 
-      const dob = new Date(customer.dateOfBirth);
+      const dob = new Date(contact.dateOfBirth);
       const nextBirthday = new Date(
         now.getFullYear(),
         dob.getMonth(),
@@ -157,10 +157,10 @@ export function BirthdayList() {
       items.push({
         contactId: contact.id,
         contactName: contact.name,
-        gender: customer.gender ?? undefined,
+        gender: contact.gender ?? undefined,
         customerName: customer.name,
         position: contact.position ?? "-",
-        dateOfBirth: customer.dateOfBirth,
+        dateOfBirth: contact.dateOfBirth,
         nextBirthday,
         daysUntil,
       });

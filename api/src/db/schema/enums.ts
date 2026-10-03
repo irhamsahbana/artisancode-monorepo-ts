@@ -2,7 +2,9 @@ import { pgEnum } from 'drizzle-orm/pg-core'
 
 export const statusEnum = pgEnum('status', ['active', 'inactive'])
 
-export const customerTypeEnum = pgEnum('customer_type', ['individual', 'business'])
+// Customers are always businesses — personal/individual data lives on
+// contacts (key persons) instead.
+export const companyTypeEnum = pgEnum('company_type', ['bumn', 'swasta_nasional', 'swasta_asing'])
 
 export const customerStatusEnum = pgEnum('customer_status', ['prospect', 'active', 'inactive'])
 

@@ -64,7 +64,7 @@ export function BroadcastForm() {
   const religions = useMemo(() => {
     const set = new Set<string>();
     for (const r of contactTable.loadedItems ?? [])
-      if (r.customer.religion) set.add(r.customer.religion);
+      if (r.contact.religion) set.add(r.contact.religion);
     return Array.from(set).sort();
   }, [contactTable.loadedItems]);
 

@@ -8,10 +8,11 @@ import { contacts, customers } from '@/db/schema'
 
 /**
  * Run once daily (triggered by jobs/scheduler.ts): if birthday greetings are
- * enabled, match contacts whose customer's birthday is today against the
- * settings' audience filters, and enqueue one WhatsApp send job with an
- * explicit recipient list. dateOfBirth is stored as free-form text (expected
- * "YYYY-MM-DD"), so the MM-DD match happens in JS rather than SQL.
+ * enabled, match contacts (key persons — personal data lives on contacts, not
+ * customers) whose birthday is today against the settings' audience filters,
+ * and enqueue one WhatsApp send job with an explicit recipient list.
+ * dateOfBirth is stored as free-form text (expected "YYYY-MM-DD"), so the
+ * MM-DD match happens in JS rather than SQL.
  */
 export async function runBirthdayGreetingCron(): Promise<void> {
   const settings = await createBirthdayGreetingRepo().find()
@@ -24,14 +25,14 @@ export async function runBirthdayGreetingCron(): Promise<void> {
   const conditions = [
     isNull(contacts.deletedAt),
     isNull(customers.deletedAt),
-    isNotNull(customers.dateOfBirth),
+    isNotNull(contacts.dateOfBirth),
   ]
 
   if (settings.audienceGender) {
-    conditions.push(eq(customers.gender, settings.audienceGender))
+    conditions.push(eq(contacts.gender, settings.audienceGender))
   }
   if (settings.audienceReligion) {
-    conditions.push(eq(customers.religion, settings.audienceReligion))
+    conditions.push(eq(contacts.religion, settings.audienceReligion))
   }
   if (settings.audienceSegmentationId) {
     conditions.push(eq(customers.segmentationId, settings.audienceSegmentationId))
@@ -47,8 +48,8 @@ export async function runBirthdayGreetingCron(): Promise<void> {
       contactId: contacts.id,
       contactName: contacts.name,
       whatsapp: contacts.whatsapp,
-      dateOfBirth: customers.dateOfBirth,
-      gender: customers.gender,
+      dateOfBirth: contacts.dateOfBirth,
+      gender: contacts.gender,
     })
     .from(contacts)
     .innerJoin(customers, eq(contacts.customerId, customers.id))

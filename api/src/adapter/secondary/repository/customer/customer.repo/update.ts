@@ -15,7 +15,6 @@ export async function updateCustomer(
   }
 
   if (req.name !== undefined) updates.name = req.name
-  if (req.type !== undefined) updates.type = req.type
   if (req.categoryId !== undefined) updates.categoryId = req.categoryId
   if (req.segmentationId !== undefined) updates.segmentationId = req.segmentationId
   if (req.areaId !== undefined) updates.areaId = req.areaId
@@ -25,23 +24,12 @@ export async function updateCustomer(
   if (req.lastRevenue !== undefined) updates.lastRevenue = req.lastRevenue.toString()
   if (req.lastContractYear !== undefined) updates.lastContractYear = req.lastContractYear
   if (req.primaryContactId !== undefined) updates.primaryContactId = req.primaryContactId
-  if (req.gender !== undefined) updates.gender = req.gender
+  if (req.companyType !== undefined) updates.companyType = req.companyType
   if (req.address !== undefined) updates.address = req.address
-  if (req.birthPlace !== undefined) updates.birthPlace = req.birthPlace
-  if (req.dateOfBirth !== undefined) updates.dateOfBirth = req.dateOfBirth
-  if (req.religion !== undefined) updates.religion = req.religion
-  if (req.education !== undefined) updates.education = req.education
-  if (req.email !== undefined) updates.email = req.email
-  if (req.spouseName !== undefined) updates.spouseName = req.spouseName
-  if (req.spouseOccupation !== undefined) updates.spouseOccupation = req.spouseOccupation
-  if (req.childrenNames !== undefined) updates.childrenNames = req.childrenNames
-  if (req.childrenOccupation !== undefined) updates.childrenOccupation = req.childrenOccupation
-  if (req.character !== undefined) updates.character = req.character
-  if (req.hobby !== undefined) updates.hobby = req.hobby
-  if (req.companyName !== undefined) updates.companyName = req.companyName
-  if (req.position !== undefined) updates.position = req.position
-  if (req.companyAddress !== undefined) updates.companyAddress = req.companyAddress
-  if (req.whatsapp !== undefined) updates.whatsapp = req.whatsapp
+  if (req.npwp !== undefined) updates.npwp = req.npwp
+  if (req.skt !== undefined) updates.skt = req.skt
+  if (req.companyEmail !== undefined) updates.companyEmail = req.companyEmail
+  if (req.website !== undefined) updates.website = req.website
   if (req.notes !== undefined) updates.notes = req.notes
 
   const [row] = await getExecutor()

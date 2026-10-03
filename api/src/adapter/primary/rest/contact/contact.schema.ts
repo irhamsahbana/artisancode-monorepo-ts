@@ -1,5 +1,19 @@
 import { z } from 'zod'
 
+const personalFields = {
+  gender: z.enum(['male', 'female']).optional(),
+  birth_place: z.string().optional(),
+  date_of_birth: z.string().optional(),
+  religion: z.string().optional(),
+  education: z.string().optional(),
+  address: z.string().optional(),
+  spouse_name: z.string().optional(),
+  spouse_occupation: z.string().optional(),
+  children_names: z.string().optional(),
+  children_occupation: z.string().optional(),
+  profiling: z.string().optional(),
+}
+
 export const createContactSchema = z.object({
   customer_id: z.uuid(),
   name: z.string().min(1).max(255),
@@ -9,6 +23,7 @@ export const createContactSchema = z.object({
   email: z.email().optional(),
   notes: z.string().optional(),
   is_primary: z.boolean().optional(),
+  ...personalFields,
 })
 
 export const updateContactSchema = z.object({
@@ -19,6 +34,7 @@ export const updateContactSchema = z.object({
   email: z.email().optional(),
   notes: z.string().optional(),
   is_primary: z.boolean().optional(),
+  ...personalFields,
 })
 
 export const getContactListSchema = z.object({

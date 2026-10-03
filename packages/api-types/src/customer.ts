@@ -15,10 +15,6 @@ export interface Customer {
   status: CustomerStatus
   potential: CustomerPotential
   primaryContactId?: string
-  gender?: 'male' | 'female' | null
-  birthPlace?: string | null
-  dateOfBirth?: string | null
-  religion?: string | null
   address?: string
   npwp?: string
   skt?: string

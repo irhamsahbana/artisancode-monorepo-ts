@@ -6,63 +6,7 @@
       "idx": 0,
       "version": "7",
       "when": 1786788476052,
-      "tag": "0000_minor_marvel_boy",
-      "breakpoints": true
-    },
-    {
-      "idx": 1,
-      "version": "7",
-      "when": 1786951119269,
-      "tag": "0001_secret_luminals",
-      "breakpoints": true
-    },
-    {
-      "idx": 2,
-      "version": "7",
-      "when": 1786951781968,
-      "tag": "0002_sloppy_korvac",
-      "breakpoints": true
-    },
-    {
-      "idx": 3,
-      "version": "7",
-      "when": 1786953455410,
-      "tag": "0003_blushing_electro",
-      "breakpoints": true
-    },
-    {
-      "idx": 4,
-      "version": "7",
-      "when": 1786965177881,
-      "tag": "0004_ancient_energizer",
-      "breakpoints": true
-    },
-    {
-      "idx": 5,
-      "version": "7",
-      "when": 1786975199959,
-      "tag": "0005_parallel_katie_power",
-      "breakpoints": true
-    },
-    {
-      "idx": 6,
-      "version": "7",
-      "when": 1786977667243,
-      "tag": "0006_dusty_swordsman",
-      "breakpoints": true
-    },
-    {
-      "idx": 7,
-      "version": "7",
-      "when": 1790908302429,
-      "tag": "0007_premium_skreet",
-      "breakpoints": true
-    },
-    {
-      "idx": 8,
-      "version": "7",
-      "when": 1790915253981,
-      "tag": "0008_awesome_wolfpack",
+      "tag": "0000_init",
       "breakpoints": true
     }
   ]

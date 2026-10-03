@@ -1,6 +1,8 @@
 import { Customer } from './customer.entity'
 import { PaginationMetadata, PaginationQuery } from './pagination.entity'
 
+export type Gender = 'male' | 'female'
+
 export interface Contact {
   id: string
   customerId: string
@@ -9,6 +11,17 @@ export interface Contact {
   whatsapp: string | null
   countryCode: string
   email: string | null
+  gender: Gender | null
+  birthPlace: string | null
+  dateOfBirth: string | null
+  religion: string | null
+  education: string | null
+  address: string | null
+  spouseName: string | null
+  spouseOccupation: string | null
+  childrenNames: string | null
+  childrenOccupation: string | null
+  profiling: string | null
   notes: string | null
   isPrimary: boolean
   createdAt: Date
@@ -23,6 +36,17 @@ export interface CreateContactReq {
   whatsapp?: string
   country_code?: string
   email?: string
+  gender?: Gender
+  birthPlace?: string
+  dateOfBirth?: string
+  religion?: string
+  education?: string
+  address?: string
+  spouseName?: string
+  spouseOccupation?: string
+  childrenNames?: string
+  childrenOccupation?: string
+  profiling?: string
   notes?: string
   isPrimary?: boolean
 }
@@ -35,6 +59,17 @@ export interface UpdateContactReq {
   whatsapp?: string
   country_code?: string
   email?: string
+  gender?: Gender
+  birthPlace?: string
+  dateOfBirth?: string
+  religion?: string
+  education?: string
+  address?: string
+  spouseName?: string
+  spouseOccupation?: string
+  childrenNames?: string
+  childrenOccupation?: string
+  profiling?: string
   notes?: string
   isPrimary?: boolean
 }
@@ -59,7 +94,8 @@ export interface ContactSearchResult {
 export interface SearchContactsReq {
   q?: string
   pagination?: PaginationQuery
-  // Server-side filters for contact search
+  // Server-side filters for contact search — gender/religion are the
+  // contact's own (personal fields live on contacts, not customers).
   gender?: string
   religion?: string
   segmentationId?: string

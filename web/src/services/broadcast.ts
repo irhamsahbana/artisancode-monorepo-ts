@@ -57,12 +57,12 @@ export function filterAudience(
       id: string;
       name: string;
       whatsapp?: string;
+      gender?: "male" | "female" | null;
+      religion?: string | null;
     };
     customer: {
       id: string;
       name: string;
-      gender?: "male" | "female" | null;
-      religion?: string | null;
       segmentationId?: string;
       status?: string;
     };
@@ -70,12 +70,12 @@ export function filterAudience(
   filters: AudienceFilters,
 ): BroadcastAudience[] {
   let filtered = results;
-  // Personal fields (gender/religion) live on the customer record, not the
-  // contact — matches how the backend's send() usecase resolves audience.
+  // Personal fields (gender/religion) live on the contact (key person), not
+  // the customer — matches how the backend's send() usecase resolves audience.
   if (filters.gender)
-    filtered = filtered.filter((r) => r.customer.gender === filters.gender);
+    filtered = filtered.filter((r) => r.contact.gender === filters.gender);
   if (filters.religion)
-    filtered = filtered.filter((r) => r.customer.religion === filters.religion);
+    filtered = filtered.filter((r) => r.contact.religion === filters.religion);
   if (filters.segmentationId)
     filtered = filtered.filter(
       (r) => r.customer.segmentationId === filters.segmentationId,

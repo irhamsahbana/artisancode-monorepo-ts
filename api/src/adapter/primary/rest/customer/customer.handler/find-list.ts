@@ -12,7 +12,6 @@ export function findCustomerListHandler(usecase: ICustomerUsecase) {
       page,
       per_page,
       q,
-      type,
       status,
       potential,
       category_id,
@@ -23,7 +22,6 @@ export function findCustomerListHandler(usecase: ICustomerUsecase) {
 
     const payload: Entity.GetCustomerReq = {
       q,
-      type: type as Entity.CustomerType | undefined,
       status: status as Entity.CustomerStatus | undefined,
       potential: potential as Entity.CustomerPotential | undefined,
       categoryId: category_id,

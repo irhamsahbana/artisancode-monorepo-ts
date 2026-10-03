@@ -1,6 +1,6 @@
 import { boolean, index, integer, numeric, pgTable, text, uuid } from 'drizzle-orm/pg-core'
 
-import { customerPotentialEnum, customerStatusEnum, customerTypeEnum, genderEnum } from '../enums'
+import { companyTypeEnum, customerPotentialEnum, customerStatusEnum } from '../enums'
 import { categories } from './category'
 import { defaultId, softDelete, timestamps } from './helpers'
 
@@ -9,7 +9,6 @@ export const customers = pgTable(
   {
     id: defaultId,
     name: text('name').notNull(),
-    type: customerTypeEnum('type').notNull(),
     categoryId: uuid('category_id').references(() => categories.id),
     segmentationId: uuid('segmentation_id').references(() => categories.id),
     areaId: uuid('area_id').references(() => categories.id),
@@ -20,27 +19,13 @@ export const customers = pgTable(
     lastContractYear: integer('last_contract_year'),
     // primaryContactId is set after contacts are created; no strict FK to avoid circular dep
     primaryContactId: uuid('primary_contact_id'),
-    // personal
-    gender: genderEnum('gender'),
+    // client taxonomy — BUMN / swasta nasional / swasta asing
+    companyType: companyTypeEnum('company_type'),
     address: text('address'),
-    birthPlace: text('birth_place'),
-    dateOfBirth: text('date_of_birth'),
-    religion: text('religion'),
-    education: text('education'),
-    email: text('email'),
-    // family
-    spouseName: text('spouse_name'),
-    spouseOccupation: text('spouse_occupation'),
-    childrenNames: text('children_names'),
-    childrenOccupation: text('children_occupation'),
-    // traits
-    character: text('character'),
-    hobby: text('hobby'),
-    // company info
-    companyName: text('company_name'),
-    position: text('position'),
-    companyAddress: text('company_address'),
-    whatsapp: text('whatsapp'),
+    npwp: text('npwp'),
+    skt: text('skt'),
+    companyEmail: text('company_email'),
+    website: text('website'),
     notes: text('notes'),
     ...timestamps,
     ...softDelete,

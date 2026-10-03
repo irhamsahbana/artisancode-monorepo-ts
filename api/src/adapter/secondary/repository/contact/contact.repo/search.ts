@@ -14,6 +14,17 @@ function toContactEntity(data: typeof contacts.$inferSelect): ContactEntity.Cont
     whatsapp: data.whatsapp,
     countryCode: data.countryCode,
     email: data.email,
+    gender: data.gender,
+    birthPlace: data.birthPlace,
+    dateOfBirth: data.dateOfBirth,
+    religion: data.religion,
+    education: data.education,
+    address: data.address,
+    spouseName: data.spouseName,
+    spouseOccupation: data.spouseOccupation,
+    childrenNames: data.childrenNames,
+    childrenOccupation: data.childrenOccupation,
+    profiling: data.profiling,
     notes: data.notes,
     isPrimary: data.isPrimary,
     createdAt: data.createdAt,
@@ -26,7 +37,6 @@ function toCustomerEntity(data: typeof customers.$inferSelect): CustomerEntity.C
   return {
     id: data.id,
     name: data.name,
-    type: data.type,
     categoryId: data.categoryId,
     segmentationId: data.segmentationId,
     areaId: data.areaId,
@@ -36,23 +46,12 @@ function toCustomerEntity(data: typeof customers.$inferSelect): CustomerEntity.C
     lastRevenue: data.lastRevenue,
     lastContractYear: data.lastContractYear,
     primaryContactId: data.primaryContactId,
-    gender: data.gender,
+    companyType: data.companyType,
     address: data.address,
-    birthPlace: data.birthPlace,
-    dateOfBirth: data.dateOfBirth,
-    religion: data.religion,
-    education: data.education,
-    email: data.email,
-    spouseName: data.spouseName,
-    spouseOccupation: data.spouseOccupation,
-    childrenNames: data.childrenNames,
-    childrenOccupation: data.childrenOccupation,
-    character: data.character,
-    hobby: data.hobby,
-    companyName: data.companyName,
-    position: data.position,
-    companyAddress: data.companyAddress,
-    whatsapp: data.whatsapp,
+    npwp: data.npwp,
+    skt: data.skt,
+    companyEmail: data.companyEmail,
+    website: data.website,
     notes: data.notes,
     createdAt: data.createdAt,
     updatedAt: data.updatedAt,
@@ -81,12 +80,12 @@ async function queryContacts(
     if (matchesQuery) conditions.push(matchesQuery)
   }
 
-  // Apply customer-level filters
+  // Personal fields (gender/religion) live on the contact, not the customer.
   if (filters?.gender) {
-    conditions.push(eq(customers.gender, filters.gender as 'male' | 'female'))
+    conditions.push(eq(contacts.gender, filters.gender as 'male' | 'female'))
   }
   if (filters?.religion) {
-    conditions.push(eq(customers.religion, filters.religion))
+    conditions.push(eq(contacts.religion, filters.religion))
   }
   if (filters?.segmentationId) {
     conditions.push(eq(customers.segmentationId, filters.segmentationId))

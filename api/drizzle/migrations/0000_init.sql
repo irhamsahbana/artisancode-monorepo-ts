@@ -3,7 +3,6 @@ CREATE TYPE "public"."broadcast_occasion" AS ENUM('idul_fitri', 'idul_adha', 'ch
 CREATE TYPE "public"."broadcast_status" AS ENUM('draft', 'scheduled', 'sent', 'failed');--> statement-breakpoint
 CREATE TYPE "public"."customer_potential" AS ENUM('high', 'medium', 'low');--> statement-breakpoint
 CREATE TYPE "public"."customer_status" AS ENUM('prospect', 'active', 'inactive');--> statement-breakpoint
-CREATE TYPE "public"."customer_type" AS ENUM('individual', 'business');--> statement-breakpoint
 CREATE TYPE "public"."gender" AS ENUM('male', 'female');--> statement-breakpoint
 CREATE TYPE "public"."project_status" AS ENUM('prospect', 'in_progress', 'won', 'lost');--> statement-breakpoint
 CREATE TYPE "public"."quotation_status" AS ENUM('new', 'in_review', 'responded');--> statement-breakpoint
@@ -91,7 +90,6 @@ CREATE TABLE "customer_ratings" (
 CREATE TABLE "customers" (
 	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
 	"name" text NOT NULL,
-	"type" "customer_type" NOT NULL,
 	"category_id" uuid,
 	"segmentation_id" uuid,
 	"area_id" uuid,
@@ -101,23 +99,7 @@ CREATE TABLE "customers" (
 	"last_revenue" numeric,
 	"last_contract_year" integer,
 	"primary_contact_id" uuid,
-	"gender" "gender",
 	"address" text,
-	"birth_place" text,
-	"date_of_birth" text,
-	"religion" text,
-	"education" text,
-	"email" text,
-	"spouse_name" text,
-	"spouse_occupation" text,
-	"children_names" text,
-	"children_occupation" text,
-	"character" text,
-	"hobby" text,
-	"company_name" text,
-	"position" text,
-	"company_address" text,
-	"whatsapp" text,
 	"notes" text,
 	"created_at" timestamp with time zone DEFAULT now() NOT NULL,
 	"updated_at" timestamp with time zone DEFAULT now() NOT NULL,
@@ -281,3 +263,99 @@ CREATE INDEX "projects_status_idx" ON "projects" USING btree ("status");--> stat
 CREATE INDEX "quotations_status_idx" ON "quotations" USING btree ("status");--> statement-breakpoint
 CREATE INDEX "roles_deleted_at_idx" ON "roles" USING btree ("deleted_at");--> statement-breakpoint
 CREATE INDEX "uoms_category_idx" ON "uoms" USING btree ("category");
+--> statement-breakpoint
+CREATE TABLE "webhook_logs" (
+	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
+	"headers" json NOT NULL,
+	"body" text NOT NULL,
+	"target_path" text NOT NULL,
+	"is_valid" boolean DEFAULT false NOT NULL,
+	"error_message" text,
+	"invoice_number" text,
+	"payment_status" text,
+	"created_at" timestamp with time zone DEFAULT now() NOT NULL
+);
+--> statement-breakpoint
+ALTER TABLE "users" ADD COLUMN "is_protected" boolean DEFAULT false NOT NULL;
+--> statement-breakpoint
+ALTER TABLE "roles" ADD COLUMN "is_system" boolean DEFAULT false NOT NULL;
+--> statement-breakpoint
+ALTER TABLE "business_profiles" ADD COLUMN "country_code" text DEFAULT '62' NOT NULL;--> statement-breakpoint
+ALTER TABLE "contacts" ADD COLUMN "country_code" text DEFAULT '62' NOT NULL;--> statement-breakpoint
+ALTER TABLE "users" ADD COLUMN "country_code" text DEFAULT '62' NOT NULL;
+--> statement-breakpoint
+ALTER TABLE "broadcast_templates" ADD COLUMN "deleted_at" timestamp with time zone;--> statement-breakpoint
+ALTER TABLE "unit_conversions" ADD COLUMN "deleted_at" timestamp with time zone;--> statement-breakpoint
+ALTER TABLE "uoms" ADD COLUMN "deleted_at" timestamp with time zone;--> statement-breakpoint
+CREATE INDEX "broadcast_templates_deleted_at_idx" ON "broadcast_templates" USING btree ("deleted_at");--> statement-breakpoint
+CREATE INDEX "unit_conversions_deleted_at_idx" ON "unit_conversions" USING btree ("deleted_at");--> statement-breakpoint
+CREATE INDEX "uoms_deleted_at_idx" ON "uoms" USING btree ("deleted_at");
+--> statement-breakpoint
+ALTER TYPE "public"."broadcast_occasion" ADD VALUE 'birthday' BEFORE 'custom';
+--> statement-breakpoint
+CREATE TABLE "birthday_greeting_logs" (
+	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
+	"sent_at" timestamp with time zone DEFAULT now() NOT NULL,
+	"recipient_count" numeric NOT NULL,
+	"recipient_logs" jsonb DEFAULT '[]'::jsonb NOT NULL,
+	"created_at" timestamp with time zone DEFAULT now() NOT NULL,
+	"updated_at" timestamp with time zone DEFAULT now() NOT NULL
+);
+--> statement-breakpoint
+CREATE TABLE "birthday_greeting_settings" (
+	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
+	"message" text NOT NULL,
+	"enabled" boolean DEFAULT false NOT NULL,
+	"audience_gender" "gender",
+	"audience_religion" text,
+	"audience_segmentation_id" uuid,
+	"audience_customer_status" text,
+	"created_at" timestamp with time zone DEFAULT now() NOT NULL,
+	"updated_at" timestamp with time zone DEFAULT now() NOT NULL,
+	"deleted_at" timestamp with time zone
+);
+--> statement-breakpoint
+ALTER TABLE "broadcast_templates" ALTER COLUMN "occasion" SET DATA TYPE text;--> statement-breakpoint
+ALTER TABLE "broadcast_templates" ALTER COLUMN "occasion" SET DEFAULT 'custom'::text;--> statement-breakpoint
+DROP TYPE "public"."broadcast_occasion";--> statement-breakpoint
+CREATE TYPE "public"."broadcast_occasion" AS ENUM('idul_fitri', 'idul_adha', 'christmas', 'new_year', 'national_day', 'company_anniversary', 'thank_you', 'custom');--> statement-breakpoint
+ALTER TABLE "broadcast_templates" ALTER COLUMN "occasion" SET DEFAULT 'custom'::"public"."broadcast_occasion";--> statement-breakpoint
+ALTER TABLE "broadcast_templates" ALTER COLUMN "occasion" SET DATA TYPE "public"."broadcast_occasion" USING "occasion"::"public"."broadcast_occasion";--> statement-breakpoint
+ALTER TABLE "birthday_greeting_settings" ADD CONSTRAINT "birthday_greeting_settings_audience_segmentation_id_categories_id_fk" FOREIGN KEY ("audience_segmentation_id") REFERENCES "public"."categories"("id") ON DELETE no action ON UPDATE no action;
+--> statement-breakpoint
+CREATE TABLE "whatsapp_login_requests" (
+	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
+	"phone" text NOT NULL,
+	"user_id" uuid,
+	"confirm_token" text NOT NULL,
+	"expires_at" timestamp with time zone NOT NULL,
+	"verified_at" timestamp with time zone,
+	"consumed_at" timestamp with time zone,
+	"created_at" timestamp with time zone DEFAULT now() NOT NULL,
+	"updated_at" timestamp with time zone DEFAULT now() NOT NULL,
+	CONSTRAINT "whatsapp_login_requests_confirm_token_unique" UNIQUE("confirm_token")
+);
+--> statement-breakpoint
+ALTER TABLE "business_profiles" ADD COLUMN "whatsapp_device_id" text;--> statement-breakpoint
+ALTER TABLE "whatsapp_login_requests" ADD CONSTRAINT "whatsapp_login_requests_user_id_users_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."users"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
+CREATE INDEX "whatsapp_login_requests_phone_idx" ON "whatsapp_login_requests" USING btree ("phone");
+--> statement-breakpoint
+ALTER TABLE "business_profiles" ADD COLUMN "icon_filename" text;
+--> statement-breakpoint
+CREATE TYPE "public"."company_type" AS ENUM('bumn', 'swasta_nasional', 'swasta_asing');--> statement-breakpoint
+ALTER TABLE "customers" ADD COLUMN "company_type" "company_type";--> statement-breakpoint
+ALTER TABLE "customers" ADD COLUMN "npwp" text;--> statement-breakpoint
+ALTER TABLE "customers" ADD COLUMN "skt" text;--> statement-breakpoint
+ALTER TABLE "customers" ADD COLUMN "company_email" text;--> statement-breakpoint
+ALTER TABLE "customers" ADD COLUMN "website" text;--> statement-breakpoint
+ALTER TABLE "contacts" ADD COLUMN "gender" "gender";--> statement-breakpoint
+ALTER TABLE "contacts" ADD COLUMN "birth_place" text;--> statement-breakpoint
+ALTER TABLE "contacts" ADD COLUMN "date_of_birth" text;--> statement-breakpoint
+ALTER TABLE "contacts" ADD COLUMN "religion" text;--> statement-breakpoint
+ALTER TABLE "contacts" ADD COLUMN "education" text;--> statement-breakpoint
+ALTER TABLE "contacts" ADD COLUMN "address" text;--> statement-breakpoint
+ALTER TABLE "contacts" ADD COLUMN "spouse_name" text;--> statement-breakpoint
+ALTER TABLE "contacts" ADD COLUMN "spouse_occupation" text;--> statement-breakpoint
+ALTER TABLE "contacts" ADD COLUMN "children_names" text;--> statement-breakpoint
+ALTER TABLE "contacts" ADD COLUMN "children_occupation" text;--> statement-breakpoint
+ALTER TABLE "contacts" ADD COLUMN "profiling" text;

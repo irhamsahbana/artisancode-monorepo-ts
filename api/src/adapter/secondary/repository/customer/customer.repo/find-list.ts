@@ -13,7 +13,6 @@ export async function findCustomerList(
   const {
     pagination = {},
     q,
-    type,
     status,
     potential,
     categoryId,
@@ -27,7 +26,6 @@ export async function findCustomerList(
   const conditions = [isNull(customers.deletedAt)]
 
   if (q) conditions.push(ilike(customers.name, `%${q}%`))
-  if (type) conditions.push(eq(customers.type, type))
   if (status) conditions.push(eq(customers.status, status))
   if (potential) conditions.push(eq(customers.potential, potential))
   if (categoryId) conditions.push(eq(customers.categoryId, categoryId))

@@ -1,18 +1,17 @@
 import { PaginationMetadata, PaginationQuery } from './pagination.entity'
 
-export type CustomerType = 'individual' | 'business'
 export type CustomerStatus = 'prospect' | 'active' | 'inactive'
 export type CustomerPotential = 'high' | 'medium' | 'low'
-export type Gender = 'male' | 'female'
+// BUMN / swasta nasional / swasta asing (client taxonomy)
+export type CompanyType = 'bumn' | 'swasta_nasional' | 'swasta_asing'
 
-export const CustomerTypes: CustomerType[] = ['individual', 'business']
 export const CustomerStatuses: CustomerStatus[] = ['prospect', 'active', 'inactive']
 export const CustomerPotentials: CustomerPotential[] = ['high', 'medium', 'low']
+export const CompanyTypes: CompanyType[] = ['bumn', 'swasta_nasional', 'swasta_asing']
 
 export interface Customer {
   id: string
   name: string
-  type: CustomerType
   categoryId: string | null
   segmentationId: string | null
   areaId: string | null
@@ -22,23 +21,12 @@ export interface Customer {
   lastRevenue: string | null
   lastContractYear: number | null
   primaryContactId: string | null
-  gender: Gender | null
+  companyType: CompanyType | null
   address: string | null
-  birthPlace: string | null
-  dateOfBirth: string | null
-  religion: string | null
-  education: string | null
-  email: string | null
-  spouseName: string | null
-  spouseOccupation: string | null
-  childrenNames: string | null
-  childrenOccupation: string | null
-  character: string | null
-  hobby: string | null
-  companyName: string | null
-  position: string | null
-  companyAddress: string | null
-  whatsapp: string | null
+  npwp: string | null
+  skt: string | null
+  companyEmail: string | null
+  website: string | null
   notes: string | null
   createdAt: Date
   updatedAt: Date
@@ -47,7 +35,6 @@ export interface Customer {
 
 export interface CreateCustomerReq {
   name: string
-  type: CustomerType
   categoryId?: string
   segmentationId?: string
   areaId?: string
@@ -56,23 +43,12 @@ export interface CreateCustomerReq {
   hasContractHistory?: boolean
   lastRevenue?: number
   lastContractYear?: number
-  gender?: Gender
+  companyType?: CompanyType
   address?: string
-  birthPlace?: string
-  dateOfBirth?: string
-  religion?: string
-  education?: string
-  email?: string
-  spouseName?: string
-  spouseOccupation?: string
-  childrenNames?: string
-  childrenOccupation?: string
-  character?: string
-  hobby?: string
-  companyName?: string
-  position?: string
-  companyAddress?: string
-  whatsapp?: string
+  npwp?: string
+  skt?: string
+  companyEmail?: string
+  website?: string
   notes?: string
 }
 
@@ -80,7 +56,6 @@ export interface UpdateCustomerReq {
   id: string
 
   name?: string
-  type?: CustomerType
   categoryId?: string
   segmentationId?: string
   areaId?: string
@@ -90,29 +65,17 @@ export interface UpdateCustomerReq {
   lastRevenue?: number
   lastContractYear?: number
   primaryContactId?: string
-  gender?: Gender
+  companyType?: CompanyType
   address?: string
-  birthPlace?: string
-  dateOfBirth?: string
-  religion?: string
-  education?: string
-  email?: string
-  spouseName?: string
-  spouseOccupation?: string
-  childrenNames?: string
-  childrenOccupation?: string
-  character?: string
-  hobby?: string
-  companyName?: string
-  position?: string
-  companyAddress?: string
-  whatsapp?: string
+  npwp?: string
+  skt?: string
+  companyEmail?: string
+  website?: string
   notes?: string
 }
 
 export interface GetCustomerReq {
   q?: string
-  type?: CustomerType
   status?: CustomerStatus
   potential?: CustomerPotential
   categoryId?: string

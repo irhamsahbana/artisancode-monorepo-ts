@@ -11,7 +11,7 @@ export function createDashboardRepo(): IDashboardRepo {
       const base = isNull(customers.deletedAt)
       const exec = getExecutor()
 
-      const [totals, byStatus, byType, byCategory, byArea, byPotential] = await Promise.all([
+      const [totals, byStatus, byCategory, byArea, byPotential] = await Promise.all([
         exec
           .select({
             total: sql<number>`count(*)::int`,
@@ -29,12 +29,6 @@ export function createDashboardRepo(): IDashboardRepo {
           .from(customers)
           .where(base)
           .groupBy(customers.status),
-
-        exec
-          .select({ type: customers.type, count: sql<number>`count(*)::int` })
-          .from(customers)
-          .where(base)
-          .groupBy(customers.type),
 
         exec
           .select({
@@ -82,7 +76,6 @@ export function createDashboardRepo(): IDashboardRepo {
         withContractHistory: t.withContractHistory,
         highPotential: t.highPotential,
         byStatus: byStatus.map((r) => ({ status: r.status, count: r.count })),
-        byType: byType.map((r) => ({ type: r.type, count: r.count })),
         byCategory: byCategory
           .filter((r) => r.categoryId)
           .map((r) => ({ categoryId: r.categoryId ?? '', name: r.name ?? '', count: r.count })),
