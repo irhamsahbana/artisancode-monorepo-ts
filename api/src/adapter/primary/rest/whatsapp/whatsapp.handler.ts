@@ -1,6 +1,7 @@
 import { AppEnv } from '@artisancode/types'
 import { Context } from 'hono'
 
+import { authHeader, createGowaClientConfig } from '@/adapter/secondary/rest/gowa/client'
 import { verifyWebhookSignature } from '@/adapter/secondary/rest/gowa/verify-webhook'
 import { responseSuccess } from '@/common/rest_response'
 import { env } from '@/config/env'
@@ -57,6 +58,25 @@ export function createWhatsappHandler(
       const deviceId = c.req.param('id') ?? ''
       await getWhatsAppProvider().reconnect(deviceId)
       return c.json(responseSuccess(null, 'Reconnecting WhatsApp device'))
+    },
+
+    // Public: the browser loads this via a plain <img> tag (no auth header), so
+    // the path is whitelisted to gowa's own static QR path shape to prevent SSRF.
+    qrImage: async (c: Context<AppEnv>) => {
+      const path = c.req.query('path') ?? ''
+      if (!/^\/statics\/qrcode\/[\w.-]+\.png$/.test(path)) {
+        return c.body('Invalid QR path', 400)
+      }
+
+      const config = createGowaClientConfig()
+      const response = await fetch(`${config.baseUrl}${path}`, {
+        headers: { Authorization: authHeader(config) },
+      })
+      if (!response.ok) return c.body('QR image not found', 404)
+
+      return new Response(response.body, {
+        headers: { 'Content-Type': response.headers.get('Content-Type') ?? 'image/png' },
+      })
     },
 
     webhook: async (c: Context<AppEnv>) => {

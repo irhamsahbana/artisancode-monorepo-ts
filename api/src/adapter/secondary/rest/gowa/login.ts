@@ -1,5 +1,6 @@
 import { AppError, ErrorCode } from '@artisancode/types'
 
+import { env } from '@/config/env'
 import { WhatsAppLoginRes } from '@/contracts/integration/whatsapp.contract'
 
 import { authHeader, GowaClientConfig } from './client'
@@ -30,8 +31,12 @@ export async function login(config: GowaClientConfig, deviceId: string): Promise
     )
   }
 
+  // gowa's own qr_link is only reachable inside the Docker network. The admin's
+  // browser needs the image, so route it through our already-public API instead
+  // of requiring gowa itself to have a public domain.
+  const qrPath = new URL(body.results.qr_link).pathname
   return {
-    qrLink: body.results.qr_link.replace(config.baseUrl, config.publicUrl),
+    qrLink: `${env.API_BASE_URL}/whatsapp/qr-image?path=${encodeURIComponent(qrPath)}`,
     qrDuration: body.results.qr_duration,
   }
 }

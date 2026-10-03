@@ -22,5 +22,7 @@ router.post('/devices/:id/logout', authenticate, handler.logout)
 router.post('/devices/:id/reconnect', authenticate, handler.reconnect)
 // Public: called by the gowa server, signature-verified inside the handler
 router.post('/webhook', handler.webhook)
+// Public: loaded directly by <img src>, path whitelisted inside the handler
+router.get('/qr-image', handler.qrImage)
 
 export default router
