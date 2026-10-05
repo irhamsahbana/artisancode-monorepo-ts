@@ -4,10 +4,6 @@ import { env } from '@/config/env'
 
 export interface GowaClientConfig {
   baseUrl: string
-  /** Browser-reachable origin for links gowa returns (e.g. the QR image) —
-   * same as baseUrl unless gowa sits behind an internal-only hostname
-   * (docker-compose service name) that only the API container can resolve. */
-  publicUrl: string
   /** "user:password" for HTTP basic auth */
   basicAuth: string
 }
@@ -15,7 +11,6 @@ export interface GowaClientConfig {
 export function createGowaClientConfig(): GowaClientConfig {
   const config: GowaClientConfig = {
     baseUrl: env.GOWA.BASE_URL,
-    publicUrl: env.GOWA.PUBLIC_URL || env.GOWA.BASE_URL,
     basicAuth: env.GOWA.BASIC_AUTH,
   }
 
