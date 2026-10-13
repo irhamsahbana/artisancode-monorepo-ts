@@ -1,33 +1,29 @@
-import { AppError, ErrorCode } from '@artisancode/types'
-
 import { IContactRepo, IContactUsecase } from '@/contracts/contact.contract'
 
+import { createContact } from './contact.usecase/create'
+import { deleteContact } from './contact.usecase/delete'
+import { findContactById } from './contact.usecase/find-by-id'
+import { findContactList } from './contact.usecase/find-list'
+import { searchContact } from './contact.usecase/search'
+import { searchPersons } from './contact.usecase/search-persons'
+import { updateContact } from './contact.usecase/update'
+
+export interface ContactUsecaseDeps {
+  repo: IContactRepo
+}
+
 export function createContactUsecase(repo: IContactRepo): IContactUsecase {
+  const deps: ContactUsecaseDeps = { repo }
+
   return {
-    create: (req) => repo.create(req),
-
-    findById: async (id) => {
-      const item = await repo.findById(id)
-      if (!item) throw new AppError(ErrorCode.NOT_FOUND, 'Contact not found')
-      return item
-    },
-
-    findList: (req) => repo.findList(req),
-
-    search: (q) => repo.search(q),
-
-    searchPersons: (req) => repo.searchPersons(req),
-
-    update: async (req) => {
-      const item = await repo.update(req)
-      if (!item) throw new AppError(ErrorCode.NOT_FOUND, 'Contact not found')
-      return item
-    },
-
-    delete: async (id) => {
-      const item = await repo.findById(id)
-      if (!item) throw new AppError(ErrorCode.NOT_FOUND, 'Contact not found')
-      await repo.delete(id)
-    },
+    create: (req) => createContact(deps, req),
+    findById: (id) => findContactById(deps, id),
+    findList: (req) => findContactList(deps, req),
+    search: (q) => searchContact(deps, q),
+    searchPersons: (req) => searchPersons(deps, req),
+    update: (req) => updateContact(deps, req),
+    delete: (id) => deleteContact(deps, id),
   }
 }
+
+export default createContactUsecase
