@@ -16,6 +16,7 @@
     "format": "turbo run format",
     "lint:fix": "turbo run lint:fix",
     "type-check": "turbo run type-check",
+    "changelog": "git-cliff -o CHANGELOG.md",
     "prepare": "husky"
   },
   "devDependencies": {

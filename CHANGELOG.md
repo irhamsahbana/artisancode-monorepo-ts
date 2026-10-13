@@ -1,0 +1,217 @@
+## [unreleased]
+
+### 🚀 Features
+
+- *(api)* Add segmentation support to customer module
+- *(web)* Add API client and services
+- *(web)* Add auth hooks and route guards
+- *(web)* Add data hooks for categories, customers, contacts, and dashboard
+- *(web)* Add login, customer CRUD, dashboard, master, and settings pages
+- *(web)* Add app layout with sidebar, header, and routing
+- *(api-types)* Add segmentationId to customer types
+- *(web)* Add PWA support with offline customer data
+- *(web)* Add DEMO_MODE toggle and mock authentication
+- *(web)* Add key-person search across customer companies
+- *(web)* Add shared error boundary and textarea components
+- *(web)* Add project monitoring module
+- *(web)* Add chat blast / broadcast module
+- *(web)* Add quotation (RFQ) module with public share form
+- *(web)* Add customer risk rating module
+- *(web)* Wire up navigation and routes for new modules
+- *(web)* Add product master data
+- *(web)* Add project number and multi-product line items
+- *(api-types)* Add unit of measurement and conversion types
+- *(web)* Add unit of measurement master data
+- *(web)* Add unit conversion module
+- *(web)* Add hardcoded category to unit of measurement
+- *(web)* Scope unit conversion picker to a single category
+- *(web)* Add searchable combobox and formatted quantity to RFQ form
+- *(web)* Show project number and product line items in project detail
+- *(web)* Add project location picker with search and geolocation
+- *(web)* Link visit log contact field to customer key persons
+- *(web)* Add product catalog shortcut to project product picker
+- *(web)* Default theme to light instead of system
+- *(web)* Add Android home screen install button
+- *(web)* Add iOS install guide and show button on login page
+- *(web)* Add project pipeline bar chart to dashboard
+- *(web)* Flag projects overdue for a follow-up visit on dashboard
+- *(web)* Add quotation detail view and deep-link dashboard alert to it
+- Support multiple products per quotation request (RFQ)
+- *(web)* Add a "Lainnya" hamburger sheet to the mobile bottom nav
+- *(web)* Add pull-to-refresh to mobile layout
+- *(web)* Responsive card list + load more for mobile data table
+- *(web)* Add roles & permissions CRUD under settings
+- *(web)* Split Master Data role permission into per-page modules
+- *(web)* Add Google Maps link and radius circle to project location
+- *(web)* Recipient count, audience tags, and delete on broadcast list
+- *(web)* Key person profile view + customer company info fields
+- *(web)* Add project map with clustering
+- *(web)* Sync quotations with projects and update statuses
+- *(web)* Add key person as PIC Pelanggan to project
+- *(web)* Add quotation title and display linked quotations in project detail
+- *(web)* Add PIC and quotation columns to project monitoring list
+- *(web)* Derive contract history from won projects
+- *(web)* Add create flow for key person (contact)
+- *(web)* Add notification bell to desktop and mobile headers
+- *(web)* Sync mock holidays with real 2026 data
+- *(web)* Include observance holidays in mock schedule
+- *(web)* Add dedicated Ulang Tahun menu and fix popover z-index
+- *(web)* Add sendTime and delivery status to Birthday menu
+- *(web)* Add settings dialog for birthday automation
+- *(web)* Add gender-based greeting to birthday list and template
+- *(web)* Add project map date and status filters, split quotation columns
+- *(api)* Cache active-user permissions, pilot hexagonal adapter split
+- *(api)* Cache dashboard metrics, split into repo/usecase
+- *(api)* Seed uoms and unit_conversions
+- *(web)* Group key persons appearing at multiple companies
+- *(api)* Add GET /contacts/persons — grouped, paginated key-person search
+- *(web)* Server-side pagination pilot for <DataTable> (customers + key person)
+- *(api,web)* Add quotation/contact search filters, wire remaining server-side pagination
+- *(web)* Finish server-side pagination sweep for remaining list pages
+- *(api)* Finish DOKU payment webhook module, move outbound REST clients to adapter/secondary/rest
+- *(web)* Wire React Hook Form + Zod validation into all forms
+- *(web)* Add Pengguna (users) module for creating new users
+- *(api)* Add user update/delete + protect system users and roles
+- *(web)* Edit/delete users, generated password, clipboard copy on create
+- Add @artisancode/phone shared package
+- *(api)* Split country_code out of phone/whatsapp on users, business_profiles, contacts
+- *(web)* Country code dropdown on every phone/whatsapp input
+- *(auth)* Silent access-token refresh + logout revocation
+- Enforce RBAC permissions across API routes and gate FE actions
+- *(api)* Add delete routes for products, uoms, unit conversions, and broadcast templates
+- *(api)* Broadcast WhatsApp sending via gowa, worker/server process split
+- Automatic daily WhatsApp birthday broadcast
+- *(api)* In-process cron scheduler (cronbake) for birthday broadcast
+- *(api)* Add {{sapaan}} placeholder to birthday greeting, restore original template
+- *(api)* Auto-dispatch scheduled broadcasts every minute
+- *(web)* Add country code select to the RFQ/quotation form's WhatsApp field
+- *(api)* Support {{sapaan}} placeholder in broadcast messages
+- *(web)* Sync table tabs, search, filters, and page to the URL
+- *(web)* Show {{nama}}/{{sapaan}} placeholder hint on broadcast message field
+- *(web)* Default Peta Proyek date range to this year, sync filters to URL
+- Add lightweight GET /projects/map endpoint, stop truncating Peta Proyek at 10
+- *(api)* Back cache stores with Redis as shared secondary store
+- *(web)* Add coming-soon placeholder, use it for ratings route
+- *(api)* Send typing indicator before WhatsApp messages
+- Add WhatsApp connection admin page and reply-based WhatsApp login
+- Support multiple WhatsApp devices with manual/auto primary selection
+- Rate-limit the public WhatsApp login endpoints
+- Customizable browser tab branding (title, favicon, PWA manifest)
+- *(ui)* Add responsive dialog and swipe gesture to sheet component
+
+### 🐛 Bug Fixes
+
+- Update class names for select components to improve styling consistency
+- *(api)* Lowercase gender enum values in student schema
+- *(web)* Lock broadcast template once it has run
+- *(web)* Kill Tailwind watcher when dev server exits
+- *(web)* Make mobile bottom nav a floating capsule
+- *(web)* Add iOS PWA meta tags so home-screen launch isn't a blank screen
+- *(web)* Make iOS splash screen follow system light/dark mode
+- *(web)* Raise mobile bottom nav further off the screen edge
+- *(web)* Stop pull-to-refresh from hijacking scroll-up mid-page
+- *(web)* Generate real per-device iOS splash images
+- *(web)* Stop responsive grids from overflowing on mobile
+- *(web)* Stop long customer names overlapping the risk badge
+- *(web)* Require fixed credentials for demo login
+- *(web)* Separate Master Data into its own section on role form
+- *(web)* Zoom in further on project location maps
+- *(web)* Stop project detail page from stopping at 2/3 width
+- *(web)* Dialog above map, map links as buttons, rating on visit log
+- *(web)* Make bottom nav active state visible
+- *(web)* Use rounded-full for mobile bottom nav items
+- *(web)* Make bottom nav active background fill cleanly
+- *(web)* Perfect pill shape for bottom nav items
+- *(web)* Use only projectId for quotation assignments
+- *(web)* Assign-quotation dialog z-index and hide already-linked projects
+- *(web)* Select dropdown hidden behind Dialog (z-index)
+- *(web)* Ensure green badge text is white for sent birthday
+- Api seeder errors and match frontend demo data
+- *(web)* Disable demo mode, use real backend auth
+- *(web)* Resolve unit names from real uoms API instead of mock data
+- *(api)* Add missing GET /contacts/search route
+- *(web)* Show only first company for multi-company key persons, badge the rest
+- *(api)* Fix double-mounted /roles route causing 404 on role list
+- *(api)* Accept per_page on GET /users list (matches other list endpoints)
+- *(web)* Redirect to login on any 401 API response
+- *(web)* Stop showing "wrong password" toast on login server errors
+- *(api)* Backfill isProtected on existing seeded admin user
+- *(web)* Align permission catalog with backend, close notification popover on click
+- *(api)* Reject HTML tags in quotation/RFQ free-text fields
+- *(chart)* Update minimum width for tooltip content
+- *(docker)* Copy packages/phone package.json before frozen-lockfile install
+- *(api)* Soft-delete uoms, unit_conversions, and broadcast_templates
+- *(api)* Use unpooled DB connection for BullMQ, fix queue schema migration target
+- *(web)* Wire /birthdays page to the real broadcast backend
+- *(web)* Guard permissions.includes against a missing permissions array
+- *(web)* Broadcast audience filters read gender/religion off customer, show recipients for scheduled/sent
+- *(api)* Stop rejecting empty-string id filters on list/search query endpoints
+- *(web)* Trim redundant Topik Permintaan options on the RFQ form
+- *(web)* Hide Proyek Terkait picker from the public RFQ form
+- *(api)* Drop ":" from WhatsApp queue job IDs, rejected by the Postgres backend
+- *(api)* Substitute {{nama}} in broadcast messages before sending
+- *(web)* Use latest log entry per recipient in broadcast status map
+- *(web)* Sync broadcast detail form/filters once useBroadcasts() loads
+- *(web)* Stop broadcast pages colliding with customer-list's react-query cache
+- *(web)* Fix crash on new broadcast page from FormField outside FormProvider
+- *(api)* Hash tokens before using as Redis cache keys, namespace caches
+- *(api)* Give each cache its own KeyvRedis instance, not a shared one
+- *(web)* Stop select trigger overflowing on long values; add visit topic master data
+- *(web)* Prevent long form field content from widening grid columns
+- *(web)* Pick visit topic from master data instead of free text
+- Resolve WhatsApp reply-login via connected device, fix phone matching
+
+### 📚 Documentation
+
+- Add demo-UI build context, PRD plan, and meeting notes
+- *(web)* Write up mobile/PWA pitfalls hit while building this session
+- *(prd,tasks)* Add Aug 9 meeting summary and backlog tasks
+- *(api)* Document process split (server/worker/scheduler/cron) and queue infra
+- *(api)* Document worker/scheduler Dokploy deployment
+
+### 🚜 Refactor
+
+- *(api)* [**breaking**] Replace master_items table with categories FK refs
+- *(api)* Remove master module and route
+- *(api)* Update dashboard to use categories instead of masterItems
+- *(api)* Update seed data to use categories table
+- *(http-client)* Remove winston logger dependency
+- *(web)* Replace customer type/category with generic master groups
+- *(web)* Format project estimated value with thousand separators
+- *(web)* Split dashboard page into a folder, add quotation and breakdown widgets
+- *(web)* Split customer-detail.tsx into per-tab files
+- *(api)* Split seed.ts into per-table seeder files
+- *(api)* Migrate remaining 13 modules to adapter/primary + adapter/secondary
+- Split birthday greeting into its own module, separate from broadcast
+- *(web)* Split key-person tab into its own /contacts page
+- Centralize rate-limit key prefixes into a typed enum
+- *(api)* Move personal fields from customers to contacts, squash migrations
+- *(api)* Remove publicUrl from GowaClientConfig and env configuration
+- *(master)* Split dialog components into schema, form hook, and UI
+- *(users)* Extract user form hook, schema, and utils from dialog
+- *(ratings)* Split rating dialog into schema, form hook, and responsive UI
+- *(projects)* Separate visit log dialog, form hook, and schema
+- *(web)* Migrate quotation and whatsapp dialogs to responsive dialog
+
+### 🎨 Styling
+
+- *(web)* Format UI components and shared components
+- *(web)* Increase table cell padding
+
+### ⚙️ Miscellaneous Tasks
+
+- *(web)* Update deps, config, and process polyfill
+- Add configurable POSTGRES_PORT and update lockfile
+- *(web)* Ignore local settings overrides
+- *(web)* Add leaflet map dependencies
+- *(web)* Migrate table checkbox selectors to Tailwind v4 syntax
+- *(tasks)* Set up backlog/todo/wip/done kanban folders
+- Test dokploy auto-deploy webhook
+- Retest dokploy auto-deploy webhook after server reload
+- Retest dokploy auto-deploy with watchPaths cleared
+- Remove dokploy webhook test comment from README
+- *(web)* Remove UI-only demo mode scaffolding
+- Speed up docker builds with a BuildKit cache mount for bun install
+- *(api)* Temporarily run seed on container start
+- *(api)* Revert temporary seed-on-start Dockerfile change
+- *(monorepo)* Configure turborepo pipelines and bun scripts

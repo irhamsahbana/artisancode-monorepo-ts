@@ -46,3 +46,12 @@ bun lint:fix # ESLint + prettier fix across all workspaces
 - **API** — [`api/agents.md`](api/agents.md) for full architecture, conventions, and docs index.
 - **Web** — [`web/agents.md`](web/agents.md) for stack, structure, and docs index.
 - **packages/api-types** — shared request/response types (`@artisancode/api-types`). Single-tenant, no `company_id`. Import from here in both API and Web instead of defining types locally.
+
+## Changelog & Releases
+
+Generate or update `CHANGELOG.md` using `git-cliff`:
+
+```bash
+bun run changelog   # git-cliff (config: cliff.toml) regenerates CHANGELOG.md
+```
+
