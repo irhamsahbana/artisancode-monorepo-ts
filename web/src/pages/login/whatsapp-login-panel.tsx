@@ -1,9 +1,9 @@
 import { toFullPhone } from "@artisancode/phone";
 import { AppError, type RestResponse } from "@artisancode/types";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Loader2 } from "lucide-react";
+import { Copy, Loader2 } from "lucide-react";
 import { useEffect, useState } from "react";
-import { useForm } from "react-hook-form";
+import { useForm, useWatch } from "react-hook-form";
 import { useNavigate } from "react-router";
 import { toast } from "sonner";
 
@@ -17,7 +17,7 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
+import { PhoneInput } from "@/components/ui/phone-input";
 import {
   useRequestWhatsAppLogin,
   useWhatsAppLoginStatus,
@@ -32,9 +32,9 @@ import {
 import type { RequestWhatsAppLoginRes } from "@artisancode/api-types";
 
 function errorMessage(error: unknown, fallback: string) {
-  if (error instanceof AppError && (error.httpCode ?? 0) < 500) {
+  if (error instanceof AppError) {
     const backendMessage = (error.data as RestResponse | undefined)?.message;
-    return backendMessage || error.message;
+    return backendMessage || error.message || fallback;
   }
   return fallback;
 }
@@ -49,6 +49,11 @@ export function WhatsappLoginPanel({ onBack }: { onBack: () => void }) {
   const form = useForm<WhatsappLoginValues>({
     resolver: zodResolver(whatsappLoginSchema),
     defaultValues: whatsappLoginDefaultValues,
+  });
+
+  const countryCode = useWatch({
+    control: form.control,
+    name: "countryCode",
   });
 
   useEffect(() => {
@@ -74,6 +79,15 @@ export function WhatsappLoginPanel({ onBack }: { onBack: () => void }) {
     ? `https://wa.me/${request.businessWhatsapp}?text=${encodeURIComponent(request.confirmMessage)}`
     : "";
 
+  async function copy(text: string, label: string) {
+    try {
+      await navigator.clipboard.writeText(text);
+      toast.success(`${label} disalin.`);
+    } catch {
+      toast.error("Gagal menyalin, coba salin manual.");
+    }
+  }
+
   if (request) {
     return (
       <div className="grid gap-4 text-center">
@@ -91,6 +105,26 @@ export function WhatsappLoginPanel({ onBack }: { onBack: () => void }) {
             Kirim Konfirmasi via WhatsApp
           </a>
         </Button>
+
+        <div className="rounded-md border bg-muted/30 p-3 text-left text-xs">
+          <p className="text-muted-foreground">
+            Tombol di atas tidak terbuka? Salin link ini, lalu buka sendiri di
+            WhatsApp.
+          </p>
+          <div className="mt-2 flex items-start justify-between gap-2">
+            <span className="min-w-0 break-all font-mono">{waLink}</span>
+            <Button
+              type="button"
+              size="sm"
+              variant="ghost"
+              className="h-7 shrink-0 px-2"
+              onClick={() => copy(waLink, "Link")}
+            >
+              <Copy className="h-3.5 w-3.5" />
+            </Button>
+          </div>
+        </div>
+
         <p className="flex items-center justify-center gap-2 text-xs text-muted-foreground">
           <Loader2 className="h-3.5 w-3.5 animate-spin" />
           Menunggu konfirmasi dari WhatsApp Anda...
@@ -123,9 +157,9 @@ export function WhatsappLoginPanel({ onBack }: { onBack: () => void }) {
                   )}
                 />
                 <FormControl>
-                  <Input
-                    type="tel"
-                    placeholder="812xxxxxxxx"
+                  <PhoneInput
+                    placeholder="812-3456-7890"
+                    countryCode={countryCode}
                     className="flex-1"
                     {...field}
                   />

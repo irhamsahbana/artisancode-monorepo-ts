@@ -12,3 +12,5 @@ export function digitsOnly(value: string) {
 export function formatThousands(value: string) {
   return value ? Number(value).toLocaleString("id-ID") : "";
 }
+
+export { formatPhone, normalizePhoneDigits } from "@artisancode/phone";

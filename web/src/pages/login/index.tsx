@@ -36,13 +36,21 @@ export function Login() {
     doLogin(values, {
       onSuccess: () => navigate("/dashboard"),
       onError: (error) => {
-        const isServerError =
-          error instanceof AppError && (error.httpCode ?? 0) >= 500;
-        toast.error(
-          isServerError
-            ? "Terjadi kesalahan pada server. Coba lagi nanti."
-            : "Email atau password salah.",
-        );
+        if (error instanceof AppError) {
+          if ((error.httpCode ?? 0) >= 500) {
+            toast.error("Terjadi kesalahan pada server. Coba lagi nanti.");
+          } else if (error.httpCode === 401) {
+            toast.error("Email atau password salah.");
+          } else {
+            toast.error(error.message || "Email atau password salah.");
+          }
+        } else {
+          toast.error(
+            error instanceof Error
+              ? error.message
+              : "Gagal masuk. Coba lagi nanti.",
+          );
+        }
       },
     });
   }
