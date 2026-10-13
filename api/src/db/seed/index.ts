@@ -1,7 +1,7 @@
 /**
  * Database seeder — run with: bun src/db/seed/index.ts
  *
- * Seeds: business profile → permissions → role → user → master items → uoms → unit conversions → customers → contacts → products → quotations → ratings → broadcasts
+ * Seeds: reset → business profile → permissions → role → users → master items → uoms → unit conversions → customers → contacts → products → quotations → ratings → broadcasts
  * Safe to re-run: skips existing records by checking unique columns.
  *
  * Updated to use same data as frontend demo (web/src/data/*)
@@ -16,13 +16,17 @@ import { upsertPermissions } from './permissions'
 import { seedProducts } from './products'
 import { seedQuotations } from './quotations'
 import { seedRatings } from './ratings'
+import { resetDatabase } from './reset'
 import { upsertRole } from './roles'
 import { seedUnitConversions } from './unit-conversions'
 import { seedUoms } from './uoms'
-import { upsertAdminUser } from './users'
+import { seedUsers } from './users'
 
 async function main() {
   console.log('Seeding database...')
+
+  // Step 0: Truncate existing application data
+  await resetDatabase()
 
   console.log('\n[1/13] Business profile')
   await upsertBusinessProfile()
@@ -34,7 +38,7 @@ async function main() {
   const role = await upsertRole(permissionIds)
 
   console.log('\n[4/13] Users')
-  await upsertAdminUser(role.id)
+  const credentials = await seedUsers(role.id)
 
   console.log('\n[5/13] Master items')
   const categoryIds = await seedMasterItems()
@@ -63,7 +67,22 @@ async function main() {
   console.log('\n[13/13] Broadcasts')
   await seedBroadcasts()
 
-  console.log('\nDone.')
+  console.log('\nSeeding selesai!')
+  console.log('\n================================================================================')
+  console.log('                          KREDENSIAL PENGGUNA (SEEDED)                          ')
+  console.log('================================================================================')
+  for (const cred of credentials) {
+    console.log(`  Nama     : ${cred.name}`)
+    console.log(`  Username : ${cred.username}`)
+    console.log(`  Email    : ${cred.email}`)
+    console.log(`  Telepon  : ${cred.phone}`)
+    console.log(`  Role     : ${cred.role}`)
+    console.log(`  Password : ${cred.password}`)
+    console.log('--------------------------------------------------------------------------------')
+  }
+  console.log('  Catatan  : Simpan password acak di atas untuk masuk ke sistem.')
+  console.log('================================================================================\n')
+
   await client.end()
 }
 
