@@ -98,6 +98,8 @@
 - Rate-limit the public WhatsApp login endpoints
 - Customizable browser tab branding (title, favicon, PWA manifest)
 - *(ui)* Add responsive dialog and swipe gesture to sheet component
+- *(api)* Align whatsapp login usecase and rate limiting with coffee-workspace
+- *(web)* Add phone input and align whatsapp login panel with coffee-workspace
 
 ### 🐛 Bug Fixes
 
@@ -234,3 +236,5 @@
 - *(api)* Revert temporary seed-on-start Dockerfile change
 - *(monorepo)* Configure turborepo pipelines and bun scripts
 - *(release)* Configure git-cliff and add changelog script
+- *(api)* Configure eslint rules and add test scripts
+- *(release)* Update changelog with recent refactorings
