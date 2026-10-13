@@ -5,6 +5,7 @@ import * as Entity from '@/entities/customer.entity'
 import { createCustomer } from './customer.repo/create'
 import { deleteCustomer } from './customer.repo/delete'
 import { findCustomerById } from './customer.repo/find-by-id'
+import { findCustomersByNames } from './customer.repo/find-customers-by-names'
 import { findCustomerList } from './customer.repo/find-list'
 import { updateCustomer } from './customer.repo/update'
 
@@ -47,5 +48,6 @@ export function createCustomerRepo(): ICustomerRepo {
     findList: (req) => findCustomerList(deps, req),
     update: (req) => updateCustomer(deps, req),
     delete: (id) => deleteCustomer(id),
+    findCustomersByNames: (names) => findCustomersByNames(deps, names),
   }
 }

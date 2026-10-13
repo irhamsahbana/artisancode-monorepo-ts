@@ -6,6 +6,7 @@ export interface ICustomerRepo {
   findList(req: Entity.GetCustomerReq): Promise<Entity.CustomerList>
   update(req: Entity.UpdateCustomerReq): Promise<Entity.Customer | null>
   delete(id: string): Promise<void>
+  findCustomersByNames(names: string[]): Promise<Entity.Customer[]>
 }
 
 export interface ICustomerUsecase {
@@ -14,4 +15,7 @@ export interface ICustomerUsecase {
   findList(req: Entity.GetCustomerReq): Promise<Entity.CustomerList>
   update(req: Entity.UpdateCustomerReq): Promise<Entity.Customer | null>
   delete(id: string): Promise<void>
+  generateTemplate(): Promise<Buffer>
+  dryRunImport(fileBuffer: Buffer | Uint8Array): Promise<Entity.CustomerImportDryRunResult>
+  executeImport(req: Entity.CustomerImportExecuteReq): Promise<Entity.CustomerImportExecuteResult>
 }

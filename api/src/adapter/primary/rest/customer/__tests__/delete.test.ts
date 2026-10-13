@@ -16,6 +16,9 @@ describe('CustomerHandler - delete', () => {
     })),
     update: mock(async () => ({}) as any),
     delete: mock(async () => {}),
+    generateTemplate: mock(async () => Buffer.from('')),
+    dryRunImport: mock(async () => ({}) as any),
+    executeImport: mock(async () => ({}) as any),
   }
 
   const handler = createCustomerHandler(mockUsecase)

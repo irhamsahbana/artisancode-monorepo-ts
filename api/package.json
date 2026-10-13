@@ -75,6 +75,7 @@
     "cronbake": "^0.4.0",
     "doku-nodejs-library": "^1.0.52",
     "drizzle-orm": "^0.45.2",
+    "exceljs": "^4.4.0",
     "hono": "^4.12.25",
     "jsonwebtoken": "^9.0.3",
     "node-cron": "^4.2.1",
