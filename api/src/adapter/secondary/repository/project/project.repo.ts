@@ -9,6 +9,8 @@ import { findAllProjectVisits } from './project.repo/find-all-visits'
 import { findProjectById } from './project.repo/find-by-id'
 import { findProjectList } from './project.repo/find-list'
 import { findProjectMapMarkers } from './project.repo/find-map-markers'
+import { findProjectsByNamesAndCustomers } from './project.repo/find-projects-by-names-and-customers'
+import { findProjectsByNumbers } from './project.repo/find-projects-by-numbers'
 import { findVisitsByProjectId } from './project.repo/find-visits-by-project-id'
 import { updateProject } from './project.repo/update'
 
@@ -75,6 +77,8 @@ export function createProjectRepo(): IProjectRepo {
     createVisit: (req) => createProjectVisit(deps, req),
     findVisitsByProjectId: (projectId) => findVisitsByProjectId(deps, projectId),
     findAllVisits: () => findAllProjectVisits(deps),
+    findProjectsByNumbers: (numbers) => findProjectsByNumbers(deps, numbers),
+    findProjectsByNamesAndCustomers: (items) => findProjectsByNamesAndCustomers(deps, items),
   }
 }
 

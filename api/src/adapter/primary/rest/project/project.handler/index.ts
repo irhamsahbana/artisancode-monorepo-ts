@@ -7,6 +7,9 @@ import { IProjectUsecase } from '@/contracts/project.contract'
 import { createProjectHandler as makeCreate } from './create'
 import { createProjectVisitHandler as makeCreateVisit } from './create-visit'
 import { deleteProjectHandler as makeDelete } from './delete'
+import { downloadProjectTemplateHandler as makeDownloadTemplate } from './download-template'
+import { dryRunProjectImportHandler as makeDryRunImport } from './dry-run-import'
+import { executeProjectImportHandler as makeExecuteImport } from './execute-import'
 import { findAllProjectVisitsHandler as makeFindAllVisits } from './find-all-visits'
 import { findProjectByIdHandler as makeFindById } from './find-by-id'
 import { findProjectListHandler as makeFindList } from './find-list'
@@ -25,6 +28,9 @@ export function createProjectHandlerDeps(usecase: IProjectUsecase) {
     createVisit: makeCreateVisit(usecase),
     findVisitsByProjectId: makeFindVisitsByProjectId(usecase),
     findAllVisits: makeFindAllVisits(usecase),
+    downloadTemplate: makeDownloadTemplate(usecase),
+    dryRunImport: makeDryRunImport(usecase),
+    executeImport: makeExecuteImport(usecase),
   }
 
   return {
@@ -43,6 +49,12 @@ export function createProjectHandlerDeps(usecase: IProjectUsecase) {
       withSpan('ProjectHandler.findVisitsByProjectId', () => handlers.findVisitsByProjectId(c)),
     findAllVisits: (c: Context<AppEnv>) =>
       withSpan('ProjectHandler.findAllVisits', () => handlers.findAllVisits(c)),
+    downloadTemplate: (c: Context<AppEnv>) =>
+      withSpan('ProjectHandler.downloadTemplate', () => handlers.downloadTemplate(c)),
+    dryRunImport: (c: Context<AppEnv>) =>
+      withSpan('ProjectHandler.dryRunImport', () => handlers.dryRunImport(c)),
+    executeImport: (c: Context<AppEnv>) =>
+      withSpan('ProjectHandler.executeImport', () => handlers.executeImport(c)),
   }
 }
 

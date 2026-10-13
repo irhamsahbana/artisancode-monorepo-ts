@@ -10,6 +10,8 @@ export interface IProjectRepo {
   createVisit(req: Entity.CreateProjectVisitReq): Promise<Entity.ProjectVisit>
   findVisitsByProjectId(projectId: string): Promise<Entity.ProjectVisit[]>
   findAllVisits(): Promise<Entity.ProjectVisit[]>
+  findProjectsByNumbers(numbers: string[]): Promise<Entity.Project[]>
+  findProjectsByNamesAndCustomers(items: { customerId: string; name: string }[]): Promise<Entity.Project[]>
 }
 
 export interface IProjectUsecase {
@@ -22,4 +24,7 @@ export interface IProjectUsecase {
   createVisit(req: Entity.CreateProjectVisitReq): Promise<Entity.ProjectVisit>
   findVisitsByProjectId(projectId: string): Promise<Entity.ProjectVisit[]>
   findAllVisits(): Promise<Entity.ProjectVisit[]>
+  generateTemplate(): Promise<Buffer>
+  dryRunImport(fileBuffer: Buffer | Uint8Array): Promise<Entity.ProjectImportDryRunResult>
+  executeImport(req: Entity.ProjectImportExecuteReq): Promise<Entity.ProjectImportExecuteResult>
 }

@@ -1,16 +1,25 @@
 import { Hono } from 'hono'
 
+import { createContactRepo } from '@/adapter/secondary/repository/contact/contact.repo'
+import { createCustomerRepo } from '@/adapter/secondary/repository/customer/customer.repo'
+import { createProductRepo } from '@/adapter/secondary/repository/product/product.repo'
 import { createProjectRepo } from '@/adapter/secondary/repository/project/project.repo'
+import { transactor } from '@/common/executor'
 import { authenticate } from '@/common/middlewares/auth.middleware'
 import { requirePermission } from '@/common/middlewares/permission.middleware'
 import { validate, validateQuery } from '@/common/middlewares/validation.middleware'
+import { createProductUsecase } from '@/modules/product/product.usecase'
 import { createProjectUsecase } from '@/modules/project/project.usecase'
 
 import { createProjectHandler } from './project.handler'
 import * as Schema from './project.schema'
 
 const repo = createProjectRepo()
-const usecase = createProjectUsecase(repo)
+const customerRepo = createCustomerRepo()
+const contactRepo = createContactRepo()
+const productRepo = createProductRepo()
+const productUsecase = createProductUsecase(productRepo)
+const usecase = createProjectUsecase(repo, customerRepo, contactRepo, productUsecase, transactor)
 const handler = createProjectHandler(usecase)
 
 const router = new Hono()
@@ -29,6 +38,15 @@ router.get(
   validateQuery(Schema.getProjectListSchema),
   handler.findList,
 )
+router.get('/template', authenticate, requirePermission('projects.view'), handler.downloadTemplate)
+router.post(
+  '/import/dry-run',
+  authenticate,
+  requirePermission('projects.create'),
+  handler.dryRunImport,
+)
+router.post('/import', authenticate, requirePermission('projects.create'), handler.executeImport)
+
 router.get('/visits', authenticate, requirePermission('project_visits.view'), handler.findAllVisits)
 router.get('/map', authenticate, requirePermission('projects.view'), handler.findMapMarkers)
 router.post(
