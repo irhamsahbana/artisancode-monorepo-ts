@@ -24,6 +24,11 @@ export type {
   UpdateCustomerReq,
   GetCustomerReq,
   CustomerList,
+  CustomerImportRow,
+  KeyPersonImportRow,
+  ImportError,
+  CustomerImportDryRunResult,
+  CustomerImportExecuteResult,
 } from './customer'
 export type { DashboardMetrics } from './dashboard'
 export type {

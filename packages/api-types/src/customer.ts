@@ -68,3 +68,76 @@ export interface CustomerList {
   items: Customer[]
   pagination: PaginationMetadata
 }
+
+export interface CustomerImportRow {
+  rowNumber: number
+  name: string
+  categoryName?: string
+  categoryId?: string
+  segmentationName?: string
+  segmentationId?: string
+  areaName?: string
+  areaId?: string
+  companyType?: CompanyType
+  status?: CustomerStatus
+  potential?: CustomerPotential
+  address?: string
+  companyEmail?: string
+  website?: string
+  npwp?: string
+  skt?: string
+  hasContractHistory?: boolean
+  lastContractYear?: number
+  lastRevenue?: number
+  notes?: string
+}
+
+export interface KeyPersonImportRow {
+  rowNumber: number
+  customerName: string
+  name: string
+  position?: string
+  whatsapp: string
+  countryCode?: string
+  email?: string
+  gender?: 'male' | 'female'
+  birthPlace?: string
+  dateOfBirth?: string
+  religion?: string
+  education?: string
+  address?: string
+  spouseName?: string
+  spouseOccupation?: string
+  childrenNames?: string
+  childrenOccupation?: string
+  profiling?: string
+  notes?: string
+  isPrimary?: boolean
+}
+
+export interface ImportError {
+  sheet: 'Customer' | 'Key Person'
+  row: number
+  field?: string
+  value?: string
+  message: string
+}
+
+export interface CustomerImportDryRunResult {
+  totalCustomers: number
+  validCustomers: number
+  totalKeyPersons: number
+  validKeyPersons: number
+  errors: ImportError[]
+  previewCustomers: CustomerImportRow[]
+  previewKeyPersons: KeyPersonImportRow[]
+}
+
+export interface CustomerImportExecuteResult {
+  createdCustomers: number
+  updatedCustomers: number
+  createdKeyPersons: number
+  skippedCustomers: number
+  errors: ImportError[]
+}
+
