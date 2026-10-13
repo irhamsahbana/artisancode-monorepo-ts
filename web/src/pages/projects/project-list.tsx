@@ -1,5 +1,6 @@
-import { Plus, Eye, Pencil } from "lucide-react";
-import { useMemo } from "react";
+import { useQueryClient } from "@tanstack/react-query";
+import { Plus, Eye, Pencil, FileSpreadsheet } from "lucide-react";
+import { useMemo, useState } from "react";
 import { useNavigate } from "react-router";
 
 import type { Column, FilterOption } from "@/components/shared/data-table";
@@ -19,6 +20,7 @@ import {
 } from "@/pages/quotations/quotation-status";
 import { projectService } from "@/services/project";
 
+import { ProjectImportDialog } from "./project-import-dialog";
 import {
   formatRupiah,
   projectStatusLabel,
@@ -42,6 +44,8 @@ const filters: FilterOption[] = [
 
 export function ProjectList() {
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
+  const [importOpen, setImportOpen] = useState(false);
   const canCreate = useHasPermission("projects.create");
   const canEdit = useHasPermission("projects.update");
   const { data: customersData } = useCustomers({ per_page: 100 });
@@ -144,14 +148,25 @@ export function ProjectList() {
         title="Monitoring Proyek"
         description="Pantau proyek yang sedang di-follow up."
         action={
-          <Button
-            size="sm"
-            onClick={() => navigate("/projects/new")}
-            disabled={!canCreate}
-          >
-            <Plus className="mr-1 h-4 w-4" />
-            Tambah
-          </Button>
+          <div className="flex items-center gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setImportOpen(true)}
+              disabled={!canCreate}
+            >
+              <FileSpreadsheet className="mr-1 h-4 w-4" />
+              Import Excel
+            </Button>
+            <Button
+              size="sm"
+              onClick={() => navigate("/projects/new")}
+              disabled={!canCreate}
+            >
+              <Plus className="mr-1 h-4 w-4" />
+              Tambah
+            </Button>
+          </div>
         }
       />
       <DataTable
@@ -190,6 +205,14 @@ export function ProjectList() {
             </Button>
           </div>
         )}
+      />
+
+      <ProjectImportDialog
+        open={importOpen}
+        onOpenChange={setImportOpen}
+        onSuccess={() => {
+          queryClient.invalidateQueries({ queryKey: queryKeys.projects.all });
+        }}
       />
     </div>
   );

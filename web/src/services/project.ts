@@ -1,9 +1,12 @@
+import { env } from "@/config/env";
 import { api } from "@/lib/api";
 
 import type {
   CreateProjectReq,
   CreateProjectVisitReq,
   Project,
+  ProjectImportDryRunResult,
+  ProjectImportExecuteResult,
   ProjectList,
   ProjectMapMarker,
   ProjectVisit,
@@ -40,4 +43,42 @@ export const projectService = {
 
   createVisit: (body: CreateProjectVisitReq) =>
     api.post<ProjectVisit>(`/projects/visits`, body),
+
+  downloadTemplate: async () => {
+    const token = localStorage.getItem("token") ?? "";
+    const res = await fetch(`${env.API_BASE_URL}/api/projects/template`, {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    if (!res.ok) {
+      throw new Error("Gagal mengunduh template Excel proyek");
+    }
+    const blob = await res.blob();
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "template_import_project_crm_wika.xlsx";
+    document.body.appendChild(a);
+    a.click();
+    window.URL.revokeObjectURL(url);
+    document.body.removeChild(a);
+  },
+
+  dryRunImport: (file: File) => {
+    const formData = new FormData();
+    formData.append("file", file);
+    return api.post<ProjectImportDryRunResult>(
+      "/projects/import/dry-run",
+      formData,
+    );
+  },
+
+  executeImport: (file: File, mode: "upsert" | "skip" = "skip") => {
+    const formData = new FormData();
+    formData.append("file", file);
+    formData.append("mode", mode);
+    return api.post<ProjectImportExecuteResult>("/projects/import", formData);
+  },
 };
