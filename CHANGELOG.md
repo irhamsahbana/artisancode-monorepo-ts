@@ -192,6 +192,24 @@
 - *(ratings)* Split rating dialog into schema, form hook, and responsive UI
 - *(projects)* Separate visit log dialog, form hook, and schema
 - *(web)* Migrate quotation and whatsapp dialogs to responsive dialog
+- *(category)* Implement 1f1f pattern, observability spans, and unit tests
+- *(role_and_permission)* Implement 1f1f pattern, observability spans, and unit tests
+- *(user)* Implement 1f1f pattern, observability spans, and unit tests
+- *(customer)* Implement 1f1f pattern, observability spans, and unit tests
+- *(contact)* Implement 1f1f pattern, observability spans, and unit tests
+- *(product)* Implement 1f1f pattern, observability spans, and unit tests
+- *(uom)* Implement 1f1f pattern, observability spans, and unit tests
+- *(rating)* Implement 1f1f pattern, observability spans, and unit tests
+- *(quotation)* Implement 1f1f pattern, observability spans, and unit tests
+- *(project)* Implement 1f1f pattern, observability spans, and unit tests
+- *(health)* Implement 1f1f pattern, observability spans, and unit tests
+- *(dashboard)* Implement 1f1f pattern, observability spans, and unit tests
+- *(business_profile)* Implement 1f1f pattern, observability spans, and unit tests
+- *(birthday_greeting)* Implement 1f1f pattern, observability spans, and unit tests
+- *(broadcast)* Implement 1f1f pattern, observability spans, and unit tests
+- *(webhook)* Implement 1f1f pattern, observability spans, and unit tests
+- *(whatsapp_login)* Implement 1f1f pattern, observability spans, and unit tests
+- *(whatsapp)* Implement 1f1f pattern, observability spans, and unit tests
 
 ### 🎨 Styling
 
@@ -215,3 +233,4 @@
 - *(api)* Temporarily run seed on container start
 - *(api)* Revert temporary seed-on-start Dockerfile change
 - *(monorepo)* Configure turborepo pipelines and bun scripts
+- *(release)* Configure git-cliff and add changelog script
