@@ -20,7 +20,7 @@ const router = new Hono()
 // a legitimate client for up to the request's 5-minute TTL.
 router.post(
   '/',
-  rateLimit({ windowMs: 5 * 60 * 1000, max: 5, keyPrefix: RateLimitKey.WA_LOGIN_REQUEST }),
+  rateLimit({ windowMs: 5 * 60 * 1000, max: 20, keyPrefix: RateLimitKey.WA_LOGIN_REQUEST }),
   validate(Schema.requestWhatsAppLoginSchema),
   handler.request,
 )

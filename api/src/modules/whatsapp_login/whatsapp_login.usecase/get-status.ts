@@ -12,9 +12,9 @@ export async function getWhatsAppLoginStatus(
   const row = await deps.repo.findById(id)
   if (!row) throw new AppError(ErrorCode.NOT_FOUND, 'Permintaan login tidak ditemukan')
 
-  if (!row.verifiedAt) return { pending: true }
-  if (row.consumedAt) return { pending: false }
-  if (!row.userId) return { pending: false }
+  if (row.verifiedAt === null) return { pending: true }
+  if (row.consumedAt !== null) return { pending: false }
+  if (row.userId === null) return { pending: false }
 
   const user = await deps.userRepo.findById(row.userId)
   if (!user) return { pending: false }

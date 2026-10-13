@@ -1,13 +1,15 @@
 import { getWhatsAppProvider } from '@/integrations/whatsapp'
 
+import { CONFIRM_MESSAGE_PATTERN } from './helpers'
+
 import type { WhatsAppLoginUsecaseDeps } from '../whatsapp_login.usecase'
 
-export async function confirmWhatsAppLoginByIncomingMessage(
+export async function confirmByIncomingMessage(
   deps: WhatsAppLoginUsecaseDeps,
   phone: string,
   messageBody: string,
 ): Promise<void> {
-  const match = messageBody.match(deps.confirmMessagePattern)
+  const match = messageBody.match(CONFIRM_MESSAGE_PATTERN)
   if (!match) return
 
   const token = match[1]?.toUpperCase()
@@ -24,3 +26,5 @@ export async function confirmWhatsAppLoginByIncomingMessage(
     message: 'Login berhasil dikonfirmasi. Kembali ke halaman login untuk melanjutkan.',
   })
 }
+
+export { confirmByIncomingMessage as confirmWhatsAppLoginByIncomingMessage }

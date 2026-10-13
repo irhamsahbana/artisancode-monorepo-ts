@@ -1,5 +1,8 @@
 import * as Entity from '@/entities/whatsapp_login.entity'
 
+import type { AppEnv } from '@artisancode/types'
+import type { Context } from 'hono'
+
 export interface IWhatsAppLoginRepo {
   create(req: Entity.CreateWhatsAppLoginRequestReq): Promise<Entity.WhatsAppLoginRequestRow>
   findById(id: string): Promise<Entity.WhatsAppLoginRequestRow | null>
@@ -13,4 +16,9 @@ export interface IWhatsAppLoginUsecase {
   getStatus(id: string): Promise<Entity.WhatsAppLoginStatusRes>
   /** Called by the whatsapp webhook when an inbound message arrives. */
   confirmByIncomingMessage(phone: string, messageBody: string): Promise<void>
+}
+
+export interface IWhatsAppLoginHandler {
+  request(c: Context<AppEnv>): Promise<Response>
+  status(c: Context<AppEnv>): Promise<Response>
 }
