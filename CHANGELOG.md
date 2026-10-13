@@ -103,6 +103,8 @@
 - *(whatsapp_login)* Add instruction text to OTP confirmation message and update tests
 - *(config)* Implement zod schema validation for environment variables
 - *(web)* Update wika branding assets, favicon, and splash screens
+- *(phone)* Add normalizePhoneDigits and formatPhone utilities
+- *(web)* Migrate react frontend build tooling to vite
 
 ### 🐛 Bug Fixes
 
@@ -244,3 +246,4 @@
 - *(api)* Configure eslint rules and add test scripts
 - *(release)* Update changelog with recent refactorings
 - *(release)* Update changelog with whatsapp login improvements
+- *(release)* Update changelog with recent changes
