@@ -1,3 +1,6 @@
+import type { AppEnv } from '@artisancode/types'
+import type { Context } from 'hono'
+
 export interface HealthCheckResult {
   status: string
   latency: number
@@ -13,4 +16,8 @@ export interface IHealthUsecase {
     db: HealthCheckResult
     cache: HealthCheckResult
   }>
+}
+
+export interface IHealthHandler {
+  check(c: Context<AppEnv>): Promise<Response>
 }

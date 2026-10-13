@@ -1,25 +1,29 @@
 import { withSpan } from '@artisancode/observability'
 
-import logger from '@/config/logger'
 import { IHealthRepo, IHealthUsecase } from '@/contracts/health.contract'
 
+import { checkHealth } from './health.usecase/check'
+
+export interface HealthUsecaseDeps {
+  repo: IHealthRepo
+}
+
+export function createHealthUsecase(repo: IHealthRepo): IHealthUsecase {
+  const deps: HealthUsecaseDeps = { repo }
+
+  return {
+    check: () => withSpan('HealthUsecase.check', () => checkHealth(deps)),
+  }
+}
+
 export default class HealthUsecase implements IHealthUsecase {
-  constructor(private readonly repo: IHealthRepo) {}
+  private readonly deps: HealthUsecaseDeps
+
+  constructor(repo: IHealthRepo) {
+    this.deps = { repo }
+  }
 
   async check() {
-    logger.info('[health.usecase] starting health check')
-
-    const db = await withSpan('HealthUsecase.checkDb', async () => {
-      logger.info('[health.usecase] delegating to repo for db check')
-      return this.repo.checkDb()
-    })
-
-    const cache = await withSpan('HealthUsecase.checkCache', async () => {
-      logger.info('[health.usecase] delegating to repo for cache check')
-      return this.repo.checkCache()
-    })
-
-    logger.info('[health.usecase] all checks completed')
-    return { db, cache }
+    return withSpan('HealthUsecase.check', () => checkHealth(this.deps))
   }
 }

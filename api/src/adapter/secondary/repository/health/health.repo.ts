@@ -1,26 +1,21 @@
-import { withSpan } from '@artisancode/observability'
-
-import logger from '@/config/logger'
 import { IHealthRepo } from '@/contracts/health.contract'
+
+import { checkCache } from './health.repo/check-cache'
+import { checkDb } from './health.repo/check-db'
+
+export function createHealthRepo(): IHealthRepo {
+  return {
+    checkDb,
+    checkCache,
+  }
+}
 
 export default class HealthRepo implements IHealthRepo {
   async checkDb() {
-    return withSpan('HealthRepo.checkDb', async () => {
-      logger.info('[health.repo] checking database connectivity')
-      // simulasikan query ke database
-      await new Promise((r) => setTimeout(r, 5))
-      logger.info('[health.repo] database respond')
-      return { status: 'ok', latency: 5 }
-    })
+    return checkDb()
   }
 
   async checkCache() {
-    return withSpan('HealthRepo.checkCache', async () => {
-      logger.info('[health.repo] checking cache connectivity')
-      // simulasikan query ke cache
-      await new Promise((r) => setTimeout(r, 2))
-      logger.info('[health.repo] cache respond')
-      return { status: 'ok', latency: 2 }
-    })
+    return checkCache()
   }
 }
