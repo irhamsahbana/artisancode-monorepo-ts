@@ -46,6 +46,22 @@ export default tseslint.config(
         'newlines-between': 'always',
         alphabetize: { order: 'asc', caseInsensitive: true },
       }],
+      '@typescript-eslint/no-unused-vars': [
+        'error',
+        {
+          argsIgnorePattern: '^_',
+          varsIgnorePattern: '^_',
+          caughtErrorsIgnorePattern: '^_',
+        },
+      ],
+    },
+  },
+
+  {
+    files: ['**/__tests__/**', '**/*.test.ts'],
+    rules: {
+      '@typescript-eslint/no-explicit-any': 'off',
+      '@typescript-eslint/no-empty-function': 'off',
     },
   },
 )
