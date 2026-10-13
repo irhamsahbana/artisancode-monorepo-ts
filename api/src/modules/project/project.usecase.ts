@@ -1,14 +1,22 @@
-import { AppError, ErrorCode } from '@artisancode/types'
-
 import { IProjectRepo, IProjectUsecase } from '@/contracts/project.contract'
 import * as Entity from '@/entities/project.entity'
+
+import { createProject } from './project.usecase/create'
+import { createVisit } from './project.usecase/create-visit'
+import { deleteProject } from './project.usecase/delete'
+import { findAllVisits } from './project.usecase/find-all-visits'
+import { findProjectById } from './project.usecase/find-by-id'
+import { findProjectList } from './project.usecase/find-list'
+import { findProjectMapMarkers } from './project.usecase/find-map-markers'
+import { findVisitsByProjectId } from './project.usecase/find-visits-by-project-id'
+import { updateProject } from './project.usecase/update'
 
 export interface ProjectUsecaseDeps {
   repo: IProjectRepo
 }
 
 // Business rules for status transitions (won/lost are terminal).
-const ALLOWED_TRANSITIONS: Record<Entity.ProjectStatus, Entity.ProjectStatus[]> = {
+export const ALLOWED_TRANSITIONS: Record<Entity.ProjectStatus, Entity.ProjectStatus[]> = {
   prospect: ['prospect', 'in_progress', 'won', 'lost'],
   in_progress: ['in_progress', 'won', 'lost', 'prospect'],
   won: ['won'],
@@ -18,59 +26,17 @@ const ALLOWED_TRANSITIONS: Record<Entity.ProjectStatus, Entity.ProjectStatus[]> 
 export function createProjectUsecase(repo: IProjectRepo): IProjectUsecase {
   const deps: ProjectUsecaseDeps = { repo }
 
-  const assertStatusTransition = (current: Entity.ProjectStatus, next: Entity.ProjectStatus) => {
-    if (!ALLOWED_TRANSITIONS[current].includes(next)) {
-      throw new AppError(
-        ErrorCode.VALIDATION_ERROR,
-        `Invalid status transition: ${current} -> ${next}`,
-      )
-    }
-  }
-
   return {
-    create: (req) => deps.repo.create(req),
-
-    findById: async (id) => {
-      const item = await deps.repo.findById(id)
-      if (!item) throw new AppError(ErrorCode.NOT_FOUND, 'Project not found')
-      return item
-    },
-
-    findList: (req) => deps.repo.findList(req),
-
-    findMapMarkers: () => deps.repo.findMapMarkers(),
-
-    update: async (req) => {
-      const existing = await deps.repo.findById(req.id)
-      if (!existing) throw new AppError(ErrorCode.NOT_FOUND, 'Project not found')
-
-      if (req.status && req.status !== existing.status) {
-        assertStatusTransition(existing.status, req.status)
-      }
-
-      const item = await deps.repo.update(req)
-      if (!item) throw new AppError(ErrorCode.NOT_FOUND, 'Project not found')
-      return item
-    },
-
-    delete: async (id) => {
-      const existing = await deps.repo.findById(id)
-      if (!existing) throw new AppError(ErrorCode.NOT_FOUND, 'Project not found')
-      await deps.repo.delete(id)
-    },
-
-    createVisit: async (req) => {
-      const project = await deps.repo.findById(req.projectId)
-      if (!project) throw new AppError(ErrorCode.NOT_FOUND, 'Project not found')
-      return deps.repo.createVisit(req)
-    },
-
-    findVisitsByProjectId: async (projectId) => {
-      const project = await deps.repo.findById(projectId)
-      if (!project) throw new AppError(ErrorCode.NOT_FOUND, 'Project not found')
-      return deps.repo.findVisitsByProjectId(projectId)
-    },
-
-    findAllVisits: () => deps.repo.findAllVisits(),
+    create: (req) => createProject(deps, req),
+    findById: (id) => findProjectById(deps, id),
+    findList: (req) => findProjectList(deps, req),
+    findMapMarkers: () => findProjectMapMarkers(deps),
+    update: (req) => updateProject(deps, req),
+    delete: (id) => deleteProject(deps, id),
+    createVisit: (req) => createVisit(deps, req),
+    findVisitsByProjectId: (projectId) => findVisitsByProjectId(deps, projectId),
+    findAllVisits: () => findAllVisits(deps),
   }
 }
+
+export default createProjectUsecase
