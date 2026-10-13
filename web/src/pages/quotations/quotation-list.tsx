@@ -8,14 +8,14 @@ import { Combobox } from "@/components/shared/combobox";
 import type { Column, FilterOption } from "@/components/shared/data-table";
 import { DataTable } from "@/components/shared/data-table";
 import { PageHeader } from "@/components/shared/page-header";
+import {
+  ResponsiveDialog,
+  ResponsiveDialogContent,
+  ResponsiveDialogHeader,
+  ResponsiveDialogTitle,
+} from "@/components/shared/responsive-dialog";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
 import {
   Select,
   SelectContent,
@@ -307,11 +307,14 @@ export function QuotationList() {
         )}
       />
 
-      <Dialog open={!!selected} onOpenChange={(v) => !v && setSelected(null)}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Detail Penawaran</DialogTitle>
-          </DialogHeader>
+      <ResponsiveDialog
+        open={!!selected}
+        onOpenChange={(v) => !v && setSelected(null)}
+      >
+        <ResponsiveDialogContent>
+          <ResponsiveDialogHeader>
+            <ResponsiveDialogTitle>Detail Penawaran</ResponsiveDialogTitle>
+          </ResponsiveDialogHeader>
           {selected && (
             <div className="grid gap-3 text-sm">
               <DetailRow label="Judul" value={selected.title} />
@@ -357,17 +360,19 @@ export function QuotationList() {
               </div>
             </div>
           )}
-        </DialogContent>
-      </Dialog>
+        </ResponsiveDialogContent>
+      </ResponsiveDialog>
 
-      <Dialog
+      <ResponsiveDialog
         open={!!assigningQuotation}
         onOpenChange={(v) => !v && setAssigningQuotation(null)}
       >
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Assign Penawaran ke Proyek</DialogTitle>
-          </DialogHeader>
+        <ResponsiveDialogContent>
+          <ResponsiveDialogHeader>
+            <ResponsiveDialogTitle>
+              Assign Penawaran ke Proyek
+            </ResponsiveDialogTitle>
+          </ResponsiveDialogHeader>
           <form onSubmit={handleAssign} className="grid gap-4 py-4">
             <div className="grid gap-2">
               <label className="text-sm font-medium">Pilih Proyek</label>
@@ -399,8 +404,8 @@ export function QuotationList() {
               </Button>
             </div>
           </form>
-        </DialogContent>
-      </Dialog>
+        </ResponsiveDialogContent>
+      </ResponsiveDialog>
     </div>
   );
 }

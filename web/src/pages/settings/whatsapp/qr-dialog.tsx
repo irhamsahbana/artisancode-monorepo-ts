@@ -3,13 +3,13 @@ import { Loader2 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
-import { Button } from "@/components/ui/button";
 import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
+  ResponsiveDialog,
+  ResponsiveDialogContent,
+  ResponsiveDialogHeader,
+  ResponsiveDialogTitle,
+} from "@/components/shared/responsive-dialog";
+import { Button } from "@/components/ui/button";
 import { useWhatsappLogin } from "@/hooks/use-whatsapp";
 
 function errorMessage(error: unknown, fallback: string) {
@@ -70,11 +70,14 @@ export function WhatsappQrDialog({
   }
 
   return (
-    <Dialog open={!!deviceId} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className="sm:max-w-sm">
-        <DialogHeader>
-          <DialogTitle>Hubungkan WhatsApp</DialogTitle>
-        </DialogHeader>
+    <ResponsiveDialog
+      open={!!deviceId}
+      onOpenChange={(open) => !open && onClose()}
+    >
+      <ResponsiveDialogContent className="sm:max-w-sm">
+        <ResponsiveDialogHeader>
+          <ResponsiveDialogTitle>Hubungkan WhatsApp</ResponsiveDialogTitle>
+        </ResponsiveDialogHeader>
         <div className="flex flex-col items-center gap-2 py-2">
           {login.isPending ? (
             <p className="text-sm text-muted-foreground">Memuat QR...</p>
@@ -113,7 +116,7 @@ export function WhatsappQrDialog({
             </Button>
           )}
         </div>
-      </DialogContent>
-    </Dialog>
+      </ResponsiveDialogContent>
+    </ResponsiveDialog>
   );
 }
