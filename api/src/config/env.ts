@@ -1,3 +1,5 @@
+import { parseRequiredEnv, whatsappProvider } from './env.schema'
+
 const parseBoolean = (value: string | undefined, def: boolean): boolean => {
   if (value === undefined) return def
   return value.toLowerCase() === 'true'
@@ -8,16 +10,21 @@ const parseNumber = (value: string | undefined, def: number): number => {
   return Number.isFinite(n) ? n : def
 }
 
+const required = parseRequiredEnv()
+
 export const env = {
   REST: {
     PORT: process.env.REST_PORT ? parseInt(process.env.REST_PORT, 10) : 3000,
   },
-  APP_ENV: process.env.APP_ENV || 'development',
-  APP_NAME: process.env.APP_NAME || 'artisancode-backend-ts',
-  APP_VERSION: process.env.APP_VERSION || '1.0.0',
-  APP_LOG_LEVEL: process.env.APP_LOG_LEVEL || 'info',
-  APP_LOGGER: (process.env.APP_LOGGER || 'winston') as 'winston' | 'pino',
-  IS_PRODUCTION: process.env.APP_ENV === 'production',
+  APP_ENV: required.APP_ENV,
+  APP_NAME: required.APP_NAME,
+  APP_VERSION: required.APP_VERSION,
+  APP_LOG_LEVEL: required.APP_LOG_LEVEL,
+  APP_LOGGER: required.APP_LOGGER,
+  IS_PRODUCTION: required.APP_ENV === 'production',
+  // 64-char hex string (32 bytes) — encrypts secrets at rest (e.g. SMTP/API
+  // keys in email_connections). Generate with: openssl rand -hex 32
+  SECRETS_ENCRYPTION_KEY: required.SECRETS_ENCRYPTION_KEY,
   CORS: {
     ORIGINS: (process.env.CORS_ORIGINS || '')
       .split(',')
@@ -25,14 +32,14 @@ export const env = {
       .filter(Boolean),
     ALLOW_CREDENTIALS: parseBoolean(process.env.CORS_ALLOW_CREDENTIALS, true),
   },
-  DATABASE_URL: process.env.DATABASE_URL,
+  DATABASE_URL: required.DATABASE_URL,
   DATABASE: {
-    URL: process.env.DATABASE_URL,
+    URL: required.DATABASE_URL,
     // BullMQ's Postgres backend always pins search_path via a connection startup
-    // parameter, which Neon's pooled (pgbouncer) endpoint rejects. Point it at the
+    // parameter, which a pooled (e.g. pgbouncer) endpoint can reject. Point it at the
     // unpooled connection string instead; falls back to DATABASE_URL when unset
     // (e.g. a plain Postgres that isn't behind a pooler).
-    URL_UNPOOLED: process.env.DATABASE_URL_UNPOOLED || process.env.DATABASE_URL,
+    URL_UNPOOLED: process.env.DATABASE_URL_UNPOOLED || required.DATABASE_URL,
     POOL: {
       MAX: parseNumber(process.env.DB_POOL_MAX, 20),
       MIN: parseNumber(process.env.DB_POOL_MIN, 5),
@@ -45,9 +52,9 @@ export const env = {
     },
   },
   JWT: {
-    SECRET: process.env.JWT_SECRET || 'secret',
-    EXPIRES_IN: process.env.JWT_EXPIRES_IN || '1d',
-    REFRESH_SECRET: process.env.JWT_REFRESH_SECRET || 'refresh-secret',
+    SECRET: required.JWT_SECRET,
+    EXPIRES_IN: process.env.JWT_EXPIRES_IN || '15m',
+    REFRESH_SECRET: required.JWT_REFRESH_SECRET,
     REFRESH_EXPIRES_IN: process.env.JWT_REFRESH_EXPIRES_IN || '7d',
   },
   OTEL: {
@@ -70,7 +77,7 @@ export const env = {
     PUBLIC_KEY: process.env.DOKU_PUBLIC_KEY,
   },
   WHATSAPP: {
-    PROVIDER: (process.env.WHATSAPP_PROVIDER || 'noop') as 'gowa' | 'noop',
+    PROVIDER: whatsappProvider,
     // Random delay range between messages to reduce ban risk on unofficial API
     SEND_DELAY_MIN_MS: parseNumber(process.env.WHATSAPP_SEND_DELAY_MIN_MS, 10_000),
     SEND_DELAY_MAX_MS: parseNumber(process.env.WHATSAPP_SEND_DELAY_MAX_MS, 30_000),
@@ -79,18 +86,18 @@ export const env = {
     TYPING_DELAY_MAX_MS: parseNumber(process.env.WHATSAPP_TYPING_DELAY_MAX_MS, 4_000),
   },
   GOWA: {
-    BASE_URL: process.env.GOWA_BASE_URL || '',
+    BASE_URL: required.GOWA_BASE_URL || '',
     // "user:password" (matches APP_BASIC_AUTH on the gowa server)
-    BASIC_AUTH: process.env.GOWA_BASIC_AUTH || '',
+    BASIC_AUTH: required.GOWA_BASIC_AUTH || '',
     // Must match WHATSAPP_WEBHOOK_SECRET configured on the gowa server —
     // verifies the X-Hub-Signature-256 header on incoming message webhooks.
-    WEBHOOK_SECRET: process.env.GOWA_WEBHOOK_SECRET || '',
+    WEBHOOK_SECRET: required.GOWA_WEBHOOK_SECRET || '',
   },
   S3: {
-    BUCKET: process.env.S3_BUCKET || '',
+    BUCKET: required.S3_BUCKET,
     REGION: process.env.S3_REGION || 'ap-southeast-1',
-    ACCESS_KEY_ID: process.env.S3_ACCESS_KEY_ID || '',
-    SECRET_ACCESS_KEY: process.env.S3_SECRET_ACCESS_KEY || '',
+    ACCESS_KEY_ID: required.S3_ACCESS_KEY_ID,
+    SECRET_ACCESS_KEY: required.S3_SECRET_ACCESS_KEY,
     ENDPOINT: process.env.S3_ENDPOINT || undefined,
     PUBLIC_BASE_URL: process.env.S3_PUBLIC_BASE_URL || '',
   },
@@ -98,6 +105,4 @@ export const env = {
   // Shared volume read by both api (writes) and web (serves /favicon) so the
   // uploaded browser-tab icon survives container restarts.
   BRANDING_STORAGE_DIR: process.env.BRANDING_STORAGE_DIR || './storage/branding',
-  // Shared cache secondary store. Unset = in-memory only (per-process).
-  REDIS_URL: process.env.REDIS_URL || undefined,
 }
