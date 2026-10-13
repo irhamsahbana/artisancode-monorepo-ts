@@ -6,7 +6,7 @@
   "main": "index.js",
   "scripts": {
     "test": "bun run test:unit",
-    "test:unit": "bun test src/modules/ src/adapter/primary/rest/ src/common/store/ src/common/middlewares/",
+    "test:unit": "bun test src/modules/ src/adapter/primary/rest/ src/common/store/ src/common/middlewares/ src/config/",
     "test:usecase": "bun test src/modules/",
     "test:handler": "bun test src/adapter/primary/rest/",
     "test:packages": "bun test src/__tests__/packages/",
@@ -55,7 +55,7 @@
     "@artisancode/types": "workspace:*",
     "@aws-sdk/client-s3": "^3.1067.0",
     "@aws-sdk/s3-request-presigner": "^3.1067.0",
-    "@keyv/redis": "^5.1.6",
+    "@keyv/postgres": "^2.2.3",
     "@opentelemetry/api": "^1.9.0",
     "@opentelemetry/exporter-logs-otlp-http": "^0.210.0",
     "@opentelemetry/exporter-trace-otlp-http": "^0.210.0",

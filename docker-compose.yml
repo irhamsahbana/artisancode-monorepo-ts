@@ -16,19 +16,6 @@ services:
       timeout: 5s
       retries: 5
 
-  redis:
-    image: redis:8-alpine
-    restart: unless-stopped
-    ports:
-      - "${REDIS_PORT:-6379}:6379"
-    volumes:
-      - redis_data:/data
-    healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
-      interval: 5s
-      timeout: 5s
-      retries: 5
-
   # Web UI buat Postgres lokal — login manual di browser pakai POSTGRES_USER/PASSWORD/DB di atas
   adminer:
     image: adminer:latest
@@ -68,7 +55,6 @@ services:
       REST_PORT: 3002
       DATABASE_URL: postgresql://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB:-wika}
       DB_SSL_ENABLED: "false"
-      REDIS_URL: redis://redis:6379
       CORS_ORIGINS: ${CORS_ORIGINS:-}
       CORS_ALLOW_CREDENTIALS: ${CORS_ALLOW_CREDENTIALS:-true}
       OTEL_ENABLED: ${OTEL_ENABLED:-false}
@@ -85,8 +71,6 @@ services:
       - branding_assets:/app/storage/branding
     depends_on:
       postgres:
-        condition: service_healthy
-      redis:
         condition: service_healthy
 
   web:
@@ -109,6 +93,5 @@ services:
 
 volumes:
   postgres_data:
-  redis_data:
   gowa_storages:
   branding_assets:

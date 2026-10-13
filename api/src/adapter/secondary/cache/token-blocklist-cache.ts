@@ -1,9 +1,9 @@
 import { Cacheable } from 'cacheable'
 
 import { hashToken } from '@/adapter/secondary/cache/hash-token'
-import { createRedisSecondary } from '@/adapter/secondary/cache/redis-secondary'
+import { createPostgresSecondary } from '@/adapter/secondary/cache/postgres-secondary'
 
-const cache = new Cacheable({ secondary: createRedisSecondary(), namespace: 'token-blocklist' })
+const cache = new Cacheable({ secondary: createPostgresSecondary(), namespace: 'token-blocklist' })
 
 const GRACE_MS = 60_000
 

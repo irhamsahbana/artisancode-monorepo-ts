@@ -1,8 +1,8 @@
 import { Cacheable } from 'cacheable'
 
-import { createRedisSecondary } from '@/adapter/secondary/cache/redis-secondary'
+import { createPostgresSecondary } from '@/adapter/secondary/cache/postgres-secondary'
 
-const cache = new Cacheable({ secondary: createRedisSecondary(), namespace: 'rate-limit' })
+const cache = new Cacheable({ secondary: createPostgresSecondary(), namespace: 'rate-limit' })
 
 interface Bucket {
   count: number
@@ -11,8 +11,8 @@ interface Bucket {
 
 // ponytail: get-then-set isn't atomic, so two requests landing in the same
 // millisecond could both read the same count and under-count by one — fine
-// for abuse throttling, not a billing-grade quota. Swap for a Redis Lua
-// INCR+PEXPIRE script if exact counts ever matter.
+// for abuse throttling, not a billing-grade quota. Swap for an atomic
+// Postgres UPDATE ... RETURNING if exact counts ever matter.
 export async function hitRateLimit(
   key: string,
   windowMs: number,

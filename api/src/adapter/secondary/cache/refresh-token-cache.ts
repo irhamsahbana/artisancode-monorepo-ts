@@ -1,13 +1,13 @@
 import { Cacheable } from 'cacheable'
 
 import { hashToken } from '@/adapter/secondary/cache/hash-token'
-import { createRedisSecondary } from '@/adapter/secondary/cache/redis-secondary'
+import { createPostgresSecondary } from '@/adapter/secondary/cache/postgres-secondary'
 import { env } from '@/config/env'
 
 // ponytail: TTL mirrors refresh token expiry so entries self-expire.
 const cache = new Cacheable({
   ttl: env.JWT.REFRESH_EXPIRES_IN,
-  secondary: createRedisSecondary(),
+  secondary: createPostgresSecondary(),
   namespace: 'refresh-token',
 })
 

@@ -1,6 +1,6 @@
 import { Cacheable } from 'cacheable'
 
-import { createRedisSecondary } from '@/adapter/secondary/cache/redis-secondary'
+import { createPostgresSecondary } from '@/adapter/secondary/cache/postgres-secondary'
 import * as Entity from '@/entities/dashboard.entity'
 
 const METRICS_KEY = 'dashboard-metrics'
@@ -10,7 +10,7 @@ const METRICS_KEY = 'dashboard-metrics'
 // every dashboard load/refresh.
 const cache = new Cacheable({
   ttl: '1m',
-  secondary: createRedisSecondary(),
+  secondary: createPostgresSecondary(),
   namespace: 'dashboard',
 })
 

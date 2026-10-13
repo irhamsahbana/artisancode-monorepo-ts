@@ -1,10 +1,10 @@
 import { Cacheable } from 'cacheable'
 
-import { createRedisSecondary } from '@/adapter/secondary/cache/redis-secondary'
+import { createPostgresSecondary } from '@/adapter/secondary/cache/postgres-secondary'
 
 const cache = new Cacheable({
   ttl: '5m',
-  secondary: createRedisSecondary(),
+  secondary: createPostgresSecondary(),
   namespace: 'permissions',
 })
 
