@@ -1,6 +1,10 @@
-import { AppError, ErrorCode } from '@artisancode/types'
-
 import { ICustomerRepo, ICustomerUsecase } from '@/contracts/customer.contract'
+
+import { createCustomer } from './customer.usecase/create'
+import { deleteCustomer } from './customer.usecase/delete'
+import { findCustomerById } from './customer.usecase/find-by-id'
+import { findCustomerList } from './customer.usecase/find-list'
+import { updateCustomer } from './customer.usecase/update'
 
 export interface CustomerUsecaseDeps {
   repo: ICustomerRepo
@@ -10,26 +14,12 @@ export function createCustomerUsecase(repo: ICustomerRepo): ICustomerUsecase {
   const deps: CustomerUsecaseDeps = { repo }
 
   return {
-    create: (req) => deps.repo.create(req),
-
-    findById: async (id) => {
-      const item = await deps.repo.findById(id)
-      if (!item) throw new AppError(ErrorCode.NOT_FOUND, 'Customer not found')
-      return item
-    },
-
-    findList: (req) => deps.repo.findList(req),
-
-    update: async (req) => {
-      const item = await deps.repo.update(req)
-      if (!item) throw new AppError(ErrorCode.NOT_FOUND, 'Customer not found')
-      return item
-    },
-
-    delete: async (id) => {
-      const item = await deps.repo.findById(id)
-      if (!item) throw new AppError(ErrorCode.NOT_FOUND, 'Customer not found')
-      await deps.repo.delete(id)
-    },
+    create: (req) => createCustomer(deps, req),
+    findById: (id) => findCustomerById(deps, id),
+    findList: (req) => findCustomerList(deps, req),
+    update: (req) => updateCustomer(deps, req),
+    delete: (id) => deleteCustomer(deps, id),
   }
 }
+
+export default createCustomerUsecase
