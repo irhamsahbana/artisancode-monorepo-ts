@@ -107,3 +107,63 @@ export interface CreateProjectVisitReq {
   topic?: string
   notes?: string
 }
+
+export interface ProjectImportError {
+  sheet: string
+  row: number
+  field?: string
+  value?: string
+  message: string
+}
+
+export interface ProjectImportRow {
+  rowNumber: number
+  projectNumber?: string
+  name: string
+  customerName: string
+  customerId?: string
+  contactName?: string
+  contactId?: string
+  status?: ProjectStatus
+  estimatedValue?: number
+  location?: string
+  latitude?: number
+  longitude?: number
+  sourceOfFunds?: string
+  picName?: string
+  spkNumber?: string
+  lostReason?: string
+  winnerCompetitor?: string
+  notes?: string
+}
+
+export interface ProjectProductImportRow {
+  rowNumber: number
+  projectRef: string
+  productName: string
+  productId?: string
+  quantity: number
+  unit?: string
+}
+
+export interface ProjectImportDryRunResult {
+  totalProjects: number
+  validProjects: number
+  totalProducts: number
+  validProducts: number
+  errors: ProjectImportError[]
+  previewProjects: ProjectImportRow[]
+  previewProducts: ProjectProductImportRow[]
+}
+
+export interface ProjectImportExecuteReq {
+  file: Buffer | Uint8Array
+  mode?: 'skip' | 'upsert'
+}
+
+export interface ProjectImportExecuteResult {
+  createdProjects: number
+  updatedProjects: number
+  skippedProjects: number
+  attachedProducts: number
+}

@@ -69,6 +69,12 @@ export type {
   ProjectList,
   ProjectMapMarker,
   CreateProjectVisitReq,
+  ProjectImportError,
+  ProjectImportRow,
+  ProjectProductImportRow,
+  ProjectImportDryRunResult,
+  ProjectImportExecuteReq,
+  ProjectImportExecuteResult,
 } from './project'
 export type {
   Product,
