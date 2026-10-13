@@ -1,10 +1,12 @@
-import { AppError, ErrorCode } from '@artisancode/types'
-
 import {
   IBirthdayGreetingRepo,
   IBirthdayGreetingUsecase,
 } from '@/contracts/birthday_greeting.contract'
 import * as Entity from '@/entities/birthday_greeting.entity'
+
+import { findBirthdayGreeting } from './birthday_greeting.usecase/find'
+import { findBirthdayGreetingLogs } from './birthday_greeting.usecase/find-logs'
+import { updateBirthdayGreeting } from './birthday_greeting.usecase/update'
 
 const DEFAULT_MESSAGE =
   'Selamat Ulang Tahun {{sapaan}} {{nama}}! 🎉\n\nSemoga selalu diberikan kesehatan, kebahagiaan, dan kesuksesan. Terima kasih atas kepercayaan Anda bersama CRM Wika.'
@@ -22,19 +24,24 @@ const DEFAULT_SETTINGS: Entity.BirthdayGreetingSettings = {
   updatedAt: new Date(0),
 }
 
+export interface BirthdayGreetingUsecaseDeps {
+  repo: IBirthdayGreetingRepo
+  defaultSettings: Entity.BirthdayGreetingSettings
+}
+
 export function createBirthdayGreetingUsecase(
   repo: IBirthdayGreetingRepo,
 ): IBirthdayGreetingUsecase {
+  const deps: BirthdayGreetingUsecaseDeps = {
+    repo,
+    defaultSettings: DEFAULT_SETTINGS,
+  }
+
   return {
-    find: async () => (await repo.find()) ?? DEFAULT_SETTINGS,
-
-    update: async (req) => {
-      const item = await repo.update(req)
-      if (!item)
-        throw new AppError(ErrorCode.NOT_FOUND, 'Failed to save birthday greeting settings')
-      return item
-    },
-
-    findLogs: () => repo.findLogs(),
+    find: () => findBirthdayGreeting(deps),
+    update: (req) => updateBirthdayGreeting(deps, req),
+    findLogs: () => findBirthdayGreetingLogs(deps),
   }
 }
+
+export default createBirthdayGreetingUsecase
