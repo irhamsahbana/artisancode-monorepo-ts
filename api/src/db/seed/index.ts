@@ -33,7 +33,7 @@ async function main() {
   console.log('\n[3/13] Role')
   const role = await upsertRole(permissionIds)
 
-  console.log('\n[4/13] Admin user')
+  console.log('\n[4/13] Users')
   await upsertAdminUser(role.id)
 
   console.log('\n[5/13] Master items')

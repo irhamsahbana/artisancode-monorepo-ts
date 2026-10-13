@@ -9,7 +9,7 @@ Each table has its own file (`business-profile.ts`, `permissions.ts`, `roles.ts`
 1. **Business profile** — single row in `business_profiles` (company name, address, contact).
 2. **Permissions** — 52 rows from `PERMISSION_MODULES × PERMISSION_ACTIONS` matrix in `@artisancode/api-types`. Description auto-generated as `"<Module Label>: <Action Label>"`.
 3. **Role** — one `Admin` role, linked to **all** 52 permissions via `role_permissions`.
-4. **Admin user** — `admin@wika.demo` / `password123` (hashed), assigned to the Admin role.
+4. **Users** — initial admin users (`Irham` with WA `082188449289`, `Amri` with WA `+62 823-2872-2713`, and `Administrator` fallback `admin@wika.demo`), assigned to the Admin role with hashed password `password123`.
 5. **Master items** — `categories` rows for groups `segmentation`, `area`, `relation_status`.
 6. **Customers** — 10 demo customers matching `web/src/data/customers.ts`.
 7. **Contacts** — 1–2 contacts per customer; first contact marked `isPrimary`.
