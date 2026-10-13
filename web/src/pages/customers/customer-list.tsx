@@ -1,4 +1,6 @@
-import { Plus, Eye, Pencil } from "lucide-react";
+import { useQueryClient } from "@tanstack/react-query";
+import { Eye, FileSpreadsheet, Pencil, Plus } from "lucide-react";
+import * as React from "react";
 import { useNavigate } from "react-router";
 
 import type { Column, FilterOption } from "@/components/shared/data-table";
@@ -11,6 +13,8 @@ import { useCategoryList } from "@/hooks/use-categories";
 import { useServerTable } from "@/hooks/use-server-table";
 import { queryKeys } from "@/lib/query-keys";
 import { customerService } from "@/services/customer";
+
+import { CustomerImportDialog } from "./customer-import-dialog";
 
 import type { Customer } from "@artisancode/api-types";
 
@@ -78,8 +82,10 @@ const filters: FilterOption[] = [
 
 export function CustomerList() {
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
   const canCreate = useHasPermission("customers.create");
   const canEdit = useHasPermission("customers.update");
+  const [importOpen, setImportOpen] = React.useState(false);
   const { data: segmentationsData } = useCategoryList("segmentation");
   const segmentations = segmentationsData?.items ?? [];
 
@@ -105,15 +111,34 @@ export function CustomerList() {
         title="Pelanggan"
         description="Kelola data pelanggan Anda."
         action={
-          <Button
-            size="sm"
-            onClick={() => navigate("/customers/new")}
-            disabled={!canCreate}
-          >
-            <Plus className="mr-1 h-4 w-4" />
-            Tambah
-          </Button>
+          <div className="flex items-center gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setImportOpen(true)}
+              disabled={!canCreate}
+            >
+              <FileSpreadsheet className="mr-1 h-4 w-4" />
+              Import Excel
+            </Button>
+            <Button
+              size="sm"
+              onClick={() => navigate("/customers/new")}
+              disabled={!canCreate}
+            >
+              <Plus className="mr-1 h-4 w-4" />
+              Tambah
+            </Button>
+          </div>
         }
+      />
+
+      <CustomerImportDialog
+        open={importOpen}
+        onOpenChange={setImportOpen}
+        onSuccess={() => {
+          queryClient.invalidateQueries({ queryKey: queryKeys.customers.all });
+        }}
       />
 
       <DataTable
