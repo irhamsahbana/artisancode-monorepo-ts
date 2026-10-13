@@ -20,7 +20,7 @@ export async function loginUser(
     throw new AppError(ErrorCode.FORBIDDEN, 'User account is not active')
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+   
   const { password: _, ...cleanUser } = user
 
   return issueSession(cleanUser)
