@@ -1,18 +1,17 @@
-import {
-  getCachedDashboardMetrics,
-  setCachedDashboardMetrics,
-} from '@/adapter/secondary/cache/dashboard-cache'
 import { IDashboardRepo, IDashboardUsecase } from '@/contracts/dashboard.contract'
 
-export function createDashboardUsecase(repo: IDashboardRepo): IDashboardUsecase {
-  return {
-    getMetrics: async (req) => {
-      const cached = await getCachedDashboardMetrics()
-      if (cached) return cached
+import { getDashboardMetrics } from './dashboard.usecase/get-metrics'
 
-      const metrics = await repo.getMetrics(req)
-      await setCachedDashboardMetrics(metrics)
-      return metrics
-    },
+export interface DashboardUsecaseDeps {
+  repo: IDashboardRepo
+}
+
+export function createDashboardUsecase(repo: IDashboardRepo): IDashboardUsecase {
+  const deps: DashboardUsecaseDeps = { repo }
+
+  return {
+    getMetrics: (req) => getDashboardMetrics(deps, req),
   }
 }
+
+export default createDashboardUsecase
