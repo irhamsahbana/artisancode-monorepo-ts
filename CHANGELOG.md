@@ -100,6 +100,9 @@
 - *(ui)* Add responsive dialog and swipe gesture to sheet component
 - *(api)* Align whatsapp login usecase and rate limiting with coffee-workspace
 - *(web)* Add phone input and align whatsapp login panel with coffee-workspace
+- *(whatsapp_login)* Add instruction text to OTP confirmation message and update tests
+- *(config)* Implement zod schema validation for environment variables
+- *(web)* Update wika branding assets, favicon, and splash screens
 
 ### 🐛 Bug Fixes
 
@@ -212,11 +215,13 @@
 - *(webhook)* Implement 1f1f pattern, observability spans, and unit tests
 - *(whatsapp_login)* Implement 1f1f pattern, observability spans, and unit tests
 - *(whatsapp)* Implement 1f1f pattern, observability spans, and unit tests
+- *(cache)* Migrate secondary cache from redis to postgres
 
 ### 🎨 Styling
 
 - *(web)* Format UI components and shared components
 - *(web)* Increase table cell padding
+- *(api)* Format rest handlers, repositories, and usecases
 
 ### ⚙️ Miscellaneous Tasks
 
@@ -238,3 +243,4 @@
 - *(release)* Configure git-cliff and add changelog script
 - *(api)* Configure eslint rules and add test scripts
 - *(release)* Update changelog with recent refactorings
+- *(release)* Update changelog with whatsapp login improvements
