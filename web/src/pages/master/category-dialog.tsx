@@ -3,14 +3,14 @@ import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
-import { Button } from "@/components/ui/button";
 import {
-  Dialog,
-  DialogContent,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
+  ResponsiveDialog,
+  ResponsiveDialogContent,
+  ResponsiveDialogFooter,
+  ResponsiveDialogHeader,
+  ResponsiveDialogTitle,
+} from "@/components/shared/responsive-dialog";
+import { Button } from "@/components/ui/button";
 import {
   Form,
   FormControl,
@@ -49,13 +49,13 @@ export function CategoryDialog({
   }, [open, editing]);
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-sm">
-        <DialogHeader>
-          <DialogTitle>
+    <ResponsiveDialog open={open} onOpenChange={onOpenChange}>
+      <ResponsiveDialogContent className="sm:max-w-sm">
+        <ResponsiveDialogHeader>
+          <ResponsiveDialogTitle>
             {editing ? `Edit ${title}` : `Tambah ${title}`}
-          </DialogTitle>
-        </DialogHeader>
+          </ResponsiveDialogTitle>
+        </ResponsiveDialogHeader>
         <Form {...form}>
           <form
             id="category-form"
@@ -81,15 +81,15 @@ export function CategoryDialog({
             />
           </form>
         </Form>
-        <DialogFooter>
+        <ResponsiveDialogFooter>
           <Button variant="outline" onClick={() => onOpenChange(false)}>
             Batal
           </Button>
           <Button type="submit" form="category-form">
             {editing ? "Simpan" : "Tambah"}
           </Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
+        </ResponsiveDialogFooter>
+      </ResponsiveDialogContent>
+    </ResponsiveDialog>
   );
 }

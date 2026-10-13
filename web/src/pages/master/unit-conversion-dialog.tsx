@@ -1,17 +1,11 @@
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useEffect, useMemo } from "react";
-import { useForm, useWatch } from "react-hook-form";
-import { toast } from "sonner";
-import { z } from "zod";
-
-import { Button } from "@/components/ui/button";
 import {
-  Dialog,
-  DialogContent,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
+  ResponsiveDialog,
+  ResponsiveDialogContent,
+  ResponsiveDialogFooter,
+  ResponsiveDialogHeader,
+  ResponsiveDialogTitle,
+} from "@/components/shared/responsive-dialog";
+import { Button } from "@/components/ui/button";
 import {
   Form,
   FormControl,
@@ -28,39 +22,11 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import {
-  useCreateUnitConversion,
-  useUpdateUnitConversion,
-} from "@/hooks/use-unit-conversions";
 
 import { categoryOptions } from "./uoms";
+import { useUnitConversionForm } from "./use-unit-conversion-form";
 
 import type { UnitConversion, UnitOfMeasurement } from "@artisancode/api-types";
-
-const schema = z
-  .object({
-    category: z.string().min(1, "Tipe satuan wajib dipilih"),
-    fromUnitId: z.string().min(1, "Satuan asal wajib dipilih"),
-    toUnitId: z.string().min(1, "Satuan tujuan wajib dipilih"),
-    factor: z
-      .string()
-      .refine((v) => v.trim() !== "" && !Number.isNaN(Number(v)), {
-        message: "Faktor wajib diisi dengan angka",
-      }),
-  })
-  .refine((data) => data.fromUnitId !== data.toUnitId, {
-    message: "Satuan asal dan satuan tujuan tidak boleh sama",
-    path: ["toUnitId"],
-  });
-
-type FormValues = z.infer<typeof schema>;
-
-const emptyValues: FormValues = {
-  category: "",
-  fromUnitId: "",
-  toUnitId: "",
-  factor: "",
-};
 
 export function UnitConversionDialog({
   open,
@@ -73,79 +39,21 @@ export function UnitConversionDialog({
   editing: UnitConversion | null;
   uoms: UnitOfMeasurement[];
 }) {
-  const { mutate: create } = useCreateUnitConversion();
-  const { mutate: update } = useUpdateUnitConversion();
-
-  const form = useForm<FormValues>({
-    resolver: zodResolver(schema),
-    defaultValues: emptyValues,
-  });
-
-  useEffect(() => {
-    if (open) {
-      const fromUnit = uoms.find((u) => u.id === editing?.fromUnitId);
-      form.reset(
-        editing
-          ? {
-              category: fromUnit?.category ?? "",
-              fromUnitId: editing.fromUnitId,
-              toUnitId: editing.toUnitId,
-              factor: String(editing.factor),
-            }
-          : emptyValues,
-      );
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [open, editing]);
-
-  const category = useWatch({ control: form.control, name: "category" });
-  const unitsInCategory = useMemo(
-    () => uoms.filter((u) => u.category === category),
-    [uoms, category],
-  );
-
-  function onSubmit(values: FormValues) {
-    const factor = Number(values.factor);
-    if (editing) {
-      update(
-        {
-          id: editing.id,
-          fromUnitId: values.fromUnitId,
-          toUnitId: values.toUnitId,
-          factor,
-        },
-        {
-          onSuccess: () => {
-            toast.success("Konversi satuan berhasil diperbarui.");
-            onOpenChange(false);
-          },
-        },
-      );
-    } else {
-      create(
-        { fromUnitId: values.fromUnitId, toUnitId: values.toUnitId, factor },
-        {
-          onSuccess: () => {
-            toast.success("Konversi satuan berhasil ditambahkan.");
-            onOpenChange(false);
-          },
-        },
-      );
-    }
-  }
+  const { form, category, unitsInCategory, isSubmitting, onSubmit } =
+    useUnitConversionForm(open, editing, uoms, () => onOpenChange(false));
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-sm">
-        <DialogHeader>
-          <DialogTitle>
+    <ResponsiveDialog open={open} onOpenChange={onOpenChange}>
+      <ResponsiveDialogContent className="sm:max-w-sm">
+        <ResponsiveDialogHeader>
+          <ResponsiveDialogTitle>
             {editing ? "Edit Konversi Satuan" : "Tambah Konversi Satuan"}
-          </DialogTitle>
-        </DialogHeader>
+          </ResponsiveDialogTitle>
+        </ResponsiveDialogHeader>
         <Form {...form}>
           <form
             id="unit-conversion-form"
-            onSubmit={form.handleSubmit(onSubmit)}
+            onSubmit={onSubmit}
             className="grid gap-3 py-2"
           >
             <FormField
@@ -250,15 +158,23 @@ export function UnitConversionDialog({
             />
           </form>
         </Form>
-        <DialogFooter>
-          <Button variant="outline" onClick={() => onOpenChange(false)}>
+        <ResponsiveDialogFooter>
+          <Button
+            variant="outline"
+            onClick={() => onOpenChange(false)}
+            disabled={isSubmitting}
+          >
             Batal
           </Button>
-          <Button type="submit" form="unit-conversion-form">
+          <Button
+            type="submit"
+            form="unit-conversion-form"
+            disabled={isSubmitting}
+          >
             {editing ? "Simpan" : "Tambah"}
           </Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
+        </ResponsiveDialogFooter>
+      </ResponsiveDialogContent>
+    </ResponsiveDialog>
   );
 }
