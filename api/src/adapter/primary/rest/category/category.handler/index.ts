@@ -23,8 +23,10 @@ export function createCategoryHandlerDeps(usecase: ICategoryUsecase) {
     create: (c: Context<AppEnv>) => withSpan('CategoryHandler.create', () => handlers.create(c)),
     update: (c: Context<AppEnv>) => withSpan('CategoryHandler.update', () => handlers.update(c)),
     delete: (c: Context<AppEnv>) => withSpan('CategoryHandler.delete', () => handlers.delete(c)),
-    findById: (c: Context<AppEnv>) => withSpan('CategoryHandler.findById', () => handlers.findById(c)),
-    findList: (c: Context<AppEnv>) => withSpan('CategoryHandler.findList', () => handlers.findList(c)),
+    findById: (c: Context<AppEnv>) =>
+      withSpan('CategoryHandler.findById', () => handlers.findById(c)),
+    findList: (c: Context<AppEnv>) =>
+      withSpan('CategoryHandler.findList', () => handlers.findList(c)),
   }
 }
 

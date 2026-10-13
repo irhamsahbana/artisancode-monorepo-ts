@@ -19,7 +19,10 @@ describe('UomHandler - findUomList', () => {
   }
 
   const mockUsecase = {
-    findUomList: mock(async () => ({ items: [mockUom], pagination: { total: 1, page: 1, per_page: 10, last_page: 1 } })),
+    findUomList: mock(async () => ({
+      items: [mockUom],
+      pagination: { total: 1, page: 1, per_page: 10, last_page: 1 },
+    })),
   } as unknown as IUomUsecase
 
   const handler = createUomHandler(mockUsecase)

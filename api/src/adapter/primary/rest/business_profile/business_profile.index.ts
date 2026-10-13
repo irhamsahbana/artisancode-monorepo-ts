@@ -16,12 +16,7 @@ const handler = createBusinessProfileHandler(usecase)
 
 const router = new Hono()
 
-router.get(
-  '/',
-  authenticate,
-  requirePermission('business_profiles.view'),
-  handler.find,
-)
+router.get('/', authenticate, requirePermission('business_profiles.view'), handler.find)
 
 router.patch(
   '/',

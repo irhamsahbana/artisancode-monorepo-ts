@@ -35,7 +35,10 @@ describe('ContactHandler - findList', () => {
   }
 
   const mockUsecase = {
-    findList: mock(async () => ({ items: [mockContact], pagination: { total: 1, page: 1, per_page: 10, last_page: 1 } })),
+    findList: mock(async () => ({
+      items: [mockContact],
+      pagination: { total: 1, page: 1, per_page: 10, last_page: 1 },
+    })),
   } as unknown as IContactUsecase
 
   const handler = createContactHandler(mockUsecase)

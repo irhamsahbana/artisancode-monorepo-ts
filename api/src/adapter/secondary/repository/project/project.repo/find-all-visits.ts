@@ -6,9 +6,7 @@ import * as Entity from '@/entities/project.entity'
 
 import type { ProjectRepoDeps } from '../project.repo'
 
-export async function findAllProjectVisits(
-  deps: ProjectRepoDeps,
-): Promise<Entity.ProjectVisit[]> {
+export async function findAllProjectVisits(deps: ProjectRepoDeps): Promise<Entity.ProjectVisit[]> {
   const rows = await getExecutor()
     .select()
     .from(projectVisits)

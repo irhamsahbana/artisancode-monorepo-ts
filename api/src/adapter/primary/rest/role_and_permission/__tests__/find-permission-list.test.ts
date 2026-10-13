@@ -9,7 +9,12 @@ import { createRoleAndPermissionHandler } from '../role_and_permission.handler'
 describe('RoleAndPermissionHandler - findPermissionList', () => {
   const mockUsecase = {
     findPermissionList: mock(async () => [
-      { id: 'perm-1', name: 'customers.create', description: 'Create customers', module: 'customers' },
+      {
+        id: 'perm-1',
+        name: 'customers.create',
+        description: 'Create customers',
+        module: 'customers',
+      },
     ]),
   } as unknown as IRoleAndPermissionUsecase
 

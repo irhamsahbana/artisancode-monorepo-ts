@@ -14,7 +14,12 @@ describe('UserHandler - create', () => {
   const handler = createUserHandler(mockUsecase)
   const app = new Hono<AppEnv>()
   app.post('/', (c) => {
-    c.set('body', { username: 'john', email: 'john@crm.com', password: 'secret', role_ids: [] } as any)
+    c.set('body', {
+      username: 'john',
+      email: 'john@crm.com',
+      password: 'secret',
+      role_ids: [],
+    } as any)
     return handler.create(c)
   })
 

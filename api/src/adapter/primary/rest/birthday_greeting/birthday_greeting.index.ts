@@ -15,12 +15,7 @@ const handler = createBirthdayGreetingHandler(usecase)
 
 const router = new Hono()
 
-router.get(
-  '/',
-  authenticate,
-  requirePermission('birthday_greeting.view'),
-  handler.find,
-)
+router.get('/', authenticate, requirePermission('birthday_greeting.view'), handler.find)
 
 router.patch(
   '/',
@@ -30,11 +25,6 @@ router.patch(
   handler.update,
 )
 
-router.get(
-  '/logs',
-  authenticate,
-  requirePermission('birthday_greeting.view'),
-  handler.findLogs,
-)
+router.get('/logs', authenticate, requirePermission('birthday_greeting.view'), handler.findLogs)
 
 export default router

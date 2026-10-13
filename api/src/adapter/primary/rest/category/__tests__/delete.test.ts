@@ -8,11 +8,14 @@ import { createCategoryHandler } from '../category.handler'
 
 describe('CategoryHandler - delete', () => {
   const mockUsecase: ICategoryUsecase = {
-    create: mock(async () => ({} as any)),
-    update: mock(async () => ({} as any)),
+    create: mock(async () => ({}) as any),
+    update: mock(async () => ({}) as any),
     delete: mock(async () => {}),
-    findById: mock(async () => ({} as any)),
-    findList: mock(async () => ({ items: [], pagination: { total: 0, page: 1, per_page: 10, last_page: 1 } })),
+    findById: mock(async () => ({}) as any),
+    findList: mock(async () => ({
+      items: [],
+      pagination: { total: 0, page: 1, per_page: 10, last_page: 1 },
+    })),
   }
 
   const handler = createCategoryHandler(mockUsecase)

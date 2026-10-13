@@ -16,8 +16,7 @@ export async function findProductList(
 
   const conditions = [isNull(products.deletedAt)]
   if (q) conditions.push(ilike(products.name, `%${q}%`))
-  if (isActive !== undefined)
-    conditions.push(eq(products.status, isActive ? 'active' : 'inactive'))
+  if (isActive !== undefined) conditions.push(eq(products.status, isActive ? 'active' : 'inactive'))
   const where = and(...conditions)
 
   const exec = getExecutor()

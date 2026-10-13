@@ -19,7 +19,8 @@ export function createProductHandlerDeps(usecase: IProductUsecase) {
 
   return {
     create: (c: Context<AppEnv>) => withSpan('ProductHandler.create', () => handlers.create(c)),
-    findList: (c: Context<AppEnv>) => withSpan('ProductHandler.findList', () => handlers.findList(c)),
+    findList: (c: Context<AppEnv>) =>
+      withSpan('ProductHandler.findList', () => handlers.findList(c)),
     update: (c: Context<AppEnv>) => withSpan('ProductHandler.update', () => handlers.update(c)),
     delete: (c: Context<AppEnv>) => withSpan('ProductHandler.delete', () => handlers.delete(c)),
   }

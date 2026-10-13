@@ -1,11 +1,7 @@
 import { desc, eq, sql } from 'drizzle-orm'
 
 import { getExecutor } from '@/common/executor'
-import type {
-  GetWebhookLogListReq,
-  WebhookLog,
-  WebhookLogList,
-} from '@/contracts/webhook.contract'
+import type { GetWebhookLogListReq, WebhookLog, WebhookLogList } from '@/contracts/webhook.contract'
 import { webhookLogs } from '@/db/schema'
 
 export async function getWebhookLogs(req: GetWebhookLogListReq): Promise<WebhookLogList> {

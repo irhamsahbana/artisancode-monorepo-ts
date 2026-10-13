@@ -21,8 +21,10 @@ export function createCustomerHandlerDeps(usecase: ICustomerUsecase) {
 
   return {
     create: (c: Context<AppEnv>) => withSpan('CustomerHandler.create', () => handlers.create(c)),
-    findById: (c: Context<AppEnv>) => withSpan('CustomerHandler.findById', () => handlers.findById(c)),
-    findList: (c: Context<AppEnv>) => withSpan('CustomerHandler.findList', () => handlers.findList(c)),
+    findById: (c: Context<AppEnv>) =>
+      withSpan('CustomerHandler.findById', () => handlers.findById(c)),
+    findList: (c: Context<AppEnv>) =>
+      withSpan('CustomerHandler.findList', () => handlers.findList(c)),
     update: (c: Context<AppEnv>) => withSpan('CustomerHandler.update', () => handlers.update(c)),
     delete: (c: Context<AppEnv>) => withSpan('CustomerHandler.delete', () => handlers.delete(c)),
   }

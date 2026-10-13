@@ -41,10 +41,7 @@ export async function sendBroadcast(
   }
   if (template.audienceCustomerStatus) {
     conditions.push(
-      eq(
-        customers.status,
-        template.audienceCustomerStatus as 'prospect' | 'active' | 'inactive',
-      ),
+      eq(customers.status, template.audienceCustomerStatus as 'prospect' | 'active' | 'inactive'),
     )
   }
 

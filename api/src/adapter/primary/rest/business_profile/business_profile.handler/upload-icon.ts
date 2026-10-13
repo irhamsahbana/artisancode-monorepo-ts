@@ -2,11 +2,7 @@ import { AppEnv, AppError, ErrorCode } from '@artisancode/types'
 import { Context } from 'hono'
 
 import { responseSuccess } from '@/common/rest_response'
-import {
-  ICON_EXT_BY_MIME,
-  MAX_ICON_SIZE_BYTES,
-  saveIcon,
-} from '@/common/storage/branding-storage'
+import { ICON_EXT_BY_MIME, MAX_ICON_SIZE_BYTES, saveIcon } from '@/common/storage/branding-storage'
 import { IBusinessProfileUsecase } from '@/contracts/business_profile.contract'
 
 export function uploadBusinessProfileIconHandler(usecase: IBusinessProfileUsecase) {

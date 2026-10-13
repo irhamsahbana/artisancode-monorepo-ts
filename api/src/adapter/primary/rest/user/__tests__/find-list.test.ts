@@ -8,7 +8,10 @@ import { createUserHandler } from '../user.handler'
 
 describe('UserHandler - findList', () => {
   const mockUsecase = {
-    findList: mock(async () => ({ items: [{ id: 'u-1', username: 'john' }], pagination: { total: 1, page: 1, per_page: 10 } })),
+    findList: mock(async () => ({
+      items: [{ id: 'u-1', username: 'john' }],
+      pagination: { total: 1, page: 1, per_page: 10 },
+    })),
   } as unknown as IUserUsecase
 
   const handler = createUserHandler(mockUsecase)

@@ -24,7 +24,10 @@ describe('CategoryHandler - findList', () => {
     update: mock(async () => mockCategory),
     delete: mock(async () => {}),
     findById: mock(async () => mockCategory),
-    findList: mock(async () => ({ items: [mockCategory], pagination: { total: 1, page: 1, per_page: 10, last_page: 1 } })),
+    findList: mock(async () => ({
+      items: [mockCategory],
+      pagination: { total: 1, page: 1, per_page: 10, last_page: 1 },
+    })),
   }
 
   const handler = createCategoryHandler(mockUsecase)

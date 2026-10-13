@@ -20,12 +20,18 @@ describe('UomHandler - createUom', () => {
 
   const mockUsecase = {
     createUom: mock(async () => mockUom),
-    findUomList: mock(async () => ({ items: [mockUom], pagination: { total: 1, page: 1, per_page: 10, last_page: 1 } })),
+    findUomList: mock(async () => ({
+      items: [mockUom],
+      pagination: { total: 1, page: 1, per_page: 10, last_page: 1 },
+    })),
     updateUom: mock(async () => mockUom),
     deleteUom: mock(async () => {}),
-    createConversion: mock(async () => ({} as any)),
-    findConversionList: mock(async () => ({ items: [], pagination: { total: 0, page: 1, per_page: 10, last_page: 1 } })),
-    updateConversion: mock(async () => ({} as any)),
+    createConversion: mock(async () => ({}) as any),
+    findConversionList: mock(async () => ({
+      items: [],
+      pagination: { total: 0, page: 1, per_page: 10, last_page: 1 },
+    })),
+    updateConversion: mock(async () => ({}) as any),
     deleteConversion: mock(async () => {}),
   } as unknown as IUomUsecase
 

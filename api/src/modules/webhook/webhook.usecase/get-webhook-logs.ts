@@ -1,7 +1,4 @@
-import type {
-  GetWebhookLogListReq,
-  WebhookLogList,
-} from '@/contracts/webhook.contract'
+import type { GetWebhookLogListReq, WebhookLogList } from '@/contracts/webhook.contract'
 
 import type { WebhookUsecaseDeps } from '../webhook.usecase'
 

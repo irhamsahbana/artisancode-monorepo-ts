@@ -35,7 +35,10 @@ describe('CustomerHandler - create', () => {
   const mockUsecase: ICustomerUsecase = {
     create: mock(async () => mockCustomer),
     findById: mock(async () => mockCustomer),
-    findList: mock(async () => ({ items: [mockCustomer], pagination: { total: 1, page: 1, per_page: 10, last_page: 1 } })),
+    findList: mock(async () => ({
+      items: [mockCustomer],
+      pagination: { total: 1, page: 1, per_page: 10, last_page: 1 },
+    })),
     update: mock(async () => mockCustomer),
     delete: mock(async () => {}),
   }

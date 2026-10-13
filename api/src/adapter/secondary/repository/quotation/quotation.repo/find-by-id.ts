@@ -10,10 +10,6 @@ export async function findQuotationById(
   deps: QuotationRepoDeps,
   id: string,
 ): Promise<Entity.QuotationRequest | null> {
-  const [row] = await getExecutor()
-    .select()
-    .from(quotations)
-    .where(eq(quotations.id, id))
-    .limit(1)
+  const [row] = await getExecutor().select().from(quotations).where(eq(quotations.id, id)).limit(1)
   return row ? deps.toEntity(row) : null
 }

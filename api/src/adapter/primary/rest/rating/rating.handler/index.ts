@@ -15,7 +15,8 @@ export function createRatingHandlerDeps(usecase: IRatingUsecase) {
 
   return {
     create: (c: Context<AppEnv>) => withSpan('RatingHandler.create', () => handlers.create(c)),
-    findList: (c: Context<AppEnv>) => withSpan('RatingHandler.findList', () => handlers.findList(c)),
+    findList: (c: Context<AppEnv>) =>
+      withSpan('RatingHandler.findList', () => handlers.findList(c)),
   }
 }
 

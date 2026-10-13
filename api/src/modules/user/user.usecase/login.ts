@@ -20,7 +20,6 @@ export async function loginUser(
     throw new AppError(ErrorCode.FORBIDDEN, 'User account is not active')
   }
 
-   
   const { password: _, ...cleanUser } = user
 
   return issueSession(cleanUser)

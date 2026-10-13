@@ -24,13 +24,21 @@ describe('RatingHandler - create', () => {
 
   const mockUsecase = {
     create: mock(async () => mockRating),
-    findList: mock(async () => ({ items: [mockRating], pagination: { total: 1, page: 1, per_page: 10, last_page: 1 } })),
+    findList: mock(async () => ({
+      items: [mockRating],
+      pagination: { total: 1, page: 1, per_page: 10, last_page: 1 },
+    })),
   } as unknown as IRatingUsecase
 
   const handler = createRatingHandler(mockUsecase)
   const app = new Hono<AppEnv>()
   app.post('/', (c) => {
-    c.set('body', { customerId: 'cust-1', ratingDate: '2026-10-13', paymentScore: 90, relationshipScore: 85 } as any)
+    c.set('body', {
+      customerId: 'cust-1',
+      ratingDate: '2026-10-13',
+      paymentScore: 90,
+      relationshipScore: 85,
+    } as any)
     return handler.create(c)
   })
 

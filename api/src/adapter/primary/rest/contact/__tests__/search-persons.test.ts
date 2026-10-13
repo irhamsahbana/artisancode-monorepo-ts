@@ -8,7 +8,10 @@ import { createContactHandler } from '../contact.handler'
 
 describe('ContactHandler - searchPersons', () => {
   const mockUsecase = {
-    searchPersons: mock(async () => ({ items: [], pagination: { total: 0, page: 1, per_page: 10, last_page: 1 } })),
+    searchPersons: mock(async () => ({
+      items: [],
+      pagination: { total: 0, page: 1, per_page: 10, last_page: 1 },
+    })),
   } as unknown as IContactUsecase
 
   const handler = createContactHandler(mockUsecase)

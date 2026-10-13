@@ -26,7 +26,10 @@ describe('QuotationHandler - create', () => {
   const mockUsecase = {
     create: mock(async () => mockQuotation),
     findById: mock(async () => mockQuotation),
-    findList: mock(async () => ({ items: [mockQuotation], pagination: { total: 1, page: 1, per_page: 10, last_page: 1 } })),
+    findList: mock(async () => ({
+      items: [mockQuotation],
+      pagination: { total: 1, page: 1, per_page: 10, last_page: 1 },
+    })),
     updateStatus: mock(async () => mockQuotation),
     assignProject: mock(async () => mockQuotation),
   } as unknown as IQuotationUsecase
@@ -34,7 +37,11 @@ describe('QuotationHandler - create', () => {
   const handler = createQuotationHandler(mockUsecase)
   const app = new Hono<AppEnv>()
   app.post('/', (c) => {
-    c.set('body', { requesterName: 'Budi Santoso', companyName: 'PT Wika', whatsapp: '08123456789' } as any)
+    c.set('body', {
+      requesterName: 'Budi Santoso',
+      companyName: 'PT Wika',
+      whatsapp: '08123456789',
+    } as any)
     return handler.create(c)
   })
 

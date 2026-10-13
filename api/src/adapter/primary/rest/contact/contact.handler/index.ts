@@ -25,8 +25,10 @@ export function createContactHandlerDeps(usecase: IContactUsecase) {
 
   return {
     create: (c: Context<AppEnv>) => withSpan('ContactHandler.create', () => handlers.create(c)),
-    findById: (c: Context<AppEnv>) => withSpan('ContactHandler.findById', () => handlers.findById(c)),
-    findList: (c: Context<AppEnv>) => withSpan('ContactHandler.findList', () => handlers.findList(c)),
+    findById: (c: Context<AppEnv>) =>
+      withSpan('ContactHandler.findById', () => handlers.findById(c)),
+    findList: (c: Context<AppEnv>) =>
+      withSpan('ContactHandler.findList', () => handlers.findList(c)),
     search: (c: Context<AppEnv>) => withSpan('ContactHandler.search', () => handlers.search(c)),
     searchPersons: (c: Context<AppEnv>) =>
       withSpan('ContactHandler.searchPersons', () => handlers.searchPersons(c)),

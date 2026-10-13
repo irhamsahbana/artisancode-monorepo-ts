@@ -8,10 +8,13 @@ import { createCustomerHandler } from '../customer.handler'
 
 describe('CustomerHandler - delete', () => {
   const mockUsecase: ICustomerUsecase = {
-    create: mock(async () => ({} as any)),
-    findById: mock(async () => ({} as any)),
-    findList: mock(async () => ({ items: [], pagination: { total: 0, page: 1, per_page: 10, last_page: 1 } })),
-    update: mock(async () => ({} as any)),
+    create: mock(async () => ({}) as any),
+    findById: mock(async () => ({}) as any),
+    findList: mock(async () => ({
+      items: [],
+      pagination: { total: 0, page: 1, per_page: 10, last_page: 1 },
+    })),
+    update: mock(async () => ({}) as any),
     delete: mock(async () => {}),
   }
 

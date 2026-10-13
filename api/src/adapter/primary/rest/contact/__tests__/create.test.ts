@@ -37,9 +37,15 @@ describe('ContactHandler - create', () => {
   const mockUsecase = {
     create: mock(async () => mockContact),
     findById: mock(async () => mockContact),
-    findList: mock(async () => ({ items: [mockContact], pagination: { total: 1, page: 1, per_page: 10, last_page: 1 } })),
+    findList: mock(async () => ({
+      items: [mockContact],
+      pagination: { total: 1, page: 1, per_page: 10, last_page: 1 },
+    })),
     search: mock(async () => [mockContact]),
-    searchPersons: mock(async () => ({ items: [], pagination: { total: 0, page: 1, per_page: 10, last_page: 1 } })),
+    searchPersons: mock(async () => ({
+      items: [],
+      pagination: { total: 0, page: 1, per_page: 10, last_page: 1 },
+    })),
     update: mock(async () => mockContact),
     delete: mock(async () => {}),
   } as unknown as IContactUsecase

@@ -8,10 +8,7 @@ export async function deleteBroadcastTemplate(
 ): Promise<void> {
   const logCount = await deps.repo.countLogsForTemplate(id)
   if (logCount > 0) {
-    throw new AppError(
-      ErrorCode.CONFLICT,
-      `Cannot delete: template has ${logCount} send log(s)`,
-    )
+    throw new AppError(ErrorCode.CONFLICT, `Cannot delete: template has ${logCount} send log(s)`)
   }
   await deps.repo.deleteTemplate(id)
 }

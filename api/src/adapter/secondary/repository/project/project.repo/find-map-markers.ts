@@ -22,11 +22,7 @@ export async function findProjectMapMarkers(
     })
     .from(projects)
     .where(
-      and(
-        isNull(projects.deletedAt),
-        isNotNull(projects.latitude),
-        isNotNull(projects.longitude),
-      ),
+      and(isNull(projects.deletedAt), isNotNull(projects.latitude), isNotNull(projects.longitude)),
     )
     .orderBy(sql`${projects.createdAt} desc`)
 

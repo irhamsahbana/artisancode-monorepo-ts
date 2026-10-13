@@ -29,13 +29,16 @@ export function createProjectHandlerDeps(usecase: IProjectUsecase) {
 
   return {
     create: (c: Context<AppEnv>) => withSpan('ProjectHandler.create', () => handlers.create(c)),
-    findById: (c: Context<AppEnv>) => withSpan('ProjectHandler.findById', () => handlers.findById(c)),
-    findList: (c: Context<AppEnv>) => withSpan('ProjectHandler.findList', () => handlers.findList(c)),
+    findById: (c: Context<AppEnv>) =>
+      withSpan('ProjectHandler.findById', () => handlers.findById(c)),
+    findList: (c: Context<AppEnv>) =>
+      withSpan('ProjectHandler.findList', () => handlers.findList(c)),
     findMapMarkers: (c: Context<AppEnv>) =>
       withSpan('ProjectHandler.findMapMarkers', () => handlers.findMapMarkers(c)),
     update: (c: Context<AppEnv>) => withSpan('ProjectHandler.update', () => handlers.update(c)),
     delete: (c: Context<AppEnv>) => withSpan('ProjectHandler.delete', () => handlers.delete(c)),
-    createVisit: (c: Context<AppEnv>) => withSpan('ProjectHandler.createVisit', () => handlers.createVisit(c)),
+    createVisit: (c: Context<AppEnv>) =>
+      withSpan('ProjectHandler.createVisit', () => handlers.createVisit(c)),
     findVisitsByProjectId: (c: Context<AppEnv>) =>
       withSpan('ProjectHandler.findVisitsByProjectId', () => handlers.findVisitsByProjectId(c)),
     findAllVisits: (c: Context<AppEnv>) =>

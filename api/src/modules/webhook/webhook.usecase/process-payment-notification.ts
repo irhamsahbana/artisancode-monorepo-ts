@@ -43,8 +43,7 @@ export async function processPaymentNotification(
   }
 
   // 3. Extract invoice number from notification data
-  const invoiceNumber =
-    notificationData.invoice_number || notificationData.order?.invoice_number
+  const invoiceNumber = notificationData.invoice_number || notificationData.order?.invoice_number
 
   if (!invoiceNumber) {
     await deps.repo.logWebhook({

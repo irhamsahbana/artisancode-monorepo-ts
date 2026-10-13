@@ -9,7 +9,6 @@ export async function updateBirthdayGreeting(
   req: Entity.UpdateBirthdayGreetingSettingsReq,
 ): Promise<Entity.BirthdayGreetingSettings> {
   const item = await deps.repo.update(req)
-  if (!item)
-    throw new AppError(ErrorCode.NOT_FOUND, 'Failed to save birthday greeting settings')
+  if (!item) throw new AppError(ErrorCode.NOT_FOUND, 'Failed to save birthday greeting settings')
   return item
 }

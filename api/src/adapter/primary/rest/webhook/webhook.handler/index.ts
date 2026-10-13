@@ -15,7 +15,8 @@ export function createWebhookHandlerDeps(usecase: IWebhookUsecase) {
 
   return {
     notify: (c: Context<AppEnv>) => withSpan('WebhookHandler.notify', () => handlers.notify(c)),
-    findList: (c: Context<AppEnv>) => withSpan('WebhookHandler.findList', () => handlers.findList(c)),
+    findList: (c: Context<AppEnv>) =>
+      withSpan('WebhookHandler.findList', () => handlers.findList(c)),
   }
 }
 

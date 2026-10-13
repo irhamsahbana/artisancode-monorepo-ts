@@ -22,13 +22,7 @@ export async function findUomList(
 
   const exec = getExecutor()
   const [items, countResult] = await Promise.all([
-    exec
-      .select()
-      .from(uoms)
-      .where(where)
-      .orderBy(asc(uoms.name))
-      .limit(per_page)
-      .offset(offset),
+    exec.select().from(uoms).where(where).orderBy(asc(uoms.name)).limit(per_page).offset(offset),
     exec
       .select({ count: sql<number>`count(*)::int` })
       .from(uoms)

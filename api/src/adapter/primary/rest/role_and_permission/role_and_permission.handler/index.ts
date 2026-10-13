@@ -22,11 +22,16 @@ export function createRoleAndPermissionHandlerDeps(usecase: IRoleAndPermissionUs
   }
 
   return {
-    createRole: (c: Context<AppEnv>) => withSpan('RoleAndPermissionHandler.createRole', () => handlers.createRole(c)),
-    findRoleList: (c: Context<AppEnv>) => withSpan('RoleAndPermissionHandler.findRoleList', () => handlers.findRoleList(c)),
-    findRoleById: (c: Context<AppEnv>) => withSpan('RoleAndPermissionHandler.findRoleById', () => handlers.findRoleById(c)),
-    updateRole: (c: Context<AppEnv>) => withSpan('RoleAndPermissionHandler.updateRole', () => handlers.updateRole(c)),
-    deleteRole: (c: Context<AppEnv>) => withSpan('RoleAndPermissionHandler.deleteRole', () => handlers.deleteRole(c)),
+    createRole: (c: Context<AppEnv>) =>
+      withSpan('RoleAndPermissionHandler.createRole', () => handlers.createRole(c)),
+    findRoleList: (c: Context<AppEnv>) =>
+      withSpan('RoleAndPermissionHandler.findRoleList', () => handlers.findRoleList(c)),
+    findRoleById: (c: Context<AppEnv>) =>
+      withSpan('RoleAndPermissionHandler.findRoleById', () => handlers.findRoleById(c)),
+    updateRole: (c: Context<AppEnv>) =>
+      withSpan('RoleAndPermissionHandler.updateRole', () => handlers.updateRole(c)),
+    deleteRole: (c: Context<AppEnv>) =>
+      withSpan('RoleAndPermissionHandler.deleteRole', () => handlers.deleteRole(c)),
     findPermissionList: (c: Context<AppEnv>) =>
       withSpan('RoleAndPermissionHandler.findPermissionList', () => handlers.findPermissionList(c)),
   }

@@ -26,7 +26,8 @@ export function createBroadcastHandlerDeps(usecase: IBroadcastUsecase) {
       withSpan('BroadcastHandler.createTemplate', () => handlers.createTemplate(c)),
     findTemplateList: (c: Context<AppEnv>) =>
       withSpan('BroadcastHandler.findTemplateList', () => handlers.findTemplateList(c)),
-    findLogs: (c: Context<AppEnv>) => withSpan('BroadcastHandler.findLogs', () => handlers.findLogs(c)),
+    findLogs: (c: Context<AppEnv>) =>
+      withSpan('BroadcastHandler.findLogs', () => handlers.findLogs(c)),
     findLogsByTemplateId: (c: Context<AppEnv>) =>
       withSpan('BroadcastHandler.findLogsByTemplateId', () => handlers.findLogsByTemplateId(c)),
     deleteTemplate: (c: Context<AppEnv>) =>

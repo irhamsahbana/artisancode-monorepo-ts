@@ -19,9 +19,12 @@ export function createQuotationHandlerDeps(usecase: IQuotationUsecase) {
 
   return {
     create: (c: Context<AppEnv>) => withSpan('QuotationHandler.create', () => handlers.create(c)),
-    findList: (c: Context<AppEnv>) => withSpan('QuotationHandler.findList', () => handlers.findList(c)),
-    updateStatus: (c: Context<AppEnv>) => withSpan('QuotationHandler.updateStatus', () => handlers.updateStatus(c)),
-    assignProject: (c: Context<AppEnv>) => withSpan('QuotationHandler.assignProject', () => handlers.assignProject(c)),
+    findList: (c: Context<AppEnv>) =>
+      withSpan('QuotationHandler.findList', () => handlers.findList(c)),
+    updateStatus: (c: Context<AppEnv>) =>
+      withSpan('QuotationHandler.updateStatus', () => handlers.updateStatus(c)),
+    assignProject: (c: Context<AppEnv>) =>
+      withSpan('QuotationHandler.assignProject', () => handlers.assignProject(c)),
   }
 }
 

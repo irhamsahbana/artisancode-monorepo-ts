@@ -17,8 +17,10 @@ export function createBirthdayGreetingHandlerDeps(usecase: IBirthdayGreetingUsec
 
   return {
     find: (c: Context<AppEnv>) => withSpan('BirthdayGreetingHandler.find', () => handlers.find(c)),
-    update: (c: Context<AppEnv>) => withSpan('BirthdayGreetingHandler.update', () => handlers.update(c)),
-    findLogs: (c: Context<AppEnv>) => withSpan('BirthdayGreetingHandler.findLogs', () => handlers.findLogs(c)),
+    update: (c: Context<AppEnv>) =>
+      withSpan('BirthdayGreetingHandler.update', () => handlers.update(c)),
+    findLogs: (c: Context<AppEnv>) =>
+      withSpan('BirthdayGreetingHandler.findLogs', () => handlers.findLogs(c)),
   }
 }
 

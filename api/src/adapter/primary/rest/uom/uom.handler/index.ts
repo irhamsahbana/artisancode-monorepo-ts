@@ -26,11 +26,16 @@ export function createUomHandlerDeps(usecase: IUomUsecase) {
   }
 
   return {
-    createUom: (c: Context<AppEnv>) => withSpan('UomHandler.createUom', () => handlers.createUom(c)),
-    findUomList: (c: Context<AppEnv>) => withSpan('UomHandler.findUomList', () => handlers.findUomList(c)),
-    updateUom: (c: Context<AppEnv>) => withSpan('UomHandler.updateUom', () => handlers.updateUom(c)),
-    deleteUom: (c: Context<AppEnv>) => withSpan('UomHandler.deleteUom', () => handlers.deleteUom(c)),
-    createConversion: (c: Context<AppEnv>) => withSpan('UomHandler.createConversion', () => handlers.createConversion(c)),
+    createUom: (c: Context<AppEnv>) =>
+      withSpan('UomHandler.createUom', () => handlers.createUom(c)),
+    findUomList: (c: Context<AppEnv>) =>
+      withSpan('UomHandler.findUomList', () => handlers.findUomList(c)),
+    updateUom: (c: Context<AppEnv>) =>
+      withSpan('UomHandler.updateUom', () => handlers.updateUom(c)),
+    deleteUom: (c: Context<AppEnv>) =>
+      withSpan('UomHandler.deleteUom', () => handlers.deleteUom(c)),
+    createConversion: (c: Context<AppEnv>) =>
+      withSpan('UomHandler.createConversion', () => handlers.createConversion(c)),
     findConversionList: (c: Context<AppEnv>) =>
       withSpan('UomHandler.findConversionList', () => handlers.findConversionList(c)),
     updateConversion: (c: Context<AppEnv>) =>

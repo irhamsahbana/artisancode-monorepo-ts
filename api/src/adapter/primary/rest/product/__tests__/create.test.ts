@@ -19,7 +19,10 @@ describe('ProductHandler - create', () => {
 
   const mockUsecase: IProductUsecase = {
     create: mock(async () => mockProduct),
-    findList: mock(async () => ({ items: [mockProduct], pagination: { total: 1, page: 1, per_page: 10, last_page: 1 } })),
+    findList: mock(async () => ({
+      items: [mockProduct],
+      pagination: { total: 1, page: 1, per_page: 10, last_page: 1 },
+    })),
     update: mock(async () => mockProduct),
     delete: mock(async () => {}),
   }

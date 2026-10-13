@@ -21,7 +21,8 @@ export function createBusinessProfileHandlerDeps(usecase: IBusinessProfileUsecas
 
   return {
     find: (c: Context<AppEnv>) => withSpan('BusinessProfileHandler.find', () => handlers.find(c)),
-    update: (c: Context<AppEnv>) => withSpan('BusinessProfileHandler.update', () => handlers.update(c)),
+    update: (c: Context<AppEnv>) =>
+      withSpan('BusinessProfileHandler.update', () => handlers.update(c)),
     uploadIcon: (c: Context<AppEnv>) =>
       withSpan('BusinessProfileHandler.uploadIcon', () => handlers.uploadIcon(c)),
     deleteIcon: (c: Context<AppEnv>) =>

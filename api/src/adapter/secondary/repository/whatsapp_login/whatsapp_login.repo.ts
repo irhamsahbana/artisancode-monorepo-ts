@@ -12,9 +12,7 @@ export interface WhatsAppLoginRepoDeps {
   toEntity: (data: typeof whatsappLoginRequests.$inferSelect) => Entity.WhatsAppLoginRequestRow
 }
 
-function toEntity(
-  data: typeof whatsappLoginRequests.$inferSelect,
-): Entity.WhatsAppLoginRequestRow {
+function toEntity(data: typeof whatsappLoginRequests.$inferSelect): Entity.WhatsAppLoginRequestRow {
   return {
     id: data.id,
     phone: data.phone,
