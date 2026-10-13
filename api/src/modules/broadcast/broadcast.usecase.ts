@@ -1,11 +1,11 @@
-import { AppError, ErrorCode } from '@artisancode/types'
-import { and, eq, isNull } from 'drizzle-orm'
-
-import { enqueueWhatsAppSend } from '@/adapter/secondary/queue/whatsapp-send.queue'
-import { getExecutor } from '@/common/executor'
 import { IBroadcastRepo, IBroadcastUsecase } from '@/contracts/broadcast.contract'
-import { contacts, customers } from '@/db/schema'
-import { getWhatsAppProvider } from '@/integrations/whatsapp'
+
+import { createBroadcastTemplate } from './broadcast.usecase/create-template'
+import { deleteBroadcastTemplate } from './broadcast.usecase/delete-template'
+import { findBroadcastLogs } from './broadcast.usecase/find-logs'
+import { findBroadcastLogsByTemplateId } from './broadcast.usecase/find-logs-by-template-id'
+import { findBroadcastTemplateList } from './broadcast.usecase/find-template-list'
+import { sendBroadcast } from './broadcast.usecase/send'
 
 export interface BroadcastUsecaseDeps {
   repo: IBroadcastRepo
@@ -15,80 +15,13 @@ export function createBroadcastUsecase(repo: IBroadcastRepo): IBroadcastUsecase 
   const deps: BroadcastUsecaseDeps = { repo }
 
   return {
-    createTemplate: (req) => deps.repo.createTemplate(req),
-    findTemplateList: (page, perPage) => deps.repo.findTemplateList(page, perPage),
-    findLogs: () => deps.repo.findLogs(),
-    findLogsByTemplateId: (templateId) => deps.repo.findLogsByTemplateId(templateId),
-
-    deleteTemplate: async (id) => {
-      const logCount = await deps.repo.countLogsForTemplate(id)
-      if (logCount > 0) {
-        throw new AppError(
-          ErrorCode.CONFLICT,
-          `Cannot delete: template has ${logCount} send log(s)`,
-        )
-      }
-      await deps.repo.deleteTemplate(id)
-    },
-
-    send: async (req) => {
-      const exec = getExecutor()
-
-      // 1. Fetch template to get audience criteria
-      const template = await exec.query.broadcastTemplates.findFirst({
-        where: (t, { eq, and, isNull }) => and(eq(t.id, req.templateId), isNull(t.deletedAt)),
-      })
-
-      if (!template) {
-        throw new AppError(ErrorCode.NOT_FOUND, 'Broadcast template not found')
-      }
-      if (template.status === 'sent') {
-        throw new AppError(ErrorCode.VALIDATION_ERROR, 'Broadcast already sent')
-      }
-
-      // 2. Query target audience based on criteria
-      const conditions = [isNull(contacts.deletedAt), isNull(customers.deletedAt)]
-
-      if (template.audienceGender) {
-        conditions.push(eq(contacts.gender, template.audienceGender))
-      }
-      if (template.audienceReligion) {
-        conditions.push(eq(contacts.religion, template.audienceReligion))
-      }
-      if (template.audienceSegmentationId) {
-        conditions.push(eq(customers.segmentationId, template.audienceSegmentationId))
-      }
-      if (template.audienceCustomerStatus) {
-        conditions.push(
-          eq(
-            customers.status,
-            template.audienceCustomerStatus as 'prospect' | 'active' | 'inactive',
-          ),
-        )
-      }
-
-      const targetContacts = await exec
-        .select({
-          contactId: contacts.id,
-        })
-        .from(contacts)
-        .innerJoin(customers, eq(contacts.customerId, customers.id))
-        .where(and(...conditions))
-
-      if (targetContacts.length === 0) {
-        throw new AppError(ErrorCode.VALIDATION_ERROR, 'No contacts match the audience criteria')
-      }
-
-      // 3. Enqueue: singletonKey = templateId dedupes a second send while one is running
-      const provider = getWhatsAppProvider()
-      await enqueueWhatsAppSend({ kind: 'broadcast', templateId: req.templateId })
-
-      // 4. Ack immediately with dispatch info
-      return {
-        templateId: req.templateId,
-        recipientCount: targetContacts.length,
-        provider: provider.name,
-      }
-    },
+    createTemplate: (req) => createBroadcastTemplate(deps, req),
+    findTemplateList: (page, perPage) => findBroadcastTemplateList(deps, page, perPage),
+    findLogs: () => findBroadcastLogs(deps),
+    findLogsByTemplateId: (templateId) => findBroadcastLogsByTemplateId(deps, templateId),
+    deleteTemplate: (id) => deleteBroadcastTemplate(deps, id),
+    send: (req) => sendBroadcast(deps, req),
   }
 }
+
+export default createBroadcastUsecase

@@ -1,9 +1,19 @@
-import { and, desc, eq, isNull, sql } from 'drizzle-orm'
-
-import { getExecutor } from '@/common/executor'
 import { IBroadcastRepo } from '@/contracts/broadcast.contract'
 import { broadcastLogs, broadcastTemplates } from '@/db/schema'
 import * as Entity from '@/entities/broadcast.entity'
+
+import { countLogsForTemplate } from './broadcast.repo/count-logs-for-template'
+import { createBroadcastTemplate } from './broadcast.repo/create-template'
+import { deleteBroadcastTemplate } from './broadcast.repo/delete-template'
+import { findBroadcastLogs } from './broadcast.repo/find-logs'
+import { findBroadcastLogsByTemplateId } from './broadcast.repo/find-logs-by-template-id'
+import { findBroadcastTemplateList } from './broadcast.repo/find-template-list'
+import { recordBroadcastSend } from './broadcast.repo/record-send'
+
+export interface BroadcastRepoDeps {
+  templateToEntity: (data: typeof broadcastTemplates.$inferSelect) => Entity.BroadcastTemplate
+  logToEntity: (data: typeof broadcastLogs.$inferSelect) => Entity.BroadcastLog
+}
 
 function templateToEntity(data: typeof broadcastTemplates.$inferSelect): Entity.BroadcastTemplate {
   return {
@@ -34,106 +44,20 @@ function logToEntity(data: typeof broadcastLogs.$inferSelect): Entity.BroadcastL
 }
 
 export function createBroadcastRepo(): IBroadcastRepo {
+  const deps: BroadcastRepoDeps = {
+    templateToEntity,
+    logToEntity,
+  }
+
   return {
-    createTemplate: async (req) => {
-      const [row] = await getExecutor()
-        .insert(broadcastTemplates)
-        .values({
-          name: req.name,
-          message: req.message,
-          occasion: req.occasion,
-          audienceGender: req.audienceGender,
-          audienceReligion: req.audienceReligion,
-          audienceSegmentationId: req.audienceSegmentationId,
-          audienceCustomerStatus: req.audienceCustomerStatus,
-          scheduledAt: req.scheduledAt ? new Date(req.scheduledAt) : null,
-          status: req.scheduledAt ? 'scheduled' : 'draft',
-        })
-        .returning()
-      return templateToEntity(row)
-    },
-
-    findTemplateList: async (page, perPage) => {
-      const exec = getExecutor()
-      const [items, countResult] = await Promise.all([
-        exec
-          .select()
-          .from(broadcastTemplates)
-          .where(isNull(broadcastTemplates.deletedAt))
-          .orderBy(desc(broadcastTemplates.createdAt))
-          .limit(perPage)
-          .offset((page - 1) * perPage),
-        exec
-          .select({ count: sql<number>`count(*)::int` })
-          .from(broadcastTemplates)
-          .where(isNull(broadcastTemplates.deletedAt)),
-      ])
-
-      const total = countResult[0]?.count ?? 0
-      return {
-        items: items.map(templateToEntity),
-        pagination: { total, page, per_page: perPage, last_page: Math.ceil(total / perPage) },
-      }
-    },
-
-    findLogs: async () => {
-      const rows = await getExecutor()
-        .select()
-        .from(broadcastLogs)
-        .orderBy(desc(broadcastLogs.sentAt))
-      return rows.map(logToEntity)
-    },
-
-    findLogsByTemplateId: async (templateId) => {
-      const rows = await getExecutor()
-        .select()
-        .from(broadcastLogs)
-        .where(eq(broadcastLogs.templateId, templateId))
-        .orderBy(desc(broadcastLogs.sentAt))
-      return rows.map(logToEntity)
-    },
-
-    countLogsForTemplate: async (templateId) => {
-      const [result] = await getExecutor()
-        .select({ count: sql<number>`count(*)::int` })
-        .from(broadcastLogs)
-        .where(eq(broadcastLogs.templateId, templateId))
-      return result?.count ?? 0
-    },
-
-    deleteTemplate: async (id) => {
-      await getExecutor()
-        .update(broadcastTemplates)
-        .set({ deletedAt: sql`now()` as unknown as Date })
-        .where(and(eq(broadcastTemplates.id, id), isNull(broadcastTemplates.deletedAt)))
-    },
-
-    recordSend: async (templateId, recipientLogs) => {
-      const exec = getExecutor()
-
-      const sentCount = recipientLogs.filter((l) => l.status === 'sent').length
-      const failedCount = recipientLogs.filter((l) => l.status === 'failed').length
-
-      let overallStatus: 'pending' | 'sent' | 'failed' = 'pending'
-      if (sentCount > 0) overallStatus = 'sent'
-      else if (failedCount > 0) overallStatus = 'failed'
-
-      const [logRow] = await exec
-        .insert(broadcastLogs)
-        .values({
-          templateId,
-          recipientCount: String(recipientLogs.length),
-          status: overallStatus,
-          recipientLogs,
-        })
-        .returning()
-
-      await exec
-        .update(broadcastTemplates)
-        .set({ status: 'sent', sentAt: new Date() })
-        .where(eq(broadcastTemplates.id, templateId))
-
-      return logToEntity(logRow)
-    },
+    createTemplate: (req) => createBroadcastTemplate(deps, req),
+    findTemplateList: (page, perPage) => findBroadcastTemplateList(deps, page, perPage),
+    findLogs: () => findBroadcastLogs(deps),
+    findLogsByTemplateId: (templateId) => findBroadcastLogsByTemplateId(deps, templateId),
+    countLogsForTemplate: (templateId) => countLogsForTemplate(templateId),
+    deleteTemplate: (id) => deleteBroadcastTemplate(id),
+    recordSend: (templateId, recipientLogs) => recordBroadcastSend(deps, templateId, recipientLogs),
   }
 }
+
+export default createBroadcastRepo
