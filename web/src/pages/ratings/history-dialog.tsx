@@ -1,12 +1,12 @@
 import { EmptyState } from "@/components/shared/empty-state";
-import { Badge } from "@/components/ui/badge";
 import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
+  ResponsiveDialog,
+  ResponsiveDialogContent,
+  ResponsiveDialogDescription,
+  ResponsiveDialogHeader,
+  ResponsiveDialogTitle,
+} from "@/components/shared/responsive-dialog";
+import { Badge } from "@/components/ui/badge";
 
 import { riskLabel, riskVariant } from "./rating-status";
 
@@ -39,12 +39,14 @@ export function HistoryDialog({
     : [];
 
   return (
-    <Dialog open={!!customerId} onOpenChange={(v) => !v && onClose()}>
-      <DialogContent>
-        <DialogHeader>
-          <DialogTitle>Riwayat Penilaian</DialogTitle>
-          <DialogDescription>{customerName}</DialogDescription>
-        </DialogHeader>
+    <ResponsiveDialog open={!!customerId} onOpenChange={(v) => !v && onClose()}>
+      <ResponsiveDialogContent>
+        <ResponsiveDialogHeader>
+          <ResponsiveDialogTitle>Riwayat Penilaian</ResponsiveDialogTitle>
+          <ResponsiveDialogDescription>
+            {customerName}
+          </ResponsiveDialogDescription>
+        </ResponsiveDialogHeader>
         {items.length === 0 ? (
           <EmptyState title="Belum ada riwayat penilaian" />
         ) : (
@@ -81,7 +83,7 @@ export function HistoryDialog({
             ))}
           </ul>
         )}
-      </DialogContent>
-    </Dialog>
+      </ResponsiveDialogContent>
+    </ResponsiveDialog>
   );
 }

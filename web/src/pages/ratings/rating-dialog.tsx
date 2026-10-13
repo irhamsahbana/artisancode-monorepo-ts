@@ -1,17 +1,12 @@
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
-import { toast } from "sonner";
-import { z } from "zod";
-
-import { Button } from "@/components/ui/button";
 import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
+  ResponsiveDialog,
+  ResponsiveDialogContent,
+  ResponsiveDialogDescription,
+  ResponsiveDialogFooter,
+  ResponsiveDialogHeader,
+  ResponsiveDialogTitle,
+} from "@/components/shared/responsive-dialog";
+import { Button } from "@/components/ui/button";
 import {
   Form,
   FormControl,
@@ -28,29 +23,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { useCreateRating } from "@/hooks/use-ratings";
 
-const ratingSchema = z.object({
-  customerId: z.string().min(1, "Pelanggan wajib dipilih"),
-  ratingDate: z.string().min(1, "Tanggal penilaian wajib diisi"),
-  paymentScore: z.string(),
-  relationshipScore: z.string(),
-  riskLevel: z.enum(["low", "medium", "high"]),
-  problemNotes: z.string().optional(),
-  notes: z.string().optional(),
-});
-
-type RatingFormValues = z.infer<typeof ratingSchema>;
-
-const emptyForm: RatingFormValues = {
-  customerId: "",
-  ratingDate: new Date().toISOString().slice(0, 10),
-  paymentScore: "3",
-  relationshipScore: "3",
-  riskLevel: "low",
-  problemNotes: "",
-  notes: "",
-};
+import { useRatingForm } from "./use-rating-form";
 
 export function RatingDialog({
   open,
@@ -61,45 +35,21 @@ export function RatingDialog({
   onOpenChange: (v: boolean) => void;
   eligible: { id: string; name: string }[];
 }) {
-  const { mutateAsync, isPending } = useCreateRating();
-  const form = useForm<RatingFormValues>({
-    resolver: zodResolver(ratingSchema),
-    defaultValues: emptyForm,
-  });
-
-  async function onSubmit(values: RatingFormValues) {
-    try {
-      await mutateAsync({
-        customerId: values.customerId,
-        ratingDate: values.ratingDate,
-        paymentScore: Number(values.paymentScore),
-        relationshipScore: Number(values.relationshipScore),
-        riskLevel: values.riskLevel,
-        problemNotes: values.problemNotes || undefined,
-        notes: values.notes || undefined,
-      });
-      toast.success("Penilaian tersimpan.");
-      form.reset({
-        ...emptyForm,
-        ratingDate: new Date().toISOString().slice(0, 10),
-      });
-      onOpenChange(false);
-    } catch {
-      toast.error("Gagal menyimpan penilaian.");
-    }
-  }
+  const { form, isSubmitting, onSubmit } = useRatingForm(open, () =>
+    onOpenChange(false),
+  );
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent>
-        <DialogHeader>
-          <DialogTitle>Tambah Penilaian</DialogTitle>
-          <DialogDescription>
+    <ResponsiveDialog open={open} onOpenChange={onOpenChange}>
+      <ResponsiveDialogContent>
+        <ResponsiveDialogHeader>
+          <ResponsiveDialogTitle>Tambah Penilaian</ResponsiveDialogTitle>
+          <ResponsiveDialogDescription>
             Nilai pelanggan berdasarkan pembayaran & hubungan.
-          </DialogDescription>
-        </DialogHeader>
+          </ResponsiveDialogDescription>
+        </ResponsiveDialogHeader>
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="grid gap-4">
+          <form onSubmit={onSubmit} className="grid gap-4">
             <FormField
               control={form.control}
               name="customerId"
@@ -244,21 +194,22 @@ export function RatingDialog({
               )}
             />
 
-            <DialogFooter>
+            <ResponsiveDialogFooter>
               <Button
                 type="button"
                 variant="outline"
                 onClick={() => onOpenChange(false)}
+                disabled={isSubmitting}
               >
                 Batal
               </Button>
-              <Button type="submit" disabled={isPending}>
-                {isPending ? "Menyimpan..." : "Simpan"}
+              <Button type="submit" disabled={isSubmitting}>
+                {isSubmitting ? "Menyimpan..." : "Simpan"}
               </Button>
-            </DialogFooter>
+            </ResponsiveDialogFooter>
           </form>
         </Form>
-      </DialogContent>
-    </Dialog>
+      </ResponsiveDialogContent>
+    </ResponsiveDialog>
   );
 }
