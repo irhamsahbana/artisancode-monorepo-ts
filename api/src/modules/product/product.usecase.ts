@@ -1,6 +1,9 @@
-import { AppError, ErrorCode } from '@artisancode/types'
-
 import { IProductRepo, IProductUsecase } from '@/contracts/product.contract'
+
+import { createProduct } from './product.usecase/create'
+import { deleteProduct } from './product.usecase/delete'
+import { findProductList } from './product.usecase/find-list'
+import { updateProduct } from './product.usecase/update'
 
 export interface ProductUsecaseDeps {
   repo: IProductRepo
@@ -10,16 +13,11 @@ export function createProductUsecase(repo: IProductRepo): IProductUsecase {
   const deps: ProductUsecaseDeps = { repo }
 
   return {
-    create: (req) => deps.repo.create(req),
-
-    findList: (req) => deps.repo.findList(req),
-
-    update: async (req) => {
-      const item = await deps.repo.update(req)
-      if (!item) throw new AppError(ErrorCode.NOT_FOUND, 'Product not found')
-      return item
-    },
-
-    delete: (id) => deps.repo.delete(id),
+    create: (req) => createProduct(deps, req),
+    findList: (req) => findProductList(deps, req),
+    update: (req) => updateProduct(deps, req),
+    delete: (id) => deleteProduct(deps, id),
   }
 }
+
+export default createProductUsecase
