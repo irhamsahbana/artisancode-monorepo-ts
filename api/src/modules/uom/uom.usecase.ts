@@ -1,6 +1,13 @@
-import { AppError, ErrorCode } from '@artisancode/types'
-
 import { IUomRepo, IUomUsecase } from '@/contracts/uom.contract'
+
+import { createConversion } from './uom.usecase/create-conversion'
+import { createUom } from './uom.usecase/create-uom'
+import { deleteConversion } from './uom.usecase/delete-conversion'
+import { deleteUom } from './uom.usecase/delete-uom'
+import { findConversionList } from './uom.usecase/find-conversion-list'
+import { findUomList } from './uom.usecase/find-uom-list'
+import { updateConversion } from './uom.usecase/update-conversion'
+import { updateUom } from './uom.usecase/update-uom'
 
 export interface UomUsecaseDeps {
   repo: IUomRepo
@@ -10,45 +17,15 @@ export function createUomUsecase(repo: IUomRepo): IUomUsecase {
   const deps: UomUsecaseDeps = { repo }
 
   return {
-    createUom: (req) => deps.repo.createUom(req),
-
-    findUomList: (req) => deps.repo.findUomList(req),
-
-    updateUom: async (req) => {
-      const item = await deps.repo.updateUom(req)
-      if (!item) throw new AppError(ErrorCode.NOT_FOUND, 'Unit of measurement not found')
-      return item
-    },
-
-    deleteUom: async (id) => {
-      const conversionCount = await deps.repo.countConversionsForUom(id)
-      if (conversionCount > 0) {
-        throw new AppError(
-          ErrorCode.CONFLICT,
-          `Cannot delete: still used by ${conversionCount} unit conversion(s)`,
-        )
-      }
-      await deps.repo.deleteUom(id)
-    },
-
-    createConversion: async (req) => {
-      if (req.fromUnitId === req.toUnitId) {
-        throw new AppError(
-          ErrorCode.VALIDATION_ERROR,
-          'from_unit_id and to_unit_id must be different',
-        )
-      }
-      return deps.repo.createConversion(req)
-    },
-
-    findConversionList: (req) => deps.repo.findConversionList(req),
-
-    updateConversion: async (req) => {
-      const item = await deps.repo.updateConversion(req)
-      if (!item) throw new AppError(ErrorCode.NOT_FOUND, 'Unit conversion not found')
-      return item
-    },
-
-    deleteConversion: (id) => deps.repo.deleteConversion(id),
+    createUom: (req) => createUom(deps, req),
+    findUomList: (req) => findUomList(deps, req),
+    updateUom: (req) => updateUom(deps, req),
+    deleteUom: (id) => deleteUom(deps, id),
+    createConversion: (req) => createConversion(deps, req),
+    findConversionList: (req) => findConversionList(deps, req),
+    updateConversion: (req) => updateConversion(deps, req),
+    deleteConversion: (id) => deleteConversion(deps, id),
   }
 }
+
+export default createUomUsecase

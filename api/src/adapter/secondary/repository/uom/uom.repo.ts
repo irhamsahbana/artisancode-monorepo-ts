@@ -1,9 +1,21 @@
-import { and, asc, eq, ilike, isNull, or, sql } from 'drizzle-orm'
-
-import { getExecutor } from '@/common/executor'
 import { IUomRepo } from '@/contracts/uom.contract'
 import { uoms, unitConversions } from '@/db/schema'
 import * as Entity from '@/entities/uom.entity'
+
+import { countConversionsForUom } from './uom.repo/count-conversions-for-uom'
+import { createConversion } from './uom.repo/create-conversion'
+import { createUom } from './uom.repo/create-uom'
+import { deleteConversion } from './uom.repo/delete-conversion'
+import { deleteUom } from './uom.repo/delete-uom'
+import { findConversionList } from './uom.repo/find-conversion-list'
+import { findUomList } from './uom.repo/find-uom-list'
+import { updateConversion } from './uom.repo/update-conversion'
+import { updateUom } from './uom.repo/update-uom'
+
+export interface UomRepoDeps {
+  uomToEntity: (data: typeof uoms.$inferSelect) => Entity.UnitOfMeasurement
+  conversionToEntity: (data: typeof unitConversions.$inferSelect) => Entity.UnitConversion
+}
 
 function uomToEntity(data: typeof uoms.$inferSelect): Entity.UnitOfMeasurement {
   return {
@@ -29,141 +41,19 @@ function conversionToEntity(data: typeof unitConversions.$inferSelect): Entity.U
 }
 
 export function createUomRepo(): IUomRepo {
+  const deps: UomRepoDeps = { uomToEntity, conversionToEntity }
+
   return {
-    createUom: async (req) => {
-      const [row] = await getExecutor()
-        .insert(uoms)
-        .values({ name: req.name, symbol: req.symbol, category: req.category })
-        .returning()
-      return uomToEntity(row)
-    },
-
-    findUomList: async (req) => {
-      const { pagination = {}, q, category, isActive } = req
-      const { page = 1, per_page = 100 } = pagination
-      const offset = (page - 1) * per_page
-
-      const conditions = [isNull(uoms.deletedAt)]
-      if (q) conditions.push(ilike(uoms.name, `%${q}%`))
-      if (category) conditions.push(eq(uoms.category, category))
-      if (isActive !== undefined) conditions.push(eq(uoms.isActive, isActive))
-      const where = and(...conditions)
-
-      const exec = getExecutor()
-      const [items, countResult] = await Promise.all([
-        exec
-          .select()
-          .from(uoms)
-          .where(where)
-          .orderBy(asc(uoms.name))
-          .limit(per_page)
-          .offset(offset),
-        exec
-          .select({ count: sql<number>`count(*)::int` })
-          .from(uoms)
-          .where(where),
-      ])
-
-      const total = countResult[0]?.count ?? 0
-      return {
-        items: items.map(uomToEntity),
-        pagination: { total, page, per_page, last_page: Math.ceil(total / per_page) },
-      }
-    },
-
-    updateUom: async (req) => {
-      const updates: Partial<typeof uoms.$inferInsert> = { updatedAt: new Date() }
-      if (req.name !== undefined) updates.name = req.name
-      if (req.symbol !== undefined) updates.symbol = req.symbol
-      if (req.category !== undefined) updates.category = req.category
-      if (req.isActive !== undefined) updates.isActive = req.isActive
-
-      const [row] = await getExecutor()
-        .update(uoms)
-        .set(updates)
-        .where(and(eq(uoms.id, req.id), isNull(uoms.deletedAt)))
-        .returning()
-      return row ? uomToEntity(row) : null
-    },
-
-    countConversionsForUom: async (uomId) => {
-      const [result] = await getExecutor()
-        .select({ count: sql<number>`count(*)::int` })
-        .from(unitConversions)
-        .where(
-          and(
-            or(eq(unitConversions.fromUnitId, uomId), eq(unitConversions.toUnitId, uomId)),
-            isNull(unitConversions.deletedAt),
-          ),
-        )
-      return result?.count ?? 0
-    },
-
-    deleteUom: async (id) => {
-      await getExecutor()
-        .update(uoms)
-        .set({ deletedAt: sql`now()` as unknown as Date })
-        .where(and(eq(uoms.id, id), isNull(uoms.deletedAt)))
-    },
-
-    createConversion: async (req) => {
-      const [row] = await getExecutor()
-        .insert(unitConversions)
-        .values({
-          fromUnitId: req.fromUnitId,
-          toUnitId: req.toUnitId,
-          factor: String(req.factor),
-        })
-        .returning()
-      return conversionToEntity(row)
-    },
-
-    findConversionList: async (req) => {
-      const { pagination = {} } = req
-      const { page = 1, per_page = 100 } = pagination
-      const offset = (page - 1) * per_page
-      const exec = getExecutor()
-
-      const [items, countResult] = await Promise.all([
-        exec
-          .select()
-          .from(unitConversions)
-          .where(isNull(unitConversions.deletedAt))
-          .orderBy(asc(unitConversions.createdAt))
-          .limit(per_page)
-          .offset(offset),
-        exec
-          .select({ count: sql<number>`count(*)::int` })
-          .from(unitConversions)
-          .where(isNull(unitConversions.deletedAt)),
-      ])
-
-      const total = countResult[0]?.count ?? 0
-      return {
-        items: items.map(conversionToEntity),
-        pagination: { total, page, per_page, last_page: Math.ceil(total / per_page) },
-      }
-    },
-
-    updateConversion: async (req) => {
-      const updates: Partial<typeof unitConversions.$inferInsert> = { updatedAt: new Date() }
-      if (req.fromUnitId !== undefined) updates.fromUnitId = req.fromUnitId
-      if (req.toUnitId !== undefined) updates.toUnitId = req.toUnitId
-      if (req.factor !== undefined) updates.factor = String(req.factor)
-
-      const [row] = await getExecutor()
-        .update(unitConversions)
-        .set(updates)
-        .where(and(eq(unitConversions.id, req.id), isNull(unitConversions.deletedAt)))
-        .returning()
-      return row ? conversionToEntity(row) : null
-    },
-
-    deleteConversion: async (id) => {
-      await getExecutor()
-        .update(unitConversions)
-        .set({ deletedAt: sql`now()` as unknown as Date })
-        .where(and(eq(unitConversions.id, id), isNull(unitConversions.deletedAt)))
-    },
+    createUom: (req) => createUom(deps, req),
+    findUomList: (req) => findUomList(deps, req),
+    updateUom: (req) => updateUom(deps, req),
+    countConversionsForUom: (uomId) => countConversionsForUom(uomId),
+    deleteUom: (id) => deleteUom(id),
+    createConversion: (req) => createConversion(deps, req),
+    findConversionList: (req) => findConversionList(deps, req),
+    updateConversion: (req) => updateConversion(deps, req),
+    deleteConversion: (id) => deleteConversion(id),
   }
 }
+
+export default createUomRepo
