@@ -4,7 +4,6 @@ export type { LoginReq, LoginRes, User, UpdateAccountReq } from './auth'
 export type {
   BusinessProfile,
   UpdateBusinessProfileReq,
-  BusinessBranding,
 } from './business-profile'
 export type {
   Contact,

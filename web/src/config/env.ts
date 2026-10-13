@@ -13,13 +13,9 @@ export const env = {
     process.env.BUN_PUBLIC_API_URL ||
     (typeof window !== "undefined"
       ? window.location.origin
-      : "http://localhost:4321"),
+      : "https://api-crm-wika.artisanco.de"),
   // Server-side only (never sent to the browser) — this process calling the
-  // api container directly over the Docker network, not the browser-facing
-  // BUN_PUBLIC_API_URL.
-  INTERNAL_API_URL: process.env.INTERNAL_API_URL ?? "http://localhost:4321",
-  // Shared volume written by the api container's icon upload — read-only
-  // here, same path as api's BRANDING_STORAGE_DIR.
-  BRANDING_STORAGE_DIR:
-    process.env.BRANDING_STORAGE_DIR ?? "./storage/branding",
+  // api container directly or over the network.
+  INTERNAL_API_URL:
+    process.env.INTERNAL_API_URL ?? "https://api-crm-wika.artisanco.de",
 };

@@ -3,7 +3,6 @@ import {
   IBusinessProfileUsecase,
 } from '@/contracts/business_profile.contract'
 
-import { getBusinessProfileBranding } from './business_profile.usecase/branding'
 import { findBusinessProfile } from './business_profile.usecase/find'
 import { updateBusinessProfile } from './business_profile.usecase/update'
 
@@ -17,7 +16,6 @@ export function createBusinessProfileUsecase(repo: IBusinessProfileRepo): IBusin
   return {
     find: () => findBusinessProfile(deps),
     update: (req) => updateBusinessProfile(deps, req),
-    branding: () => getBusinessProfileBranding(deps),
   }
 }
 

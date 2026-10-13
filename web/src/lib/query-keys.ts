@@ -89,6 +89,5 @@ export const queryKeys = {
   },
   businessProfile: {
     all: ["business-profile"] as const,
-    branding: () => ["business-profile", "branding"] as const,
   },
 } as const;

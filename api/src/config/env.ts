@@ -102,7 +102,4 @@ export const env = {
     PUBLIC_BASE_URL: process.env.S3_PUBLIC_BASE_URL || '',
   },
   API_BASE_URL: process.env.API_BASE_URL || 'http://localhost:3000/api',
-  // Shared volume read by both api (writes) and web (serves /favicon) so the
-  // uploaded browser-tab icon survives container restarts.
-  BRANDING_STORAGE_DIR: process.env.BRANDING_STORAGE_DIR || './storage/branding',
 }

@@ -17,9 +17,7 @@ export const businessProfiles = pgTable('business_profiles', {
   // confirmation, broadcasts, birthday greetings) when multiple devices are
   // connected. Null until an admin picks one in Settings > Koneksi WhatsApp.
   whatsappDeviceId: text('whatsapp_device_id'),
-  // Filename of the uploaded browser-tab icon (e.g. "icon.png"), stored on
-  // the shared `branding` volume read by both api and web. Null = use the
-  // bundled default icon instead.
+  // Legacy column kept for schema backwards-compatibility.
   iconFilename: text('icon_filename'),
   ...timestamps,
   ...softDelete,

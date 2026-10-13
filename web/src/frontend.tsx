@@ -6,7 +6,6 @@ import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { createBrowserRouter, RouterProvider, Navigate } from "react-router";
 
-import { BrandingSync } from "@/components/branding-sync";
 import { GuestRoute } from "@/components/guest-route";
 import { AppLayout } from "@/components/layout/app-layout";
 import { ProtectedRoute } from "@/components/protected-route";
@@ -132,7 +131,6 @@ const app = (
         enableSystem={false}
         disableTransitionOnChange
       >
-        <BrandingSync />
         <RouterProvider router={router} />
         <Toaster />
       </ThemeProvider>

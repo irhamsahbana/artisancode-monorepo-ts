@@ -7,9 +7,4 @@ export interface BusinessProfile {
   address?: string
   iconFilename?: string | null
 }
-
 export type UpdateBusinessProfileReq = Partial<BusinessProfile>
-
-export interface BusinessBranding {
-  name: string
-}

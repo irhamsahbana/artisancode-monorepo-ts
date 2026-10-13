@@ -21,6 +21,3 @@ export interface UpdateBusinessProfileReq {
   iconFilename?: string | null
 }
 
-export interface BusinessBranding {
-  name: string
-}
