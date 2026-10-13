@@ -18,7 +18,9 @@ COPY packages ./packages
 COPY web ./web
 
 WORKDIR /app/web
-RUN bunx tailwindcss -i src/index.css -o src/tailwind-out.css --minify
+ARG BUN_PUBLIC_API_URL
+ENV BUN_PUBLIC_API_URL=$BUN_PUBLIC_API_URL
+RUN bun run build
 
 ENV NODE_ENV=production
 EXPOSE 3000

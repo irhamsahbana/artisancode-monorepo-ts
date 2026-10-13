@@ -1,96 +1,78 @@
-import { serve } from "bun";
+import path from "node:path";
 
 import { env } from "@/config/env";
+import { serveFavicon, serveManifest } from "@/server/branding";
 
-import index from "./index.html";
+const DIST_DIR = path.join(import.meta.dirname, "../dist");
 
-// Extension -> content-type, checked in this order. The uploaded icon lives
-// on a volume shared with the api container (api writes it, this just reads).
-const ICON_CONTENT_TYPE: Record<string, string> = {
-  png: "image/png",
-  jpg: "image/jpeg",
-  svg: "image/svg+xml",
-  ico: "image/x-icon",
-  webp: "image/webp",
-};
-
-async function findCustomIconContentType(): Promise<string | null> {
-  for (const [ext, contentType] of Object.entries(ICON_CONTENT_TYPE)) {
-    if (await Bun.file(`${env.BRANDING_STORAGE_DIR}/icon.${ext}`).exists()) {
-      return contentType;
-    }
-  }
-  return null;
-}
-
-async function serveFavicon(): Promise<Response> {
-  for (const [ext, contentType] of Object.entries(ICON_CONTENT_TYPE)) {
-    const file = Bun.file(`${env.BRANDING_STORAGE_DIR}/icon.${ext}`);
-    if (await file.exists()) {
-      return new Response(file, { headers: { "Content-Type": contentType } });
-    }
-  }
-  return new Response(Bun.file("./src/favicon.png"), {
-    headers: { "Content-Type": "image/png" },
-  });
-}
-
-// Calls the api container directly (internal Docker network) since this runs
-// server-side, not in the browser. Public endpoint, no auth needed.
-async function fetchBrandingName(): Promise<string> {
-  try {
-    const res = await fetch(
-      `${env.INTERNAL_API_URL}/api/business-profile/branding`,
-      { signal: AbortSignal.timeout(2000) },
-    );
-    if (!res.ok) return "CRM App";
-    const body = (await res.json()) as { data?: { name?: string } };
-    return body.data?.name || "CRM App";
-  } catch {
-    return "CRM App";
-  }
-}
-
-async function serveManifest(): Promise<Response> {
-  const [name, iconContentType] = await Promise.all([
-    fetchBrandingName(),
-    findCustomIconContentType(),
-  ]);
-
-  return Response.json({
-    name,
-    short_name: name,
-    start_url: "/",
-    display: "standalone",
-    background_color: "#ffffff",
-    theme_color: "#141414",
-    icons: [
-      {
-        src: "/favicon",
-        sizes: "any",
-        type: iconContentType ?? "image/png",
-        purpose: "any",
-      },
-    ],
-  });
-}
-
-const server = serve({
+const server = Bun.serve({
   port: env.PORT,
   routes: {
     "/manifest.json": serveManifest,
     "/service-worker.js": () =>
-      new Response(Bun.file("./src/service-worker.js")),
-    "/logo.svg": () => new Response(Bun.file("./src/logo.svg")),
+      new Response(Bun.file(`${import.meta.dirname}/service-worker.js`), {
+        headers: {
+          "Content-Type": "application/javascript",
+          "Cache-Control": "no-cache, no-store, must-revalidate",
+        },
+      }),
+    "/logo.svg": () =>
+      new Response(Bun.file(`${import.meta.dirname}/logo.svg`)),
     "/favicon": serveFavicon,
+    "/favicon.png": () =>
+      new Response(Bun.file(`${import.meta.dirname}/favicon.png`), {
+        headers: { "Content-Type": "image/png" },
+      }),
+    "/wika-beton-logo.webp": () =>
+      new Response(Bun.file(`${import.meta.dirname}/wika-beton-logo.webp`), {
+        headers: { "Content-Type": "image/webp" },
+      }),
+    "/apple-touch-icon.png": () =>
+      new Response(Bun.file(`${import.meta.dirname}/apple-touch-icon.png`), {
+        headers: { "Content-Type": "image/png" },
+      }),
     "/splash/:file": (req) =>
-      new Response(Bun.file(`./src/splash/${req.params.file}`)),
-    "/*": index,
-  },
+      new Response(
+        Bun.file(`${import.meta.dirname}/splash/${req.params.file}`),
+      ),
 
-  development: !env.IS_PRODUCTION && {
-    hmr: true,
-    console: true,
+    // Proxy API requests to backend internal service so same-origin /api/* calls work
+    "/api/*": async (req) => {
+      const url = new URL(req.url);
+      const targetUrl = new URL(
+        url.pathname + url.search,
+        env.INTERNAL_API_URL,
+      );
+      const headers = new Headers(req.headers);
+      headers.set("host", new URL(env.INTERNAL_API_URL).host);
+      return fetch(targetUrl.toString(), {
+        method: req.method,
+        headers,
+        body:
+          req.method === "GET" || req.method === "HEAD" ? undefined : req.body,
+        // @ts-expect-error Bun supports duplex streaming for request bodies
+        duplex: "half",
+      });
+    },
+
+    // Vite build output (hashed assets + index.html), with SPA fallback for
+    // client-side routes that don't correspond to a real file in dist.
+    "/*": async (req) => {
+      const url = new URL(req.url);
+      const requested = url.pathname === "/" ? "/index.html" : url.pathname;
+      const file = Bun.file(path.join(DIST_DIR, requested));
+      if (await file.exists()) {
+        const isHtml = requested.endsWith(".html");
+        return new Response(file, {
+          headers: isHtml
+            ? { "Cache-Control": "no-cache, no-store, must-revalidate" }
+            : { "Cache-Control": "public, max-age=31536000, immutable" },
+        });
+      }
+      return new Response(Bun.file(path.join(DIST_DIR, "index.html")), {
+        headers: { "Cache-Control": "no-cache, no-store, must-revalidate" },
+      });
+    },
   },
 });
 
