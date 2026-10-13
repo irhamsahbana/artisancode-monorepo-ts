@@ -10,7 +10,7 @@ import { createWhatsAppLoginHandler } from '../whatsapp_login.handler'
 describe('WhatsAppLoginHandler - request', () => {
   const mockRes: Entity.RequestWhatsAppLoginRes = {
     requestId: 'req-1',
-    confirmMessage: 'LOGIN 1234ABCD',
+    confirmMessage: 'LOGIN 1234ABCD. Kirim pesan ini tanpa mengubah isinya.',
     businessWhatsapp: '6281234567890',
   }
 
@@ -31,7 +31,7 @@ describe('WhatsAppLoginHandler - request', () => {
     const json = await res.json()
     expect(json.success).toBe(true)
     expect(json.data.request_id).toBe('req-1')
-    expect(json.data.confirm_message).toBe('LOGIN 1234ABCD')
+    expect(json.data.confirm_message).toBe('LOGIN 1234ABCD. Kirim pesan ini tanpa mengubah isinya.')
     expect(mockUsecase.request).toHaveBeenCalledWith({ phone: '6281234567890' })
   })
 })

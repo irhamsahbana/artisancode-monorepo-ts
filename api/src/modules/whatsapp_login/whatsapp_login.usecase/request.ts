@@ -3,7 +3,7 @@ import { AppError, ErrorCode } from '@artisancode/types'
 import * as Entity from '@/entities/whatsapp_login.entity'
 import { getWhatsAppProvider } from '@/integrations/whatsapp'
 
-import { generateConfirmToken, jidToPhone, REQUEST_TTL_MS, WA_LOGIN_KEYWORD } from './helpers'
+import { formatConfirmMessage, generateConfirmToken, jidToPhone, REQUEST_TTL_MS } from './helpers'
 
 import type { WhatsAppLoginUsecaseDeps } from '../whatsapp_login.usecase'
 
@@ -37,7 +37,7 @@ export async function requestWhatsAppLogin(
 
   return {
     requestId: row.id,
-    confirmMessage: `${WA_LOGIN_KEYWORD} ${confirmToken}`,
+    confirmMessage: formatConfirmMessage(confirmToken),
     businessWhatsapp: jidToPhone(primary.jid),
   }
 }

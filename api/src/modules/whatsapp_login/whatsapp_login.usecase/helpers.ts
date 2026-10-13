@@ -6,6 +6,10 @@ export function generateConfirmToken(): string {
   return crypto.randomUUID().replace(/-/g, '').slice(0, 8).toUpperCase()
 }
 
+export function formatConfirmMessage(token: string): string {
+  return `${WA_LOGIN_KEYWORD} ${token}. Kirim pesan ini tanpa mengubah isinya.`
+}
+
 /** "6281234567890@s.whatsapp.net" (or "...:1@s.whatsapp.net") -> "6281234567890" */
 export function jidToPhone(jid: string): string {
   return jid.split('@')[0]?.split(':')[0] ?? ''
