@@ -4,6 +4,10 @@ import * as React from "react";
 
 import { cn } from "@/lib/utils";
 
+// Swipe-down-to-close distance, in px, past which releasing the drag handle
+// dismisses the sheet instead of snapping back.
+const DISMISS_THRESHOLD = 80;
+
 function Sheet({ ...props }: React.ComponentProps<typeof SheetPrimitive.Root>) {
   return <SheetPrimitive.Root data-slot="sheet" {...props} />;
 }
@@ -52,10 +56,49 @@ function SheetContent({
   side?: "top" | "right" | "bottom" | "left";
   showCloseButton?: boolean;
 }) {
+  const contentRef = React.useRef<HTMLDivElement>(null);
+  const closeRef = React.useRef<HTMLButtonElement>(null);
+  const dragStartY = React.useRef<number | null>(null);
+
+  function handleDragStart(e: React.PointerEvent) {
+    dragStartY.current = e.clientY;
+    e.currentTarget.setPointerCapture(e.pointerId);
+  }
+
+  function handleDragMove(e: React.PointerEvent) {
+    if (dragStartY.current === null || !contentRef.current) return;
+    const delta = Math.max(0, e.clientY - dragStartY.current);
+    contentRef.current.style.transform = `translateY(${delta}px)`;
+  }
+
+  function handleDragEnd(e: React.PointerEvent) {
+    if (dragStartY.current === null || !contentRef.current) return;
+    const delta = Math.max(0, e.clientY - dragStartY.current);
+    dragStartY.current = null;
+    const el = contentRef.current;
+    el.style.transition = "transform 0.2s ease-out";
+
+    if (delta > DISMISS_THRESHOLD) {
+      el.style.transform = "translateY(100%)";
+      const onEnd = (ev: TransitionEvent) => {
+        if (ev.propertyName !== "transform") return;
+        el.removeEventListener("transitionend", onEnd);
+        closeRef.current?.click();
+      };
+      el.addEventListener("transitionend", onEnd);
+    } else {
+      el.style.transform = "";
+      setTimeout(() => {
+        el.style.transition = "";
+      }, 200);
+    }
+  }
+
   return (
     <SheetPortal>
       <SheetOverlay />
       <SheetPrimitive.Content
+        ref={contentRef}
         data-slot="sheet-content"
         className={cn(
           "fixed z-50 flex flex-col gap-4 bg-background shadow-lg transition ease-in-out data-[state=closed]:animate-out data-[state=closed]:duration-300 data-[state=open]:animate-in data-[state=open]:duration-500",
@@ -71,9 +114,23 @@ function SheetContent({
         )}
         {...props}
       >
+        {side === "bottom" && (
+          <div
+            role="presentation"
+            onPointerDown={handleDragStart}
+            onPointerMove={handleDragMove}
+            onPointerUp={handleDragEnd}
+            className="mx-auto -mb-2 h-6 w-full shrink-0 cursor-grab touch-none active:cursor-grabbing flex items-center justify-center"
+          >
+            <div className="h-1.5 w-12 rounded-full bg-muted-foreground/30" />
+          </div>
+        )}
         {children}
         {showCloseButton && (
-          <SheetPrimitive.Close className="absolute top-4 right-4 rounded-xs opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:ring-2 focus:ring-ring focus:ring-offset-2 focus:outline-hidden disabled:pointer-events-none data-[state=open]:bg-secondary">
+          <SheetPrimitive.Close
+            ref={closeRef}
+            className="absolute top-4 right-4 rounded-xs opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:ring-2 focus:ring-ring focus:ring-offset-2 focus:outline-hidden disabled:pointer-events-none data-[state=open]:bg-secondary"
+          >
             <XIcon className="size-4" />
             <span className="sr-only">Close</span>
           </SheetPrimitive.Close>

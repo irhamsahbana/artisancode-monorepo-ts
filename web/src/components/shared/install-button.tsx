@@ -1,13 +1,13 @@
 import { Download, Plus, Share, SquarePlus } from "lucide-react";
 import { useEffect, useState } from "react";
 
-import { Button } from "@/components/ui/button";
 import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
+  ResponsiveDialog,
+  ResponsiveDialogContent,
+  ResponsiveDialogHeader,
+  ResponsiveDialogTitle,
+} from "@/components/shared/responsive-dialog";
+import { Button } from "@/components/ui/button";
 
 interface BeforeInstallPromptEvent extends Event {
   prompt: () => Promise<void>;
@@ -64,11 +64,13 @@ export function InstallButton() {
           Download Aplikasi
         </Button>
 
-        <Dialog open={showIOSGuide} onOpenChange={setShowIOSGuide}>
-          <DialogContent className="sm:max-w-sm">
-            <DialogHeader>
-              <DialogTitle>Simpan ke Layar Utama</DialogTitle>
-            </DialogHeader>
+        <ResponsiveDialog open={showIOSGuide} onOpenChange={setShowIOSGuide}>
+          <ResponsiveDialogContent className="sm:max-w-sm">
+            <ResponsiveDialogHeader>
+              <ResponsiveDialogTitle>
+                Simpan ke Layar Utama
+              </ResponsiveDialogTitle>
+            </ResponsiveDialogHeader>
 
             <ol className="grid gap-3 py-2 text-sm">
               <li className="flex items-center gap-3 rounded-md border p-3">
@@ -101,8 +103,8 @@ export function InstallButton() {
                 </span>
               </li>
             </ol>
-          </DialogContent>
-        </Dialog>
+          </ResponsiveDialogContent>
+        </ResponsiveDialog>
       </>
     );
   }
