@@ -30,8 +30,8 @@ async function serveFavicon(): Promise<Response> {
       return new Response(file, { headers: { "Content-Type": contentType } });
     }
   }
-  return new Response(Bun.file("./src/logo.svg"), {
-    headers: { "Content-Type": "image/svg+xml" },
+  return new Response(Bun.file("./src/favicon.png"), {
+    headers: { "Content-Type": "image/png" },
   });
 }
 
@@ -68,7 +68,7 @@ async function serveManifest(): Promise<Response> {
       {
         src: "/favicon",
         sizes: "any",
-        type: iconContentType ?? "image/svg+xml",
+        type: iconContentType ?? "image/png",
         purpose: "any",
       },
     ],
