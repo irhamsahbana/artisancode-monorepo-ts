@@ -15,10 +15,23 @@ import {
   useWhatsappLogout,
   useWhatsappReconnect,
 } from "@/hooks/use-whatsapp";
+import { formatPhone } from "@/lib/utils";
 
 import { WhatsappQrDialog } from "./qr-dialog";
 
 import type { WhatsappDevice } from "@artisancode/api-types";
+
+function formatWhatsappJid(jid?: string | null): string {
+  if (!jid) return "Belum terhubung";
+  const rawNumber = jid.split("@")[0]?.split(":")[0] ?? "";
+  if (!rawNumber) return jid;
+
+  if (rawNumber.startsWith("62")) {
+    const formatted = formatPhone(rawNumber);
+    return formatted ? `+62 ${formatted}` : rawNumber;
+  }
+  return `+${rawNumber}`;
+}
 
 function errorMessage(error: unknown, fallback: string) {
   if (error instanceof AppError && (error.httpCode ?? 0) < 500) {
@@ -81,28 +94,37 @@ function DeviceCard({
   }
 
   return (
-    <Card>
-      <CardContent className="grid gap-3 pt-6">
-        <div className="flex items-start justify-between gap-2">
-          <div className="min-w-0">
-            <p className="truncate text-sm font-medium">
-              {device.jid || "Belum terhubung"}
+    <Card className="min-w-0 overflow-hidden">
+      <CardContent className="flex flex-col gap-4 p-5 min-w-0">
+        <div className="flex items-start justify-between gap-3 min-w-0">
+          <div className="min-w-0 flex-1">
+            <p className="truncate text-base font-semibold leading-snug">
+              {formatWhatsappJid(device.jid)}
             </p>
-            <p className="truncate text-xs text-muted-foreground">
-              {device.id}
+            <p className="truncate text-xs text-muted-foreground font-mono mt-0.5">
+              ID: {device.id}
             </p>
           </div>
-          {device.isPrimary && <Badge className="shrink-0">Utama</Badge>}
+          {device.isPrimary && (
+            <Badge
+              variant="outline"
+              className="shrink-0 bg-primary/10 text-primary border-primary/20"
+            >
+              Utama
+            </Badge>
+          )}
         </div>
 
-        <Badge
-          variant={device.isLoggedIn ? "default" : "secondary"}
-          className="w-fit"
-        >
-          {device.isLoggedIn ? "Terhubung" : "Belum Terhubung"}
-        </Badge>
+        <div>
+          <Badge
+            variant={device.isLoggedIn ? "default" : "secondary"}
+            className="w-fit"
+          >
+            {device.isLoggedIn ? "Terhubung" : "Belum Terhubung"}
+          </Badge>
+        </div>
 
-        <div className="flex flex-wrap gap-2">
+        <div className="flex flex-wrap items-center gap-2 pt-3 border-t">
           {!device.isLoggedIn && (
             <Button size="sm" onClick={() => onConnect(device.id)}>
               Hubungkan
@@ -216,7 +238,7 @@ export function WhatsappConnection() {
       {isLoading ? (
         <p className="text-sm text-muted-foreground">Memuat device...</p>
       ) : visibleDevices && visibleDevices.length > 0 ? (
-        <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {visibleDevices.map((device) => (
             <DeviceCard
               key={device.id}
