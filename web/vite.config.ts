@@ -26,7 +26,7 @@ export default defineConfig(({ mode }) => {
         env.BUN_PUBLIC_API_URL ?? "",
       ),
     },
-    server: { port: parseInt(env.PORT || "9191"), host: true },
+    server: { port: parseInt(env.PORT || "9192"), host: true },
     build: {
       outDir: "../dist",
       emptyOutDir: true,

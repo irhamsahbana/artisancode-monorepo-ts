@@ -8,7 +8,7 @@ export const env = {
   // from the real one. Defaults to "production" so an unset var never adds
   // an unwanted suffix to an already-live deployment.
   APP_ENV: process.env.APP_ENV ?? "production",
-  PORT: parseInt(process.env.PORT ?? "9191"),
+  PORT: parseInt(process.env.PORT ?? "9192"),
   API_BASE_URL:
     process.env.BUN_PUBLIC_API_URL ||
     (typeof window !== "undefined"
