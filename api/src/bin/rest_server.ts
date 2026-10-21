@@ -46,6 +46,9 @@ class RESTServer {
     this.server = Bun.serve({
       fetch: app.fetch,
       port: env.REST.PORT,
+      // Bun's default is 10s, which cuts long requests such as Excel imports
+      // (one DB round trip per row); 255s is the maximum Bun allows.
+      idleTimeout: 255,
     })
   }
 
