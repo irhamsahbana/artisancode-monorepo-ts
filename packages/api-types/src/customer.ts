@@ -4,7 +4,7 @@ export type CustomerStatus = 'prospect' | 'active' | 'inactive'
 export type CustomerPotential = 'high' | 'medium' | 'low'
 // BUMN / swasta nasional / swasta asing (client taxonomy) — replaces the
 // generic UMKM/Korporat/Enterprise segmentation master values.
-export type CompanyType = 'bumn' | 'swasta_nasional' | 'swasta_asing'
+export type CompanyType = 'bumn' | 'swasta_nasional' | 'swasta_asing' | 'perorangan'
 
 export interface Customer {
   id: string
@@ -14,11 +14,14 @@ export interface Customer {
   companyType?: CompanyType
   status: CustomerStatus
   potential: CustomerPotential
-  primaryContactId?: string
   address?: string
   npwp?: string
   skt?: string
   companyEmail?: string
+  phone?: string
+  fax?: string
+  phoneCountryCode?: string
+  faxCountryCode?: string
   website?: string
   notes?: string
   createdAt: string
@@ -36,6 +39,10 @@ export interface CreateCustomerReq {
   npwp?: string
   skt?: string
   companyEmail?: string
+  phone?: string
+  fax?: string
+  phoneCountryCode?: string
+  faxCountryCode?: string
   website?: string
   notes?: string
 }
@@ -51,6 +58,10 @@ export interface UpdateCustomerReq {
   npwp?: string
   skt?: string
   companyEmail?: string
+  phone?: string
+  fax?: string
+  phoneCountryCode?: string
+  faxCountryCode?: string
   website?: string
   notes?: string
 }
@@ -83,6 +94,10 @@ export interface CustomerImportRow {
   potential?: CustomerPotential
   address?: string
   companyEmail?: string
+  phone?: string
+  fax?: string
+  phoneCountryCode?: string
+  faxCountryCode?: string
   website?: string
   npwp?: string
   skt?: string
@@ -97,7 +112,9 @@ export interface KeyPersonImportRow {
   customerName: string
   name: string
   position?: string
-  whatsapp: string
+  whatsapp?: string
+  landline?: string
+  landlineCountryCode?: string
   countryCode?: string
   email?: string
   gender?: 'male' | 'female'
