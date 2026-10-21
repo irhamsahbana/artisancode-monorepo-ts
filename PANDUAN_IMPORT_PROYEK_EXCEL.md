@@ -66,7 +66,7 @@ Template Excel resmi terdiri dari **3 Lembar Kerja (Sheet)**:
 | **Status** | Opsional | `Sedang Proses` | Pilihan: `Prospek` *(prospect)*, `Sedang Proses` *(in_progress)*, `Berhasil` *(won)*, `Gagal` *(lost)*. Default: *Prospek*. |
 | **Lokasi** | Opsional | `Jakarta Selatan` | Kota / lokasi proyek konstruksi. |
 | **Sumber Dana** | Opsional | `APBN` / `Swasta` | Asal pembiayaan proyek. |
-| **Nama PIC Internal** | Opsional | `Irham` / `Amri` | Sales / PIC dari internal PT Wika. |
+| **Nama PIC Internal** | Opsional | `Irham` / `Fahri` | Sales / PIC dari internal PT Wika. |
 | **No. SPK** | Opsional | `SPK-WIKA-089` | Nomor Surat Perintah Kerja jika sudah ada. |
 | **Catatan** | Opsional | `Prioritas follow up Q4` | Catatan tambahan untuk tim penawaran/sales. |
 
