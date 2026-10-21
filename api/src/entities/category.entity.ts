@@ -34,6 +34,8 @@ export interface GetCategoryReq {
   id?: string
   q?: string
   group?: string
+  status?: CategoryStatus
+  sort?: 'name'
   pagination?: PaginationQuery
 }
 

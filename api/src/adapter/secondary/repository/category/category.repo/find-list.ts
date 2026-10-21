@@ -1,4 +1,4 @@
-import { eq, and, ilike, isNull, sql } from 'drizzle-orm'
+import { asc, eq, and, ilike, isNull, sql } from 'drizzle-orm'
 
 import { getExecutor } from '@/common/executor'
 import { categories } from '@/db/schema'
@@ -10,7 +10,7 @@ export async function findCategoryList(
   deps: CategoryRepoDeps,
   req: Entity.GetCategoryReq,
 ): Promise<Entity.CategoryList> {
-  const { pagination = {}, q, group } = req
+  const { pagination = {}, q, group, status, sort } = req
   const { page = 1, per_page = 10 } = pagination
   const offset = (page - 1) * per_page
 
@@ -24,6 +24,10 @@ export async function findCategoryList(
     conditions.push(eq(categories.group, group))
   }
 
+  if (status) {
+    conditions.push(eq(categories.status, status))
+  }
+
   const where = and(...conditions)
 
   const exec = getExecutor()
@@ -32,7 +36,7 @@ export async function findCategoryList(
       .select()
       .from(categories)
       .where(where)
-      .orderBy(sql`${categories.createdAt} desc`)
+      .orderBy(sort === 'name' ? asc(categories.name) : sql`${categories.createdAt} desc`)
       .limit(per_page)
       .offset(offset),
     exec

@@ -8,16 +8,20 @@ import * as Entity from '@/entities/category.entity'
 export function findCategoryListHandler(usecase: ICategoryUsecase) {
   return async (c: Context<AppEnv>) => {
     const query = c.get('body')?._query || c.req.query()
-    const { page, limit, q, group } = query as {
+    const { page, limit, q, group, status, sort } = query as {
       page: number
       limit: number
       q: string
       group: string
+      status?: Entity.CategoryStatus
+      sort?: 'name'
     }
 
     const payload: Entity.GetCategoryReq = {
       q,
       group,
+      status,
+      sort,
       pagination: {
         page: Number(page) || 1,
         per_page: Number(limit) || 10,
