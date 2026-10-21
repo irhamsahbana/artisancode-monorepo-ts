@@ -2,7 +2,7 @@ import { IContactRepo } from '@/contracts/contact.contract'
 import { contacts } from '@/db/schema'
 import * as Entity from '@/entities/contact.entity'
 
-import { createContact } from './contact.repo/create'
+import { createContact, createContacts } from './contact.repo/create'
 import { deleteContact } from './contact.repo/delete'
 import { findContactById } from './contact.repo/find-by-id'
 import { findContactList } from './contact.repo/find-list'
@@ -22,6 +22,8 @@ function toEntity(data: typeof contacts.$inferSelect): Entity.Contact {
     whatsapp: data.whatsapp,
     countryCode: data.countryCode,
     email: data.email,
+    landline: data.landline,
+    landlineCountryCode: data.landlineCountryCode,
     gender: data.gender,
     birthPlace: data.birthPlace,
     dateOfBirth: data.dateOfBirth,
@@ -46,6 +48,7 @@ export function createContactRepo(): IContactRepo {
 
   return {
     create: (req) => createContact(deps, req),
+    createMany: (reqs) => createContacts(deps, reqs),
     findById: (id) => findContactById(deps, id),
     findList: (req) => findContactList(deps, req),
     search: (q) => searchContacts(q),

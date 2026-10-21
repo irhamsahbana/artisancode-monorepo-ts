@@ -16,6 +16,8 @@ describe('ContactHandler - create', () => {
     whatsapp: '08123456789',
     countryCode: '62',
     email: 'budi@wika.com',
+    landline: null,
+    landlineCountryCode: '62',
     gender: 'male',
     birthPlace: null,
     dateOfBirth: null,

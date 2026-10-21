@@ -3,11 +3,11 @@ import { PaginationMetadata, PaginationQuery } from './pagination.entity'
 export type CustomerStatus = 'prospect' | 'active' | 'inactive'
 export type CustomerPotential = 'high' | 'medium' | 'low'
 // BUMN / swasta nasional / swasta asing (client taxonomy)
-export type CompanyType = 'bumn' | 'swasta_nasional' | 'swasta_asing'
+export type CompanyType = 'bumn' | 'swasta_nasional' | 'swasta_asing' | 'perorangan'
 
 export const CustomerStatuses: CustomerStatus[] = ['prospect', 'active', 'inactive']
 export const CustomerPotentials: CustomerPotential[] = ['high', 'medium', 'low']
-export const CompanyTypes: CompanyType[] = ['bumn', 'swasta_nasional', 'swasta_asing']
+export const CompanyTypes: CompanyType[] = ['bumn', 'swasta_nasional', 'swasta_asing', 'perorangan']
 
 export interface Customer {
   id: string
@@ -20,12 +20,15 @@ export interface Customer {
   hasContractHistory: boolean
   lastRevenue: string | null
   lastContractYear: number | null
-  primaryContactId: string | null
   companyType: CompanyType | null
   address: string | null
   npwp: string | null
   skt: string | null
   companyEmail: string | null
+  phone: string | null
+  fax: string | null
+  phoneCountryCode: string
+  faxCountryCode: string
   website: string | null
   notes: string | null
   createdAt: Date
@@ -48,6 +51,10 @@ export interface CreateCustomerReq {
   npwp?: string
   skt?: string
   companyEmail?: string
+  phone?: string
+  fax?: string
+  phoneCountryCode?: string
+  faxCountryCode?: string
   website?: string
   notes?: string
 }
@@ -64,12 +71,15 @@ export interface UpdateCustomerReq {
   hasContractHistory?: boolean
   lastRevenue?: number
   lastContractYear?: number
-  primaryContactId?: string
   companyType?: CompanyType
   address?: string
   npwp?: string
   skt?: string
   companyEmail?: string
+  phone?: string
+  fax?: string
+  phoneCountryCode?: string
+  faxCountryCode?: string
   website?: string
   notes?: string
 }
@@ -104,6 +114,10 @@ export interface CustomerImportRow {
   potential?: CustomerPotential
   address?: string
   companyEmail?: string
+  phone?: string
+  fax?: string
+  phoneCountryCode?: string
+  faxCountryCode?: string
   website?: string
   npwp?: string
   skt?: string
@@ -118,7 +132,9 @@ export interface KeyPersonImportRow {
   customerName: string
   name: string
   position?: string
-  whatsapp: string
+  whatsapp?: string
+  landline?: string
+  landlineCountryCode?: string
   countryCode?: string
   email?: string
   gender?: 'male' | 'female'

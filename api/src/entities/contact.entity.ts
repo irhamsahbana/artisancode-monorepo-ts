@@ -11,6 +11,8 @@ export interface Contact {
   whatsapp: string | null
   countryCode: string
   email: string | null
+  landline: string | null
+  landlineCountryCode: string
   gender: Gender | null
   birthPlace: string | null
   dateOfBirth: string | null
@@ -36,6 +38,8 @@ export interface CreateContactReq {
   whatsapp?: string
   country_code?: string
   email?: string
+  landline?: string
+  landline_country_code?: string
   gender?: Gender
   birthPlace?: string
   dateOfBirth?: string
@@ -59,6 +63,8 @@ export interface UpdateContactReq {
   whatsapp?: string
   country_code?: string
   email?: string
+  landline?: string
+  landline_country_code?: string
   gender?: Gender
   birthPlace?: string
   dateOfBirth?: string

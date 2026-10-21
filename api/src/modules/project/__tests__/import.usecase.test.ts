@@ -24,12 +24,15 @@ describe('Project Import Usecases', () => {
     hasContractHistory: true,
     lastRevenue: '1000000',
     lastContractYear: 2024,
-    primaryContactId: null,
     companyType: 'bumn' as const,
     address: 'Jakarta',
     npwp: null,
     skt: null,
     companyEmail: null,
+    phone: null,
+    fax: null,
+    phoneCountryCode: '62',
+    faxCountryCode: '62',
     website: null,
     notes: null,
     createdAt: new Date(),
@@ -137,6 +140,7 @@ describe('Project Import Usecases', () => {
     update: mock(async () => ({}) as any),
     delete: mock(async () => {}),
     findCustomersByNames: mock(async () => [existingCustomer]),
+    createMany: mock(async () => []),
   }
 
   const mockContactRepo: IContactRepo = {
@@ -150,6 +154,7 @@ describe('Project Import Usecases', () => {
     })),
     update: mock(async () => null),
     delete: mock(async () => {}),
+    createMany: mock(async () => []),
   }
 
   const mockProductUsecase: IProductUsecase = {

@@ -4,7 +4,12 @@ export const statusEnum = pgEnum('status', ['active', 'inactive'])
 
 // Customers are always businesses — personal/individual data lives on
 // contacts (key persons) instead.
-export const companyTypeEnum = pgEnum('company_type', ['bumn', 'swasta_nasional', 'swasta_asing'])
+export const companyTypeEnum = pgEnum('company_type', [
+  'bumn',
+  'swasta_nasional',
+  'swasta_asing',
+  'perorangan',
+])
 
 export const customerStatusEnum = pgEnum('customer_status', ['prospect', 'active', 'inactive'])
 

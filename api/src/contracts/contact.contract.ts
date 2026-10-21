@@ -2,6 +2,8 @@ import * as Entity from '@/entities/contact.entity'
 
 export interface IContactRepo {
   create(req: Entity.CreateContactReq): Promise<Entity.Contact>
+  /** Batch insert; resolves with the created contacts in the same order as `reqs`. */
+  createMany(reqs: Entity.CreateContactReq[]): Promise<Entity.Contact[]>
   findById(id: string): Promise<Entity.Contact | null>
   findList(req: Entity.GetContactReq): Promise<Entity.ContactList>
   search(q?: string): Promise<Entity.ContactSearchResult[]>
@@ -12,6 +14,7 @@ export interface IContactRepo {
 
 export interface IContactUsecase {
   create(req: Entity.CreateContactReq): Promise<Entity.Contact>
+  createMany(reqs: Entity.CreateContactReq[]): Promise<Entity.Contact[]>
   findById(id: string): Promise<Entity.Contact | null>
   findList(req: Entity.GetContactReq): Promise<Entity.ContactList>
   search(q?: string): Promise<Entity.ContactSearchResult[]>

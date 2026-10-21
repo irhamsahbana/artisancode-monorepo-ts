@@ -17,13 +17,15 @@ export const createCustomerSchema = z.object({
   npwp: z.string().optional(),
   skt: z.string().optional(),
   company_email: z.email().optional(),
+  phone: z.string().optional(),
+  fax: z.string().optional(),
+  phone_country_code: z.string().optional(),
+  fax_country_code: z.string().optional(),
   website: z.string().optional(),
   notes: z.string().optional(),
 })
 
-export const updateCustomerSchema = createCustomerSchema.partial().extend({
-  primary_contact_id: z.uuid().optional(),
-})
+export const updateCustomerSchema = createCustomerSchema.partial()
 
 export const getCustomerListSchema = z.object({
   page: z.coerce.number().int().min(1).optional(),

@@ -1,5 +1,5 @@
 {
-  "id": "1de2a981-3727-41d5-814e-cd845f22f5d6",
+  "id": "f1d6755a-63bc-4b30-8fbb-9f42c578d593",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -634,38 +634,18 @@
           "primaryKey": false,
           "notNull": false
         },
-        "notes": {
-          "name": "notes",
+        "landline": {
+          "name": "landline",
           "type": "text",
           "primaryKey": false,
           "notNull": false
         },
-        "is_primary": {
-          "name": "is_primary",
-          "type": "boolean",
+        "landline_country_code": {
+          "name": "landline_country_code",
+          "type": "text",
           "primaryKey": false,
           "notNull": true,
-          "default": false
-        },
-        "created_at": {
-          "name": "created_at",
-          "type": "timestamp with time zone",
-          "primaryKey": false,
-          "notNull": true,
-          "default": "now()"
-        },
-        "updated_at": {
-          "name": "updated_at",
-          "type": "timestamp with time zone",
-          "primaryKey": false,
-          "notNull": true,
-          "default": "now()"
-        },
-        "deleted_at": {
-          "name": "deleted_at",
-          "type": "timestamp with time zone",
-          "primaryKey": false,
-          "notNull": false
+          "default": "'62'"
         },
         "gender": {
           "name": "gender",
@@ -731,6 +711,39 @@
         "profiling": {
           "name": "profiling",
           "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "notes": {
+          "name": "notes",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "is_primary": {
+          "name": "is_primary",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "deleted_at": {
+          "name": "deleted_at",
+          "type": "timestamp with time zone",
           "primaryKey": false,
           "notNull": false
         }
@@ -990,14 +1003,65 @@
           "primaryKey": false,
           "notNull": false
         },
-        "primary_contact_id": {
-          "name": "primary_contact_id",
-          "type": "uuid",
+        "company_type": {
+          "name": "company_type",
+          "type": "company_type",
+          "typeSchema": "public",
           "primaryKey": false,
           "notNull": false
         },
         "address": {
           "name": "address",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "npwp": {
+          "name": "npwp",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "skt": {
+          "name": "skt",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "company_email": {
+          "name": "company_email",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "phone": {
+          "name": "phone",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "phone_country_code": {
+          "name": "phone_country_code",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'62'"
+        },
+        "fax": {
+          "name": "fax",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "fax_country_code": {
+          "name": "fax_country_code",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'62'"
+        },
+        "website": {
+          "name": "website",
           "type": "text",
           "primaryKey": false,
           "notNull": false
@@ -1025,37 +1089,6 @@
         "deleted_at": {
           "name": "deleted_at",
           "type": "timestamp with time zone",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "company_type": {
-          "name": "company_type",
-          "type": "company_type",
-          "typeSchema": "public",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "npwp": {
-          "name": "npwp",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "skt": {
-          "name": "skt",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "company_email": {
-          "name": "company_email",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "website": {
-          "name": "website",
-          "type": "text",
           "primaryKey": false,
           "notNull": false
         }
@@ -2420,6 +2453,16 @@
         "failed"
       ]
     },
+    "public.company_type": {
+      "name": "company_type",
+      "schema": "public",
+      "values": [
+        "bumn",
+        "swasta_nasional",
+        "swasta_asing",
+        "perorangan"
+      ]
+    },
     "public.customer_potential": {
       "name": "customer_potential",
       "schema": "public",
@@ -2493,15 +2536,6 @@
         "time",
         "quantity",
         "other"
-      ]
-    },
-    "public.company_type": {
-      "name": "company_type",
-      "schema": "public",
-      "values": [
-        "bumn",
-        "swasta_nasional",
-        "swasta_asing"
       ]
     }
   },

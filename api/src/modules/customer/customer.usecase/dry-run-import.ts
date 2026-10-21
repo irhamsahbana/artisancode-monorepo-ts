@@ -1,4 +1,4 @@
-import { normalizePhoneDigits } from '@artisancode/phone'
+import { COUNTRY_CODES, DEFAULT_COUNTRY_CODE, normalizePhoneDigits } from '@artisancode/phone'
 import ExcelJS from 'exceljs'
 
 import type {
@@ -62,6 +62,30 @@ function getCellNumber(cell?: ExcelJS.Cell): number | undefined {
 function getCellBoolean(cell?: ExcelJS.Cell): boolean {
   const str = getCellString(cell).toLowerCase()
   return str === 'ya' || str === 'yes' || str === 'true' || str === '1' || str === 'y'
+}
+
+const COUNTRY_CODE_OPTIONS = COUNTRY_CODES.map((c) => c.code)
+
+// Blank = Indonesia (+62). Accepts "62" or "+62"; undefined = code not in the supported list.
+function parseCountryCode(raw: string): string | undefined {
+  const digits = raw.replace(/\D/g, '')
+  if (!digits) return DEFAULT_COUNTRY_CODE
+  return COUNTRY_CODE_OPTIONS.includes(digits) ? digits : undefined
+}
+
+function countryCodeError(
+  sheet: 'Customer' | 'Key Person',
+  row: number,
+  field: string,
+  value: string,
+): ImportError {
+  return {
+    sheet,
+    row,
+    field,
+    message: `Kode negara "${value}" tidak dikenal. Pilihan: ${COUNTRY_CODE_OPTIONS.join(', ')}`,
+    value,
+  }
 }
 
 function normalizeHeader(str: string): string {
@@ -162,6 +186,12 @@ export async function dryRunImport(
         custHeaderMap.set('lastContractYear', colNumber)
       } else if (norm.includes('pendapatan') || norm.includes('revenue')) {
         custHeaderMap.set('lastRevenue', colNumber)
+      } else if (norm.includes('kodenegara')) {
+        custHeaderMap.set(norm.includes('fax') ? 'faxCountryCode' : 'phoneCountryCode', colNumber)
+      } else if (norm.includes('telepon') || norm.includes('telp') || norm === 'phone') {
+        custHeaderMap.set('phone', colNumber)
+      } else if (norm.includes('fax') || norm.includes('faks')) {
+        custHeaderMap.set('fax', colNumber)
       } else if (norm.includes('alamat')) {
         custHeaderMap.set('address', colNumber)
       } else if (norm.includes('email')) {
@@ -267,7 +297,9 @@ export async function dryRunImport(
       let companyType: CompanyType | undefined
       if (rawCompanyType) {
         const ct = rawCompanyType.toLowerCase()
-        if (ct.includes('bumn')) companyType = 'bumn'
+        if (ct.includes('perorangan') || ct.includes('pribadi') || ct.includes('individu'))
+          companyType = 'perorangan'
+        else if (ct.includes('bumn')) companyType = 'bumn'
         else if (ct.includes('asing')) companyType = 'swasta_asing'
         else if (ct.includes('swasta') || ct.includes('nasional')) companyType = 'swasta_nasional'
       }
@@ -294,10 +326,27 @@ export async function dryRunImport(
       const lastRevenue = getCellNumber(getCustCell(row, 'lastRevenue', 10))
       const address = getCellString(getCustCell(row, 'address', 11)) || undefined
       const companyEmail = getCellString(getCustCell(row, 'companyEmail', 12)) || undefined
-      const website = getCellString(getCustCell(row, 'website', 13)) || undefined
-      const npwp = getCellString(getCustCell(row, 'npwp', 14)) || undefined
-      const skt = getCellString(getCustCell(row, 'skt', 15)) || undefined
-      const notes = getCellString(getCustCell(row, 'notes', 16)) || undefined
+      // phone/fax are stored as local digits (no trunk 0) + their own country code
+      const rawPhoneCc = getCellString(getCustCell(row, 'phoneCountryCode', 14))
+      const rawFaxCc = getCellString(getCustCell(row, 'faxCountryCode', 16))
+      const phoneCc = parseCountryCode(rawPhoneCc)
+      const faxCc = parseCountryCode(rawFaxCc)
+      if (phoneCc === undefined) {
+        errors.push(countryCodeError('Customer', rowNumber, 'Kode Negara Telepon', rawPhoneCc))
+        hasRowError = true
+      }
+      if (faxCc === undefined) {
+        errors.push(countryCodeError('Customer', rowNumber, 'Kode Negara Fax', rawFaxCc))
+        hasRowError = true
+      }
+      const phone =
+        normalizePhoneDigits(getCellString(getCustCell(row, 'phone', 13)), phoneCc) || undefined
+      const fax =
+        normalizePhoneDigits(getCellString(getCustCell(row, 'fax', 15)), faxCc) || undefined
+      const website = getCellString(getCustCell(row, 'website', 17)) || undefined
+      const npwp = getCellString(getCustCell(row, 'npwp', 18)) || undefined
+      const skt = getCellString(getCustCell(row, 'skt', 19)) || undefined
+      const notes = getCellString(getCustCell(row, 'notes', 20)) || undefined
 
       if (!hasRowError && rawName) {
         previewCustomers.push({
@@ -317,6 +366,10 @@ export async function dryRunImport(
           lastRevenue,
           address,
           companyEmail,
+          phone,
+          phoneCountryCode: phoneCc,
+          fax,
+          faxCountryCode: faxCc,
           website,
           npwp,
           skt,
@@ -356,6 +409,18 @@ export async function dryRunImport(
         contactHeaderMap.set('name', colNumber)
       } else if (norm.includes('jabatan') || norm.includes('posisi')) {
         contactHeaderMap.set('position', colNumber)
+      } else if (norm.includes('kodenegara')) {
+        contactHeaderMap.set(
+          norm.includes('whatsapp') ? 'countryCode' : 'landlineCountryCode',
+          colNumber,
+        )
+      } else if (
+        norm.includes('tetap') ||
+        norm.includes('landline') ||
+        norm.includes('pstn') ||
+        norm.includes('teleponkantor')
+      ) {
+        contactHeaderMap.set('landline', colNumber)
       } else if (
         norm.includes('wa') ||
         norm.includes('whatsapp') ||
@@ -366,7 +431,7 @@ export async function dryRunImport(
         contactHeaderMap.set('whatsapp', colNumber)
       } else if (norm.includes('email')) {
         contactHeaderMap.set('email', colNumber)
-      } else if (norm.includes('utama') || norm.includes('primary')) {
+      } else if (norm.includes('penting') || norm.includes('utama') || norm.includes('primary')) {
         contactHeaderMap.set('isPrimary', colNumber)
       } else if (norm.includes('kelamin') || norm.includes('gender')) {
         contactHeaderMap.set('gender', colNumber)
@@ -466,18 +531,35 @@ export async function dryRunImport(
       }
 
       const rawWa = getCellString(getKpCell(row, 'whatsapp', 4))
+      const rawLandline = getCellString(getKpCell(row, 'landline', 6))
+      const rawWaCc = getCellString(getKpCell(row, 'countryCode', 5))
+      const rawLandlineCc = getCellString(getKpCell(row, 'landlineCountryCode', 7))
+      const waCc = parseCountryCode(rawWaCc)
+      const landlineCc = parseCountryCode(rawLandlineCc)
+      if (waCc === undefined) {
+        errors.push(countryCodeError('Key Person', rowNumber, 'Kode Negara WhatsApp', rawWaCc))
+        hasRowError = true
+      }
+      if (landlineCc === undefined) {
+        errors.push(
+          countryCodeError('Key Person', rowNumber, 'Kode Negara Telepon Tetap', rawLandlineCc),
+        )
+        hasRowError = true
+      }
       let cleanWa = ''
-      if (!rawWa) {
+      let cleanLandline = ''
+      if (!rawWa && !rawLandline) {
         errors.push({
           sheet: 'Key Person',
           row: rowNumber,
-          field: 'Nomor WhatsApp',
-          message: 'Nomor WhatsApp wajib diisi',
+          field: 'Nomor WhatsApp / Telepon Tetap',
+          message: 'Isi minimal salah satu: Nomor WhatsApp atau Telepon Tetap',
           value: '',
         })
         hasRowError = true
-      } else {
-        cleanWa = normalizePhoneDigits(rawWa, '62')
+      }
+      if (rawWa) {
+        cleanWa = normalizePhoneDigits(rawWa, waCc)
         if (cleanWa.length < 8 || cleanWa.length > 15) {
           errors.push({
             sheet: 'Key Person',
@@ -489,8 +571,22 @@ export async function dryRunImport(
           hasRowError = true
         }
       }
+      if (rawLandline) {
+        // local digits without trunk 0 (country code is stored separately)
+        cleanLandline = normalizePhoneDigits(rawLandline, landlineCc)
+        if (cleanLandline.length < 6 || cleanLandline.length > 15) {
+          errors.push({
+            sheet: 'Key Person',
+            row: rowNumber,
+            field: 'Telepon Tetap',
+            message: `Telepon tetap tidak valid: "${rawLandline}"`,
+            value: rawLandline,
+          })
+          hasRowError = true
+        }
+      }
 
-      const email = getCellString(getKpCell(row, 'email', 5)) || undefined
+      const email = getCellString(getKpCell(row, 'email', 8)) || undefined
       if (email && (!email.includes('@') || !email.includes('.'))) {
         errors.push({
           sheet: 'Key Person',
@@ -502,7 +598,7 @@ export async function dryRunImport(
         hasRowError = true
       }
 
-      const rawGender = getCellString(getKpCell(row, 'gender', 7)).toLowerCase()
+      const rawGender = getCellString(getKpCell(row, 'gender', 10)).toLowerCase()
       let gender: 'male' | 'female' | undefined
       if (
         rawGender.includes('laki') ||
@@ -521,27 +617,29 @@ export async function dryRunImport(
       }
 
       const position = getCellString(getKpCell(row, 'position', 3)) || undefined
-      const isPrimary = getCellBoolean(getKpCell(row, 'isPrimary', 6))
-      const birthPlace = getCellString(getKpCell(row, 'birthPlace', 8)) || undefined
-      const dateOfBirth = getCellDateString(getKpCell(row, 'dateOfBirth', 9))
-      const religion = getCellString(getKpCell(row, 'religion', 10)) || undefined
-      const education = getCellString(getKpCell(row, 'education', 11)) || undefined
-      const address = getCellString(getKpCell(row, 'address', 12)) || undefined
-      const spouseName = getCellString(getKpCell(row, 'spouseName', 13)) || undefined
-      const spouseOccupation = getCellString(getKpCell(row, 'spouseOccupation', 14)) || undefined
-      const childrenNames = getCellString(getKpCell(row, 'childrenNames', 15)) || undefined
+      const isPrimary = getCellBoolean(getKpCell(row, 'isPrimary', 9))
+      const birthPlace = getCellString(getKpCell(row, 'birthPlace', 11)) || undefined
+      const dateOfBirth = getCellDateString(getKpCell(row, 'dateOfBirth', 12))
+      const religion = getCellString(getKpCell(row, 'religion', 13)) || undefined
+      const education = getCellString(getKpCell(row, 'education', 14)) || undefined
+      const address = getCellString(getKpCell(row, 'address', 15)) || undefined
+      const spouseName = getCellString(getKpCell(row, 'spouseName', 16)) || undefined
+      const spouseOccupation = getCellString(getKpCell(row, 'spouseOccupation', 17)) || undefined
+      const childrenNames = getCellString(getKpCell(row, 'childrenNames', 18)) || undefined
       const childrenOccupation =
-        getCellString(getKpCell(row, 'childrenOccupation', 16)) || undefined
-      const profiling = getCellString(getKpCell(row, 'profiling', 17)) || undefined
+        getCellString(getKpCell(row, 'childrenOccupation', 19)) || undefined
+      const profiling = getCellString(getKpCell(row, 'profiling', 20)) || undefined
 
-      if (!hasRowError && customerName && name && cleanWa) {
+      if (!hasRowError && customerName && name && (cleanWa || cleanLandline)) {
         previewKeyPersons.push({
           rowNumber,
           customerName,
           name,
           position,
-          whatsapp: cleanWa,
-          countryCode: '62',
+          whatsapp: cleanWa || undefined,
+          landline: cleanLandline || undefined,
+          countryCode: waCc,
+          landlineCountryCode: landlineCc,
           email,
           gender,
           isPrimary,

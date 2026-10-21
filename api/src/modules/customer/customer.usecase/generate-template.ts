@@ -1,3 +1,4 @@
+import { COUNTRY_CODES } from '@artisancode/phone'
 import ExcelJS from 'exceljs'
 
 import type { CustomerUsecaseDeps } from '../customer.usecase'
@@ -52,6 +53,10 @@ export async function generateTemplate(deps: CustomerUsecaseDeps): Promise<Buffe
     { header: 'Nilai Pendapatan Terakhir (Rp)', key: 'lastRevenue', width: 26 },
     { header: 'Alamat', key: 'address', width: 36 },
     { header: 'Email Perusahaan', key: 'companyEmail', width: 26 },
+    { header: 'Telepon Kantor', key: 'phone', width: 20 },
+    { header: 'Kode Negara Telepon', key: 'phoneCountryCode', width: 20 },
+    { header: 'Fax', key: 'fax', width: 20 },
+    { header: 'Kode Negara Fax', key: 'faxCountryCode', width: 18 },
     { header: 'Website', key: 'website', width: 26 },
     { header: 'NPWP', key: 'npwp', width: 24 },
     { header: 'SKT', key: 'skt', width: 20 },
@@ -80,6 +85,10 @@ export async function generateTemplate(deps: CustomerUsecaseDeps): Promise<Buffe
     lastRevenue: 2500000000,
     address: 'Jl. D.I. Panjaitan Kav. 9, Cawang, Jakarta Timur',
     companyEmail: 'kontak@wika-sejahtera.com',
+    phone: '021-8093333',
+    phoneCountryCode: '62',
+    fax: '021-8093334',
+    faxCountryCode: '62',
     website: 'https://www.wika.co.id',
     npwp: '01.234.567.8-901.000',
     skt: 'SKT-99881',
@@ -96,8 +105,11 @@ export async function generateTemplate(deps: CustomerUsecaseDeps): Promise<Buffe
     { header: 'Nama Lengkap PIC *', key: 'name', width: 26 },
     { header: 'Jabatan', key: 'position', width: 24 },
     { header: 'Nomor WhatsApp *', key: 'whatsapp', width: 20 },
+    { header: 'Kode Negara WhatsApp', key: 'whatsappCountryCode', width: 20 },
+    { header: 'Telepon Tetap *', key: 'landline', width: 20 },
+    { header: 'Kode Negara Telepon Tetap', key: 'landlineCountryCode', width: 24 },
     { header: 'Email', key: 'email', width: 26 },
-    { header: 'Kontak Utama?', key: 'isPrimary', width: 16 },
+    { header: 'Kontak Penting?', key: 'isPrimary', width: 16 },
     { header: 'Jenis Kelamin', key: 'gender', width: 16 },
     { header: 'Tempat Lahir', key: 'birthPlace', width: 18 },
     { header: 'Tanggal Lahir (YYYY-MM-DD)', key: 'dateOfBirth', width: 24 },
@@ -125,6 +137,9 @@ export async function generateTemplate(deps: CustomerUsecaseDeps): Promise<Buffe
     name: 'Ir. Budi Santoso, MT',
     position: 'General Manager Procurement',
     whatsapp: '081288992211',
+    whatsappCountryCode: '62',
+    landline: '021-8093333',
+    landlineCountryCode: '62',
     email: 'budi.santoso@wika-sejahtera.com',
     isPrimary: 'Ya',
     gender: 'Laki-laki',
@@ -171,6 +186,11 @@ export async function generateTemplate(deps: CustomerUsecaseDeps): Promise<Buffe
     value: 'Swasta Asing',
     notes: 'Pilihan tipe perusahaan',
   })
+  guideSheet.addRow({
+    group: 'Tipe Perusahaan',
+    value: 'Perorangan',
+    notes: 'Customer pribadi / bukan badan usaha',
+  })
 
   guideSheet.addRow({ group: 'Status Customer', value: 'Prospek', notes: 'Default: Prospek' })
   guideSheet.addRow({ group: 'Status Customer', value: 'Aktif', notes: 'Klien berjalan' })
@@ -194,12 +214,28 @@ export async function generateTemplate(deps: CustomerUsecaseDeps): Promise<Buffe
   guideSheet.addRow({
     group: 'Pilihan Boolean',
     value: 'Ya',
-    notes: 'Untuk Pernah Kontrak / Kontak Utama',
+    notes: 'Untuk Pernah Kontrak / Kontak Penting (boleh lebih dari satu per perusahaan)',
   })
   guideSheet.addRow({
     group: 'Pilihan Boolean',
     value: 'Tidak',
-    notes: 'Untuk Pernah Kontrak / Kontak Utama',
+    notes: 'Untuk Pernah Kontrak / Kontak Penting (boleh lebih dari satu per perusahaan)',
+  })
+
+  // Country codes accepted by the "Kode Negara ..." columns (blank = 62)
+  for (const cc of COUNTRY_CODES) {
+    guideSheet.addRow({
+      group: 'Kode Negara',
+      value: cc.code,
+      notes: `${cc.label}. Kosongkan kolom untuk Indonesia (62)`,
+    })
+  }
+
+  guideSheet.addRow({
+    group: 'Nomor Key Person',
+    value: 'WhatsApp atau Telepon Tetap',
+    notes:
+      'Isi minimal salah satu (tanda * di kedua kolom). Telepon tetap = nomor kantor/rumah dengan kode area',
   })
 
   // Database Categories

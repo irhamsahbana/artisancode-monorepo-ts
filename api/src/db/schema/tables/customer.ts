@@ -17,14 +17,16 @@ export const customers = pgTable(
     hasContractHistory: boolean('has_contract_history').notNull().default(false),
     lastRevenue: numeric('last_revenue'),
     lastContractYear: integer('last_contract_year'),
-    // primaryContactId is set after contacts are created; no strict FK to avoid circular dep
-    primaryContactId: uuid('primary_contact_id'),
     // client taxonomy — BUMN / swasta nasional / swasta asing
     companyType: companyTypeEnum('company_type'),
     address: text('address'),
     npwp: text('npwp'),
     skt: text('skt'),
     companyEmail: text('company_email'),
+    phone: text('phone'),
+    phoneCountryCode: text('phone_country_code').notNull().default('62'),
+    fax: text('fax'),
+    faxCountryCode: text('fax_country_code').notNull().default('62'),
     website: text('website'),
     notes: text('notes'),
     ...timestamps,

@@ -24,12 +24,15 @@ describe('Customer Import Usecases', () => {
       hasContractHistory: req.hasContractHistory ?? false,
       lastRevenue: req.lastRevenue != null ? String(req.lastRevenue) : null,
       lastContractYear: req.lastContractYear ?? null,
-      primaryContactId: null,
       companyType: req.companyType ?? null,
       address: req.address ?? null,
       npwp: req.npwp ?? null,
       skt: req.skt ?? null,
       companyEmail: req.companyEmail ?? null,
+      phone: req.phone ?? null,
+      fax: req.fax ?? null,
+      phoneCountryCode: req.phoneCountryCode ?? '62',
+      faxCountryCode: req.faxCountryCode ?? '62',
       website: req.website ?? null,
       notes: req.notes ?? null,
       createdAt: new Date(),
@@ -49,12 +52,15 @@ describe('Customer Import Usecases', () => {
       hasContractHistory: req.hasContractHistory ?? false,
       lastRevenue: req.lastRevenue != null ? String(req.lastRevenue) : null,
       lastContractYear: req.lastContractYear ?? null,
-      primaryContactId: req.primaryContactId ?? null,
       companyType: req.companyType ?? null,
       address: req.address ?? null,
       npwp: req.npwp ?? null,
       skt: req.skt ?? null,
       companyEmail: req.companyEmail ?? null,
+      phone: req.phone ?? null,
+      fax: req.fax ?? null,
+      phoneCountryCode: req.phoneCountryCode ?? '62',
+      faxCountryCode: req.faxCountryCode ?? '62',
       website: req.website ?? null,
       notes: req.notes ?? null,
       createdAt: new Date(),
@@ -63,6 +69,7 @@ describe('Customer Import Usecases', () => {
     })),
     delete: mock(async () => {}),
     findCustomersByNames: mock(async () => []),
+    createMany: mock(async (reqs) => Promise.all(reqs.map((r: any) => mockRepo.create(r)))),
   }
 
   const mockCategoryUsecase: ICategoryUsecase = {
@@ -135,6 +142,8 @@ describe('Customer Import Usecases', () => {
       whatsapp: req.whatsapp ?? null,
       countryCode: req.country_code ?? '62',
       email: req.email ?? null,
+      landline: req.landline ?? null,
+      landlineCountryCode: req.landline_country_code ?? '62',
       gender: req.gender ?? null,
       birthPlace: req.birthPlace ?? null,
       dateOfBirth: req.dateOfBirth ?? null,
@@ -158,6 +167,9 @@ describe('Customer Import Usecases', () => {
     searchPersons: mock(async () => ({ items: [], pagination: {} as any })),
     update: mock(async () => null),
     delete: mock(async () => {}),
+    createMany: mock(async (reqs) =>
+      Promise.all(reqs.map((r: any) => mockContactUsecase.create(r))),
+    ),
   }
 
   const deps: CustomerUsecaseDeps = {
@@ -199,6 +211,67 @@ describe('Customer Import Usecases', () => {
     expect(result.previewKeyPersons[0].name).toBe('Ir. Budi Santoso, MT')
     expect(result.previewKeyPersons[0].whatsapp).toBe('81288992211')
     expect(result.previewKeyPersons[0].countryCode).toBe('62')
+    expect(result.previewCustomers[0].phone).toBe('218093333')
+    expect(result.previewCustomers[0].fax).toBe('218093334')
+    expect(result.previewKeyPersons[0].landline).toBe('218093333')
+    expect(result.previewCustomers[0].phoneCountryCode).toBe('62')
+    expect(result.previewCustomers[0].faxCountryCode).toBe('62')
+    expect(result.previewKeyPersons[0].landlineCountryCode).toBe('62')
+  })
+
+  it('dryRunImport should read per-number country codes and reject unknown ones', async () => {
+    const workbook = new ExcelJS.Workbook()
+    await workbook.xlsx.load((await generateTemplate(deps)) as any)
+    const customers = workbook.getWorksheet('Data Customer') as ExcelJS.Worksheet
+    const keyPersons = workbook.getWorksheet('Data Key Person') as ExcelJS.Worksheet
+    const col = (sheet: ExcelJS.Worksheet, name: string) =>
+      (sheet.getRow(1).values as string[]).indexOf(name)
+
+    customers.getRow(2).getCell(col(customers, 'Kode Negara Telepon')).value = '+65'
+    customers.getRow(2).getCell(col(customers, 'Kode Negara Fax')).value = null // blank = 62
+    keyPersons.getRow(2).getCell(col(keyPersons, 'Kode Negara Telepon Tetap')).value = 60
+    const ok = await dryRunImport(deps, Buffer.from(await workbook.xlsx.writeBuffer()))
+    expect(ok.errors).toEqual([])
+    expect(ok.previewCustomers[0].phoneCountryCode).toBe('65')
+    expect(ok.previewCustomers[0].faxCountryCode).toBe('62')
+    expect(ok.previewKeyPersons[0].landlineCountryCode).toBe('60')
+
+    keyPersons.getRow(2).getCell(col(keyPersons, 'Kode Negara WhatsApp')).value = '999'
+    const bad = await dryRunImport(deps, Buffer.from(await workbook.xlsx.writeBuffer()))
+    expect(bad.validKeyPersons).toBe(0)
+    expect(bad.errors[0].field).toBe('Kode Negara WhatsApp')
+  })
+
+  it('dryRunImport should accept a key person with only Telepon Tetap and reject one with neither number', async () => {
+    const workbook = new ExcelJS.Workbook()
+    await workbook.xlsx.load((await generateTemplate(deps)) as any)
+    const sheet = workbook.getWorksheet('Data Key Person') as ExcelJS.Worksheet
+    const header = (name: string) => (sheet.getRow(1).values as string[]).indexOf(name)
+    const waCol = header('Nomor WhatsApp *')
+    const landlineCol = header('Telepon Tetap *')
+
+    sheet.getRow(2).getCell(waCol).value = null // landline only
+    const landlineOnly = await dryRunImport(deps, Buffer.from(await workbook.xlsx.writeBuffer()))
+    expect(landlineOnly.errors).toEqual([])
+    expect(landlineOnly.previewKeyPersons[0].whatsapp).toBeUndefined()
+    expect(landlineOnly.previewKeyPersons[0].landline).toBe('218093333')
+
+    sheet.getRow(2).getCell(landlineCol).value = null // neither
+    const neither = await dryRunImport(deps, Buffer.from(await workbook.xlsx.writeBuffer()))
+    expect(neither.validKeyPersons).toBe(0)
+    expect(neither.errors[0].field).toBe('Nomor WhatsApp / Telepon Tetap')
+  })
+
+  it('dryRunImport should map Tipe Perusahaan "Perorangan" to perorangan', async () => {
+    const workbook = new ExcelJS.Workbook()
+    await workbook.xlsx.load((await generateTemplate(deps)) as any)
+    const sheet = workbook.getWorksheet('Data Customer') as ExcelJS.Worksheet
+    const typeCol = (sheet.getRow(1).values as string[]).indexOf('Tipe Perusahaan')
+    sheet.getRow(2).getCell(typeCol).value = 'Perorangan'
+
+    const result = await dryRunImport(deps, Buffer.from(await workbook.xlsx.writeBuffer()))
+    expect(result.errors).toEqual([])
+    expect(result.previewCustomers[0].companyType).toBe('perorangan')
   })
 
   it('executeImport should execute batch import orchestrating customer repo and contact usecase', async () => {
@@ -207,7 +280,10 @@ describe('Customer Import Usecases', () => {
 
     expect(execResult.createdCustomers).toBe(1)
     expect(execResult.createdKeyPersons).toBe(1)
-    expect(mockRepo.create).toHaveBeenCalled()
-    expect(mockContactUsecase.create).toHaveBeenCalled()
+    // batch path: one createMany per entity type; "Kontak Penting?" lands on the contact itself
+    expect(mockRepo.createMany).toHaveBeenCalledTimes(1)
+    expect(mockContactUsecase.createMany).toHaveBeenCalledTimes(1)
+    const contactReqs = (mockContactUsecase.createMany as ReturnType<typeof mock>).mock.calls[0][0]
+    expect(contactReqs[0].isPrimary).toBe(true)
   })
 })

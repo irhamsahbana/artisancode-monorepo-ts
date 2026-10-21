@@ -19,6 +19,9 @@ export async function updateContact(
   if (req.whatsapp !== undefined) updates.whatsapp = req.whatsapp
   if (req.country_code !== undefined) updates.countryCode = req.country_code
   if (req.email !== undefined) updates.email = req.email
+  if (req.landline !== undefined) updates.landline = req.landline
+  if (req.landline_country_code !== undefined)
+    updates.landlineCountryCode = req.landline_country_code
   if (req.gender !== undefined) updates.gender = req.gender
   if (req.birthPlace !== undefined) updates.birthPlace = req.birthPlace
   if (req.dateOfBirth !== undefined) updates.dateOfBirth = req.dateOfBirth

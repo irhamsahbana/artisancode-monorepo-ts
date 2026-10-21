@@ -1,5 +1,6 @@
 import { AppError, ErrorCode } from '@artisancode/types'
 
+import type { CreateContactReq } from '@/entities/contact.entity'
 import type {
   CustomerImportExecuteReq,
   CustomerImportExecuteResult,
@@ -38,7 +39,7 @@ export async function executeImport(
     let skippedCustomers = 0
     let createdKeyPersons = 0
 
-    const customerIdMap = new Map<string, { id: string; primaryContactId: string | null }>()
+    const customerIdMap = new Map<string, string>()
 
     // Collect all customer names mentioned in both sheets
     const allNamesSet = new Set<string>()
@@ -53,14 +54,13 @@ export async function executeImport(
     if (allNames.length > 0) {
       const existingRows = await deps.repo.findCustomersByNames(allNames)
       for (const row of existingRows) {
-        customerIdMap.set(row.name.trim().toLowerCase(), {
-          id: row.id,
-          primaryContactId: row.primaryContactId,
-        })
+        customerIdMap.set(row.name.trim().toLowerCase(), row.id)
       }
     }
 
-    // 1. Process Customers via customer repo
+    // 1. Customers: existing ones are updated one by one (upsert only), new ones are
+    // inserted in batches — one round trip per batch instead of one per row.
+    const newCustomers: typeof dryRunResult.previewCustomers = []
     for (const c of dryRunResult.previewCustomers) {
       const key = c.name.trim().toLowerCase()
       const existing = customerIdMap.get(key)
@@ -68,7 +68,7 @@ export async function executeImport(
       if (existing) {
         if (mode === 'upsert') {
           await deps.repo.update({
-            id: existing.id,
+            id: existing,
             name: c.name.trim(),
             categoryId: c.categoryId,
             segmentationId: c.segmentationId,
@@ -78,6 +78,10 @@ export async function executeImport(
             potential: c.potential,
             address: c.address,
             companyEmail: c.companyEmail,
+            phone: c.phone,
+            fax: c.fax,
+            phoneCountryCode: c.phoneCountryCode,
+            faxCountryCode: c.faxCountryCode,
             website: c.website,
             npwp: c.npwp,
             skt: c.skt,
@@ -91,7 +95,13 @@ export async function executeImport(
           skippedCustomers++
         }
       } else {
-        const created = await deps.repo.create({
+        newCustomers.push(c)
+      }
+    }
+
+    if (newCustomers.length > 0) {
+      const created = await deps.repo.createMany(
+        newCustomers.map((c) => ({
           name: c.name.trim(),
           categoryId: c.categoryId,
           segmentationId: c.segmentationId,
@@ -101,6 +111,10 @@ export async function executeImport(
           potential: c.potential ?? 'medium',
           address: c.address,
           companyEmail: c.companyEmail,
+          phone: c.phone,
+          fax: c.fax,
+          phoneCountryCode: c.phoneCountryCode,
+          faxCountryCode: c.faxCountryCode,
           website: c.website,
           npwp: c.npwp,
           skt: c.skt,
@@ -108,26 +122,32 @@ export async function executeImport(
           lastContractYear: c.lastContractYear,
           lastRevenue: c.lastRevenue,
           notes: c.notes,
-        })
-
-        customerIdMap.set(key, { id: created.id, primaryContactId: null })
-        createdCustomers++
-      }
+        })),
+      )
+      newCustomers.forEach((c, i) => {
+        // createMany keeps input order; fail loudly rather than attach contacts to the wrong customer
+        if (created[i]?.name !== c.name.trim()) {
+          throw new AppError(ErrorCode.INTERNAL_ERROR, 'Urutan hasil import customer tidak sesuai')
+        }
+        customerIdMap.set(c.name.trim().toLowerCase(), created[i].id)
+      })
+      createdCustomers += created.length
     }
 
-    // 2. Process Key Persons via contact usecase
+    // 2. Key persons: one batch insert. "Kontak Penting?" is stored per contact
+    // (is_primary), so a customer can have several important contacts.
+    const keyPersonReqs: CreateContactReq[] = []
     for (const kp of dryRunResult.previewKeyPersons) {
-      const key = kp.customerName.trim().toLowerCase()
-      const cust = customerIdMap.get(key)
-      if (!cust) continue
+      const customerId = customerIdMap.get(kp.customerName.trim().toLowerCase())
+      if (!customerId) continue
 
-      const isPrimary = kp.isPrimary ?? false
-
-      const createdContact = await deps.contactUsecase.create({
-        customer_id: cust.id,
+      keyPersonReqs.push({
+        customer_id: customerId,
         name: kp.name.trim(),
         position: kp.position?.trim(),
-        whatsapp: kp.whatsapp.trim(),
+        whatsapp: kp.whatsapp?.trim(),
+        landline: kp.landline?.trim(),
+        landline_country_code: kp.landlineCountryCode?.trim(),
         country_code: kp.countryCode?.trim() || '62',
         email: kp.email?.trim(),
         gender: kp.gender,
@@ -142,18 +162,12 @@ export async function executeImport(
         childrenOccupation: kp.childrenOccupation?.trim(),
         profiling: kp.profiling?.trim(),
         notes: kp.notes?.trim(),
-        isPrimary,
+        isPrimary: kp.isPrimary ?? false,
       })
+    }
 
-      createdKeyPersons++
-
-      if (isPrimary || !cust.primaryContactId) {
-        await deps.repo.update({
-          id: cust.id,
-          primaryContactId: createdContact.id,
-        })
-        cust.primaryContactId = createdContact.id
-      }
+    if (keyPersonReqs.length > 0) {
+      createdKeyPersons = (await deps.contactUsecase.createMany(keyPersonReqs)).length
     }
 
     return {

@@ -24,6 +24,10 @@ export function createCustomerHandler(usecase: ICustomerUsecase) {
       npwp: body.npwp,
       skt: body.skt,
       companyEmail: body.company_email,
+      phone: body.phone,
+      fax: body.fax,
+      phoneCountryCode: body.phone_country_code,
+      faxCountryCode: body.fax_country_code,
       website: body.website,
       notes: body.notes,
     }

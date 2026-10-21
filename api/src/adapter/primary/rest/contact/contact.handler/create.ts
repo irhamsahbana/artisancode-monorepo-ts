@@ -14,6 +14,8 @@ export function createContactHandler(usecase: IContactUsecase) {
       whatsapp: body.whatsapp,
       country_code: body.country_code,
       email: body.email,
+      landline: body.landline,
+      landline_country_code: body.landline_country_code,
       gender: body.gender,
       birthPlace: body.birth_place,
       dateOfBirth: body.date_of_birth,

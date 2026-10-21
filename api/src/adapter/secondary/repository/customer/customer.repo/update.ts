@@ -23,12 +23,15 @@ export async function updateCustomer(
   if (req.hasContractHistory !== undefined) updates.hasContractHistory = req.hasContractHistory
   if (req.lastRevenue !== undefined) updates.lastRevenue = req.lastRevenue.toString()
   if (req.lastContractYear !== undefined) updates.lastContractYear = req.lastContractYear
-  if (req.primaryContactId !== undefined) updates.primaryContactId = req.primaryContactId
   if (req.companyType !== undefined) updates.companyType = req.companyType
   if (req.address !== undefined) updates.address = req.address
   if (req.npwp !== undefined) updates.npwp = req.npwp
   if (req.skt !== undefined) updates.skt = req.skt
   if (req.companyEmail !== undefined) updates.companyEmail = req.companyEmail
+  if (req.phone !== undefined) updates.phone = req.phone
+  if (req.fax !== undefined) updates.fax = req.fax
+  if (req.phoneCountryCode !== undefined) updates.phoneCountryCode = req.phoneCountryCode
+  if (req.faxCountryCode !== undefined) updates.faxCountryCode = req.faxCountryCode
   if (req.website !== undefined) updates.website = req.website
   if (req.notes !== undefined) updates.notes = req.notes
 

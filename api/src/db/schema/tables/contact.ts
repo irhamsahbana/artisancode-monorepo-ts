@@ -16,6 +16,8 @@ export const contacts = pgTable(
     whatsapp: text('whatsapp'),
     countryCode: text('country_code').notNull().default('62'),
     email: text('email'),
+    landline: text('landline'),
+    landlineCountryCode: text('landline_country_code').notNull().default('62'),
     // personal — the key person's own data, not the company's
     gender: genderEnum('gender'),
     birthPlace: text('birth_place'),
