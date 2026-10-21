@@ -388,7 +388,9 @@ export function ProjectImportDialog({
                           </Badge>
                         </td>
                         <td className="p-2">
-                          {p.estimatedValue ? formatRupiah(p.estimatedValue) : "-"}
+                          {p.estimatedValue
+                            ? formatRupiah(p.estimatedValue)
+                            : "-"}
                         </td>
                         <td className="p-2">{p.location || "-"}</td>
                       </tr>
@@ -441,8 +443,8 @@ export function ProjectImportDialog({
                           colSpan={5}
                           className="p-6 text-center text-muted-foreground"
                         >
-                          Tidak ada data kebutuhan produk (Sheet Kebutuhan Produk
-                          opsional).
+                          Tidak ada data kebutuhan produk (Sheet Kebutuhan
+                          Produk opsional).
                         </td>
                       </tr>
                     )}

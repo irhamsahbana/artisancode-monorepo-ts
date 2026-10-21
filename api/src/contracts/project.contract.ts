@@ -11,7 +11,9 @@ export interface IProjectRepo {
   findVisitsByProjectId(projectId: string): Promise<Entity.ProjectVisit[]>
   findAllVisits(): Promise<Entity.ProjectVisit[]>
   findProjectsByNumbers(numbers: string[]): Promise<Entity.Project[]>
-  findProjectsByNamesAndCustomers(items: { customerId: string; name: string }[]): Promise<Entity.Project[]>
+  findProjectsByNamesAndCustomers(
+    items: { customerId: string; name: string }[],
+  ): Promise<Entity.Project[]>
 }
 
 export interface IProjectUsecase {

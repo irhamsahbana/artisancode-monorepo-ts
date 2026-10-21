@@ -55,7 +55,9 @@ const server = Bun.serve({
           method: req.method,
           headers,
           body:
-            req.method === "GET" || req.method === "HEAD" ? undefined : req.body,
+            req.method === "GET" || req.method === "HEAD"
+              ? undefined
+              : req.body,
           // @ts-expect-error Bun supports duplex streaming for request bodies
           duplex: "half",
         });

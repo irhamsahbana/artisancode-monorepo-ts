@@ -87,12 +87,12 @@ export async function dryRunImport(
     deps.productUsecase.findList({ isActive: true, pagination: { page: 1, per_page: 2000 } }),
   ])
 
-  const customerMap = new Map<string, typeof customersResult.items[0]>()
+  const customerMap = new Map<string, (typeof customersResult.items)[0]>()
   for (const c of customersResult.items) {
     customerMap.set(c.name.toLowerCase().trim(), c)
   }
 
-  const productMap = new Map<string, typeof productsResult.items[0]>()
+  const productMap = new Map<string, (typeof productsResult.items)[0]>()
   for (const p of productsResult.items) {
     productMap.set(p.name.toLowerCase().trim(), p)
   }
@@ -184,7 +184,9 @@ export async function dryRunImport(
       const customerName = getCellString(row.getCell(colCustomerName))
       const contactName = colContactName ? getCellString(row.getCell(colContactName)) : ''
       const statusRaw = colStatus ? getCellString(row.getCell(colStatus)) : ''
-      const estimatedValue = colEstimatedValue ? getCellNumber(row.getCell(colEstimatedValue)) : undefined
+      const estimatedValue = colEstimatedValue
+        ? getCellNumber(row.getCell(colEstimatedValue))
+        : undefined
       const location = colLocation ? getCellString(row.getCell(colLocation)) : ''
       const latitude = colLatitude ? getCellNumber(row.getCell(colLatitude)) : undefined
       const longitude = colLongitude ? getCellNumber(row.getCell(colLongitude)) : undefined
@@ -192,7 +194,9 @@ export async function dryRunImport(
       const picName = colPicName ? getCellString(row.getCell(colPicName)) : ''
       const spkNumber = colSpkNumber ? getCellString(row.getCell(colSpkNumber)) : ''
       const lostReason = colLostReason ? getCellString(row.getCell(colLostReason)) : ''
-      const winnerCompetitor = colWinnerCompetitor ? getCellString(row.getCell(colWinnerCompetitor)) : ''
+      const winnerCompetitor = colWinnerCompetitor
+        ? getCellString(row.getCell(colWinnerCompetitor))
+        : ''
       const notes = colNotes ? getCellString(row.getCell(colNotes)) : ''
 
       // Validations
@@ -217,7 +221,9 @@ export async function dryRunImport(
       }
 
       // Customer Lookup
-      const matchedCustomer = customerName ? customerMap.get(customerName.toLowerCase().trim()) : undefined
+      const matchedCustomer = customerName
+        ? customerMap.get(customerName.toLowerCase().trim())
+        : undefined
       if (customerName && !matchedCustomer) {
         errors.push({
           sheet: projectSheet.name,
@@ -345,7 +351,14 @@ export async function dryRunImport(
       return undefined
     }
 
-    const colProjRef = getPCol(['namanomorproyek', 'nomornamaproyek', 'namaproyek', 'nomorproyek', 'proyek', 'ref'])
+    const colProjRef = getPCol([
+      'namanomorproyek',
+      'nomornamaproyek',
+      'namaproyek',
+      'nomorproyek',
+      'proyek',
+      'ref',
+    ])
     const colProdName = getPCol(['namaproduk', 'produk'])
     const colQuantity = getPCol(['volumejumlah', 'jumlah', 'volume', 'qty', 'kuantitas'])
     const colUnit = getPCol(['satuan', 'unit'])
@@ -383,7 +396,9 @@ export async function dryRunImport(
           isProdValid = false
         }
 
-        const matchedProduct = productName ? productMap.get(productName.toLowerCase().trim()) : undefined
+        const matchedProduct = productName
+          ? productMap.get(productName.toLowerCase().trim())
+          : undefined
         if (productName && !matchedProduct) {
           errors.push({
             sheet: productSheet.name,

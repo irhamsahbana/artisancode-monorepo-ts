@@ -63,17 +63,22 @@ export async function executeImport(
 
     const [existingByNumbers, existingByPairs] = await Promise.all([
       numbersToLookup.length > 0 ? deps.repo.findProjectsByNumbers(numbersToLookup) : [],
-      nameCustomerPairs.length > 0 ? deps.repo.findProjectsByNamesAndCustomers(nameCustomerPairs) : [],
+      nameCustomerPairs.length > 0
+        ? deps.repo.findProjectsByNamesAndCustomers(nameCustomerPairs)
+        : [],
     ])
 
-    const existingByNumberMap = new Map<string, typeof existingByNumbers[0]>()
+    const existingByNumberMap = new Map<string, (typeof existingByNumbers)[0]>()
     for (const p of existingByNumbers) {
       existingByNumberMap.set(p.projectNumber.toLowerCase().trim(), p)
     }
 
-    const existingByPairMap = new Map<string, typeof existingByPairs[0]>()
+    const existingByPairMap = new Map<string, (typeof existingByPairs)[0]>()
     for (const p of existingByPairs) {
-      existingByPairMap.set(`${p.name.toLowerCase().trim()}|${p.customerId.toLowerCase().trim()}`, p)
+      existingByPairMap.set(
+        `${p.name.toLowerCase().trim()}|${p.customerId.toLowerCase().trim()}`,
+        p,
+      )
     }
 
     // 3. Process projects
@@ -107,15 +112,25 @@ export async function executeImport(
             customerId: p.customerId,
             contactId: p.contactId || existing.contactId || undefined,
             status: p.status ?? existing.status,
-            estimatedValue: p.estimatedValue !== undefined ? p.estimatedValue : (existing.estimatedValue ?? undefined),
+            estimatedValue:
+              p.estimatedValue !== undefined
+                ? p.estimatedValue
+                : (existing.estimatedValue ?? undefined),
             location: p.location !== undefined ? p.location : (existing.location ?? undefined),
             latitude: p.latitude !== undefined ? p.latitude : (existing.latitude ?? undefined),
             longitude: p.longitude !== undefined ? p.longitude : (existing.longitude ?? undefined),
-            sourceOfFunds: p.sourceOfFunds !== undefined ? p.sourceOfFunds : (existing.sourceOfFunds ?? undefined),
+            sourceOfFunds:
+              p.sourceOfFunds !== undefined
+                ? p.sourceOfFunds
+                : (existing.sourceOfFunds ?? undefined),
             picName: p.picName !== undefined ? p.picName : (existing.picName ?? undefined),
             spkNumber: p.spkNumber !== undefined ? p.spkNumber : (existing.spkNumber ?? undefined),
-            lostReason: p.lostReason !== undefined ? p.lostReason : (existing.lostReason ?? undefined),
-            winnerCompetitor: p.winnerCompetitor !== undefined ? p.winnerCompetitor : (existing.winnerCompetitor ?? undefined),
+            lostReason:
+              p.lostReason !== undefined ? p.lostReason : (existing.lostReason ?? undefined),
+            winnerCompetitor:
+              p.winnerCompetitor !== undefined
+                ? p.winnerCompetitor
+                : (existing.winnerCompetitor ?? undefined),
             notes: p.notes !== undefined ? p.notes : (existing.notes ?? undefined),
             products: finalProducts,
           })

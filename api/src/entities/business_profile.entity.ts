@@ -20,4 +20,3 @@ export interface UpdateBusinessProfileReq {
   whatsappDeviceId?: string | null
   iconFilename?: string | null
 }
-
