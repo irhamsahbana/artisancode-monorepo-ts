@@ -3,6 +3,7 @@ import { useMemo } from "react";
 import { useSearchParams } from "react-router";
 
 import { useDebouncedValue } from "@/hooks/use-debounced-value";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 import type { PaginationMetadata } from "@artisancode/api-types";
 
@@ -30,11 +31,10 @@ interface UseServerTableOptions<T> {
 // Drives <DataTable> with real server pagination: owns page/search-debounce/
 // filter state in the URL query string ("page", "q", "<filter-key>") instead
 // of local useState, so the current view is a copy-pasteable link that reads
-// the same as the API params. Re-fetches whenever any of them change. Pages
-// 1..page are each their own react-query cache entry (fetched via
-// useQueries), which gives us both the current page (desktop) and the
-// accumulated list for mobile "load more" without a separate effect/state to
-// keep them in sync.
+// the same as the API params. Re-fetches whenever any of them change. Desktop
+// fetches only the open page; mobile fetches pages 1..page (each its own
+// react-query cache entry via useQueries) to build the accumulated "load
+// more" list without a separate effect/state to keep in sync.
 export function useServerTable<T>({
   queryKey,
   fetcher,
@@ -42,6 +42,7 @@ export function useServerTable<T>({
   filterKeys = [],
 }: UseServerTableOptions<T>) {
   const [searchParams, setSearchParams] = useSearchParams();
+  const isMobile = useIsMobile();
 
   const page = Math.max(1, Number(searchParams.get("page")) || 1);
   const queryInput = searchParams.get("q") ?? "";
@@ -92,7 +93,9 @@ export function useServerTable<T>({
   }
 
   const baseParams = { q: debouncedQuery || undefined, ...activeFilters };
-  const pageNumbers = Array.from({ length: page }, (_, i) => i + 1);
+  const pageNumbers = isMobile
+    ? Array.from({ length: page }, (_, i) => i + 1)
+    : [page];
 
   const pageQueries = useQueries({
     queries: pageNumbers.map((p) => ({
@@ -102,9 +105,14 @@ export function useServerTable<T>({
     })),
   });
 
-  const currentPageQuery = pageQueries[page - 1];
-  const pagination = currentPageQuery?.data?.pagination;
-  const totalPages = pagination?.last_page ?? 1;
+  const currentPageQuery = pageQueries[pageQueries.length - 1];
+  // ponytail: lib/api camelCases every response key, so the runtime field is
+  // lastPage even though PaginationMetadata says last_page. Fix the shared
+  // types if more snake_case fields start being read.
+  const pagination = currentPageQuery?.data?.pagination as
+    | { total: number; lastPage: number }
+    | undefined;
+  const totalPages = pagination?.lastPage ?? 1;
   const totalCount = pagination?.total ?? 0;
   const loadedItems = pageQueries.flatMap((q) => q.data?.items ?? []);
 
