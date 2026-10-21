@@ -49,6 +49,22 @@ export function InfoTab({ customer }: { customer: Customer }) {
           <Info label="NPWP" value={customer.npwp ?? "-"} />
           <Info label="SKT" value={customer.skt ?? "-"} />
           <Info label="Email Kantor" value={customer.companyEmail ?? "-"} />
+          <Info
+            label="Telepon Kantor"
+            value={
+              customer.phone
+                ? `+${customer.phoneCountryCode ?? "62"} ${customer.phone}`
+                : "-"
+            }
+          />
+          <Info
+            label="Fax"
+            value={
+              customer.fax
+                ? `+${customer.faxCountryCode ?? "62"} ${customer.fax}`
+                : "-"
+            }
+          />
           <Info label="Website" value={customer.website ?? "-"} />
           {customer.address && (
             <div className="sm:col-span-2">

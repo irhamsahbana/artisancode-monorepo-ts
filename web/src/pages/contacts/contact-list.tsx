@@ -67,7 +67,7 @@ const columns: Column<ContactPersonGroup>[] = [
   },
   {
     key: "isPrimary",
-    label: "Utama",
+    label: "Penting",
     render: (g) =>
       g.entries.some((r) => r.contact.isPrimary) ? (
         <Badge variant="secondary" className="text-[10px]">

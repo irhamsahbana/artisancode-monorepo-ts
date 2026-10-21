@@ -1,3 +1,4 @@
+import { CountryCodeSelect } from "@/components/shared/country-code-select";
 import {
   FormControl,
   FormField,
@@ -10,6 +11,54 @@ import { Textarea } from "@/components/ui/textarea";
 
 import type { FormValues } from "./schema";
 import type { Control } from "react-hook-form";
+
+// Number + its own country code (default +62), same pattern as the key person WhatsApp field
+function PhoneField({
+  control,
+  name,
+  countryName,
+  label,
+  placeholder,
+}: {
+  control: Control<FormValues>;
+  name: "phone" | "fax";
+  countryName: "phoneCountryCode" | "faxCountryCode";
+  label: string;
+  placeholder: string;
+}) {
+  return (
+    <FormField
+      control={control}
+      name={name}
+      render={({ field }) => (
+        <FormItem>
+          <FormLabel>{label}</FormLabel>
+          <div className="flex gap-2">
+            <FormField
+              control={control}
+              name={countryName}
+              render={({ field: countryField }) => (
+                <CountryCodeSelect
+                  value={countryField.value}
+                  onValueChange={countryField.onChange}
+                />
+              )}
+            />
+            <FormControl>
+              <Input
+                type="tel"
+                placeholder={placeholder}
+                className="flex-1"
+                {...field}
+              />
+            </FormControl>
+          </div>
+          <FormMessage />
+        </FormItem>
+      )}
+    />
+  );
+}
 
 export function CompanyInfoFields({
   control,
@@ -65,6 +114,22 @@ export function CompanyInfoFields({
             <FormMessage />
           </FormItem>
         )}
+      />
+
+      <PhoneField
+        control={control}
+        name="phone"
+        countryName="phoneCountryCode"
+        label="Telepon Kantor"
+        placeholder="21xxxxxxx"
+      />
+
+      <PhoneField
+        control={control}
+        name="fax"
+        countryName="faxCountryCode"
+        label="Fax"
+        placeholder="21xxxxxxx"
       />
 
       <FormField

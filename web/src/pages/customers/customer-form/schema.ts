@@ -1,3 +1,4 @@
+import { DEFAULT_COUNTRY_CODE } from "@artisancode/phone";
 import { z } from "zod";
 
 export const schema = z.object({
@@ -5,7 +6,7 @@ export const schema = z.object({
   segmentationId: z.string().min(1, "Segmentasi wajib dipilih"),
   areaId: z.string().min(1, "Area wajib dipilih"),
   companyType: z
-    .enum(["bumn", "swasta_nasional", "swasta_asing"])
+    .enum(["bumn", "swasta_nasional", "swasta_asing", "perorangan"])
     .optional()
     .or(z.literal("")),
   status: z.enum(["prospect", "active", "inactive"]),
@@ -14,6 +15,10 @@ export const schema = z.object({
   npwp: z.string().optional(),
   skt: z.string().optional(),
   companyEmail: z.email("Email tidak valid").optional().or(z.literal("")),
+  phone: z.string().optional(),
+  phoneCountryCode: z.string().min(1, "Kode negara wajib dipilih"),
+  fax: z.string().optional(),
+  faxCountryCode: z.string().min(1, "Kode negara wajib dipilih"),
   website: z.string().optional(),
   notes: z.string().optional(),
 });
@@ -31,6 +36,10 @@ export const emptyValues: FormValues = {
   npwp: "",
   skt: "",
   companyEmail: "",
+  phone: "",
+  phoneCountryCode: DEFAULT_COUNTRY_CODE,
+  fax: "",
+  faxCountryCode: DEFAULT_COUNTRY_CODE,
   website: "",
   notes: "",
 };

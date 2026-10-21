@@ -64,7 +64,7 @@ export function ContactProfile() {
             )}
             {contact.isPrimary && (
               <Badge variant="secondary" className="text-[10px]">
-                Kontak Utama
+                Kontak Penting
               </Badge>
             )}
           </div>
@@ -90,6 +90,15 @@ export function ContactProfile() {
               icon={<Phone className="h-3.5 w-3.5" />}
               label="WhatsApp"
               value={contact.whatsapp ?? "-"}
+            />
+            <Info
+              icon={<Phone className="h-3.5 w-3.5" />}
+              label="Telepon Tetap"
+              value={
+                contact.landline
+                  ? `+${contact.landlineCountryCode ?? "62"} ${contact.landline}`
+                  : "-"
+              }
             />
             <Info
               icon={<Mail className="h-3.5 w-3.5" />}

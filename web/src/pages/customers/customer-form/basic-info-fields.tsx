@@ -1,3 +1,4 @@
+import { CategorySelect } from "@/components/shared/category-select";
 import {
   FormControl,
   FormField,
@@ -20,11 +21,9 @@ import type { Control } from "react-hook-form";
 export function BasicInfoFields({
   control,
   segmentations,
-  areas,
 }: {
   control: Control<FormValues>;
   segmentations: { id: string; name: string }[];
-  areas: { id: string; name: string }[];
 }) {
   return (
     <>
@@ -75,20 +74,15 @@ export function BasicInfoFields({
         render={({ field }) => (
           <FormItem>
             <FormLabel>Area *</FormLabel>
-            <Select value={field.value} onValueChange={field.onChange}>
-              <FormControl>
-                <SelectTrigger className="w-full">
-                  <SelectValue placeholder="Pilih area" />
-                </SelectTrigger>
-              </FormControl>
-              <SelectContent>
-                {areas.map((a) => (
-                  <SelectItem key={a.id} value={a.id}>
-                    {a.name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            <FormControl>
+              <CategorySelect
+                group="area"
+                value={field.value}
+                onChange={field.onChange}
+                placeholder="Pilih area"
+                searchPlaceholder="Cari area..."
+              />
+            </FormControl>
             <FormMessage />
           </FormItem>
         )}
@@ -156,6 +150,7 @@ export function BasicInfoFields({
                 <SelectItem value="bumn">BUMN</SelectItem>
                 <SelectItem value="swasta_nasional">Swasta Nasional</SelectItem>
                 <SelectItem value="swasta_asing">Swasta Asing</SelectItem>
+                <SelectItem value="perorangan">Perorangan</SelectItem>
               </SelectContent>
             </Select>
             <FormMessage />

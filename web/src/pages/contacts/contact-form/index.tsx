@@ -52,6 +52,9 @@ export function ContactForm() {
         name: existing.name,
         position: existing.position ?? "",
         whatsapp: existing.whatsapp ?? "",
+        landline: existing.landline ?? "",
+        landlineCountryCode:
+          existing.landlineCountryCode || DEFAULT_COUNTRY_CODE,
         countryCode: existing.countryCode || DEFAULT_COUNTRY_CODE,
         email: existing.email ?? "",
         gender: existing.gender ?? "",
@@ -66,6 +69,7 @@ export function ContactForm() {
         childrenOccupation: existing.childrenOccupation ?? "",
         profiling: existing.profiling ?? "",
         notes: existing.notes ?? "",
+        isPrimary: existing.isPrimary,
       });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -76,6 +80,8 @@ export function ContactForm() {
       name: values.name,
       position: values.position || undefined,
       whatsapp: values.whatsapp ? localPhoneDigits(values.whatsapp) : undefined,
+      landline: values.landline ? localPhoneDigits(values.landline) : undefined,
+      landlineCountryCode: values.landlineCountryCode,
       countryCode: values.countryCode,
       email: values.email || undefined,
       gender: values.gender || undefined,
@@ -90,6 +96,7 @@ export function ContactForm() {
       childrenOccupation: values.childrenOccupation || undefined,
       profiling: values.profiling || undefined,
       notes: values.notes || undefined,
+      isPrimary: values.isPrimary,
     };
     try {
       if (isEdit) {

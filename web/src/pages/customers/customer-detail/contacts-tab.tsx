@@ -63,6 +63,12 @@ export function ContactsTab({
                   {con.whatsapp}
                 </span>
               )}
+              {con.landline && (
+                <span className="flex items-center gap-1">
+                  <Phone className="h-3.5 w-3.5" />+
+                  {con.landlineCountryCode ?? "62"} {con.landline}
+                </span>
+              )}
               {con.email && (
                 <span className="flex items-center gap-1">
                   <Mail className="h-3.5 w-3.5" />

@@ -5,6 +5,8 @@ export const schema = z.object({
   name: z.string().min(1, "Nama wajib diisi"),
   position: z.string().optional(),
   whatsapp: z.string().optional(),
+  landline: z.string().optional(),
+  landlineCountryCode: z.string().min(1, "Kode negara wajib dipilih"),
   countryCode: z.string().min(1, "Kode negara wajib dipilih"),
   email: z.email("Email tidak valid").optional().or(z.literal("")),
   gender: z.enum(["male", "female"]).optional().or(z.literal("")),
@@ -19,6 +21,7 @@ export const schema = z.object({
   childrenOccupation: z.string().optional(),
   profiling: z.string().optional(),
   notes: z.string().optional(),
+  isPrimary: z.boolean(),
 });
 
 export type FormValues = z.infer<typeof schema>;
@@ -27,6 +30,8 @@ export const emptyValues: FormValues = {
   name: "",
   position: "",
   whatsapp: "",
+  landline: "",
+  landlineCountryCode: DEFAULT_COUNTRY_CODE,
   countryCode: DEFAULT_COUNTRY_CODE,
   email: "",
   gender: "",
@@ -41,4 +46,5 @@ export const emptyValues: FormValues = {
   childrenOccupation: "",
   profiling: "",
   notes: "",
+  isPrimary: false,
 };

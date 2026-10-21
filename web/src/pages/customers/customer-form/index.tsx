@@ -1,3 +1,4 @@
+import { DEFAULT_COUNTRY_CODE, localPhoneDigits } from "@artisancode/phone";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ArrowLeft } from "lucide-react";
 import { useEffect } from "react";
@@ -31,7 +32,6 @@ export function CustomerForm() {
 
   const { data: existing } = useCustomer(id ?? "");
   const { data: segmentationsData } = useCategoryList("segmentation");
-  const { data: areasData } = useCategoryList("area");
   const { mutateAsync: createCustomer, isPending: creating } =
     useCreateCustomer();
   const { mutateAsync: updateCustomer, isPending: updating } =
@@ -55,6 +55,10 @@ export function CustomerForm() {
         npwp: existing.npwp ?? "",
         skt: existing.skt ?? "",
         companyEmail: existing.companyEmail ?? "",
+        phone: existing.phone ?? "",
+        phoneCountryCode: existing.phoneCountryCode || DEFAULT_COUNTRY_CODE,
+        fax: existing.fax ?? "",
+        faxCountryCode: existing.faxCountryCode || DEFAULT_COUNTRY_CODE,
         website: existing.website ?? "",
         notes: existing.notes ?? "",
       });
@@ -74,6 +78,10 @@ export function CustomerForm() {
       npwp: values.npwp || undefined,
       skt: values.skt || undefined,
       companyEmail: values.companyEmail || undefined,
+      phone: values.phone ? localPhoneDigits(values.phone) : undefined,
+      phoneCountryCode: values.phoneCountryCode,
+      fax: values.fax ? localPhoneDigits(values.fax) : undefined,
+      faxCountryCode: values.faxCountryCode,
       website: values.website || undefined,
       notes: values.notes || undefined,
     };
@@ -94,7 +102,6 @@ export function CustomerForm() {
 
   const segmentations =
     segmentationsData?.items.filter((s) => s.status === "active") ?? [];
-  const areas = areasData?.items.filter((a) => a.status === "active") ?? [];
   const isPending = creating || updating;
 
   return (
@@ -118,7 +125,6 @@ export function CustomerForm() {
               <BasicInfoFields
                 control={form.control}
                 segmentations={segmentations}
-                areas={areas}
               />
 
               <div className="sm:col-span-2">

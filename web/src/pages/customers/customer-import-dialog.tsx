@@ -406,8 +406,9 @@ export function CustomerImportDialog({
                       <th className="p-2 text-left">Nama PIC</th>
                       <th className="p-2 text-left">Jabatan</th>
                       <th className="p-2 text-left">WhatsApp</th>
+                      <th className="p-2 text-left">Telepon Tetap</th>
                       <th className="p-2 text-left">Email</th>
-                      <th className="p-2 text-left">Kontak Utama</th>
+                      <th className="p-2 text-left">Kontak Penting</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y">
@@ -419,11 +420,16 @@ export function CustomerImportDialog({
                         <td className="p-2 font-medium">{kp.customerName}</td>
                         <td className="p-2 font-medium">{kp.name}</td>
                         <td className="p-2">{kp.position || "-"}</td>
-                        <td className="p-2 font-mono">{kp.whatsapp}</td>
+                        <td className="p-2 font-mono">{kp.whatsapp || "-"}</td>
+                        <td className="p-2 font-mono">
+                          {kp.landline
+                            ? `+${kp.landlineCountryCode ?? "62"} ${kp.landline}`
+                            : "-"}
+                        </td>
                         <td className="p-2">{kp.email || "-"}</td>
                         <td className="p-2">
                           {kp.isPrimary ? (
-                            <Badge className="text-[10px] py-0">Utama</Badge>
+                            <Badge className="text-[10px] py-0">Penting</Badge>
                           ) : (
                             <span className="text-muted-foreground">-</span>
                           )}

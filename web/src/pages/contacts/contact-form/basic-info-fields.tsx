@@ -51,6 +51,25 @@ export function BasicInfoFields({ control }: { control: Control<FormValues> }) {
         )}
       />
 
+      {/* A customer can have several important contacts */}
+      <FormField
+        control={control}
+        name="isPrimary"
+        render={({ field }) => (
+          <FormItem className="flex items-center gap-2 sm:col-span-2">
+            <FormControl>
+              <input
+                type="checkbox"
+                className="h-4 w-4 accent-primary"
+                checked={field.value}
+                onChange={(e) => field.onChange(e.target.checked)}
+              />
+            </FormControl>
+            <FormLabel className="!mt-0 font-normal">Kontak penting</FormLabel>
+          </FormItem>
+        )}
+      />
+
       <FormField
         control={control}
         name="whatsapp"
@@ -71,6 +90,37 @@ export function BasicInfoFields({ control }: { control: Control<FormValues> }) {
               <FormControl>
                 <Input
                   placeholder="812xxxxxxxx"
+                  className="flex-1"
+                  {...field}
+                />
+              </FormControl>
+            </div>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
+
+      <FormField
+        control={control}
+        name="landline"
+        render={({ field }) => (
+          <FormItem>
+            <FormLabel>Telepon Tetap</FormLabel>
+            <div className="flex gap-2">
+              <FormField
+                control={control}
+                name="landlineCountryCode"
+                render={({ field: countryField }) => (
+                  <CountryCodeSelect
+                    value={countryField.value}
+                    onValueChange={countryField.onChange}
+                  />
+                )}
+              />
+              <FormControl>
+                <Input
+                  type="tel"
+                  placeholder="21xxxxxxx (kantor/rumah)"
                   className="flex-1"
                   {...field}
                 />

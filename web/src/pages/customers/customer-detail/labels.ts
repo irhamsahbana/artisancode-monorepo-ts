@@ -32,4 +32,5 @@ export const companyTypeLabel: Record<string, string> = {
   bumn: "BUMN",
   swasta_nasional: "Swasta Nasional",
   swasta_asing: "Swasta Asing",
+  perorangan: "Perorangan",
 };
