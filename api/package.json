@@ -26,6 +26,7 @@
     "drizzle:pull": "drizzle-kit pull",
     "drizzle:seed": "bun src/db/seed/index.ts",
     "test:doku": "bunx tsx scripts/test_doku.ts",
+    "convert:customers": "bun scripts/convert_customer_excel.ts",
     "lint": "eslint --ext .ts src --fix",
     "format": "prettier --write \"src/**/*.{ts,js,json}\"",
     "lint:fix": "eslint --ext .ts src --fix && prettier --write \"src/**/*.{ts,js,json}\"",
