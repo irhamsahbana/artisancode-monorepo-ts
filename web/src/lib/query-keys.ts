@@ -8,6 +8,9 @@ export const queryKeys = {
   categories: {
     all: ["categories"] as const,
     list: (group?: string) => ["categories", "list", group] as const,
+    // nested under list(group): create/update invalidations refresh pickers too
+    options: (group: string, q: string) =>
+      ["categories", "list", group, "options", q] as const,
     detail: (id: string) => ["categories", "detail", id] as const,
   },
   contacts: {

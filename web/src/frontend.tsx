@@ -1,4 +1,7 @@
-import { QueryClient } from "@tanstack/react-query";
+import {
+  defaultShouldDehydrateQuery,
+  QueryClient,
+} from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { PersistQueryClientProvider } from "@tanstack/react-query-persist-client";
 import { ThemeProvider } from "next-themes";
@@ -123,7 +126,19 @@ const app = (
   <StrictMode>
     <PersistQueryClientProvider
       client={queryClient}
-      persistOptions={{ persister, maxAge: ONE_DAY_MS }}
+      persistOptions={{
+        persister,
+        maxAge: ONE_DAY_MS,
+        // bumped to drop caches that already contain multi-page picker data
+        buster: "2",
+        dehydrateOptions: {
+          // Infinite picker lists ("options") are not persisted: restoring them
+          // makes the refetch on reload re-request every page that was loaded.
+          shouldDehydrateQuery: (query) =>
+            defaultShouldDehydrateQuery(query) &&
+            !query.queryKey.includes("options"),
+        },
+      }}
     >
       <ThemeProvider
         attribute="class"
