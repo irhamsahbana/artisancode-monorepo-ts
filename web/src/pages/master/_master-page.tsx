@@ -91,6 +91,7 @@ export function MasterPage({ title, group }: Props) {
     {
       key: "status",
       label: "Status",
+      className: "w-40",
       render: (i) => (
         <Badge
           variant={i.status === "active" ? "default" : "outline"}

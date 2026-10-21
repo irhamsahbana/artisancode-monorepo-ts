@@ -34,11 +34,17 @@ export function DataTableDesktopView<T>({
   return (
     <>
       <div className="rounded-md border">
-        <Table>
+        <Table
+          className={
+            columns.some((c) => c.className) ? "table-fixed" : undefined
+          }
+        >
           <TableHeader>
             <TableRow>
               {columns.map((c) => (
-                <TableHead key={c.key}>{c.label}</TableHead>
+                <TableHead key={c.key} className={c.className}>
+                  {c.label}
+                </TableHead>
               ))}
             </TableRow>
           </TableHeader>
@@ -61,7 +67,9 @@ export function DataTableDesktopView<T>({
               rows.map((row, i) => (
                 <TableRow key={i}>
                   {columns.map((c) => (
-                    <TableCell key={c.key}>{c.render(row)}</TableCell>
+                    <TableCell key={c.key} className={c.className}>
+                      {c.render(row)}
+                    </TableCell>
                   ))}
                 </TableRow>
               ))

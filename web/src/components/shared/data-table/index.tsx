@@ -51,8 +51,19 @@ export function DataTable<T>({
 }: Props<T>) {
   const isMobile = useIsMobile();
 
+  // Only pin the actions column when the table opted into a fixed layout
+  // (some column has a width hint); otherwise keep the auto layout untouched.
+  const fixedLayout = columns.some((c) => c.className);
   const allColumns = actions
-    ? [...columns, { key: "__actions", label: "", render: actions }]
+    ? [
+        ...columns,
+        {
+          key: "__actions",
+          label: "",
+          render: actions,
+          className: fixedLayout ? "w-16" : undefined,
+        },
+      ]
     : columns;
 
   return (
