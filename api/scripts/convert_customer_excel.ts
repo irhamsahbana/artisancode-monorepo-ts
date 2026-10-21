@@ -233,7 +233,8 @@ for (const ws of source.worksheets) {
 
     const cp = get('CONTACT_PERSON').replace(/\s+/g, ' ')
     const telp = get('TELP')
-    if (!cp) continue
+    // some rows put a phone number in CONTACT_PERSON; that's not a person (the number is already TELP)
+    if (!/\p{L}/u.test(cp)) continue
     const phone = cleanPhone(telp)
     // dryRunImport needs WhatsApp or Telepon Tetap (6..15 digits); otherwise keep contact in notes
     if (phone.length >= 6 && phone.length <= 15) {
