@@ -12,14 +12,6 @@ const MASTER_DATA = {
     { id: 'seg4', name: 'Startup', status: 'active' },
     { id: 'seg5', name: 'Freelancer', status: 'inactive' },
   ],
-  area: [
-    { id: 'area1', name: 'Jakarta Selatan', status: 'active' },
-    { id: 'area2', name: 'Jakarta Barat', status: 'active' },
-    { id: 'area3', name: 'Bandung', status: 'active' },
-    { id: 'area4', name: 'Surabaya', status: 'active' },
-    { id: 'area5', name: 'Yogyakarta', status: 'active' },
-    { id: 'area6', name: 'Medan', status: 'inactive' },
-  ],
   relation_status: [
     { id: 'rs1', name: 'Prospek', status: 'active' },
     { id: 'rs2', name: 'Aktif', status: 'active' },
@@ -36,7 +28,7 @@ const MASTER_DATA = {
 } as const
 
 // Maps the demo IDs above (e.g. "seg2") to the real UUIDs generated on insert,
-// so seedCustomers/seedBroadcasts can resolve segmentationId/areaId/audienceSegmentationId refs.
+// so seedBroadcasts can resolve audienceSegmentationId refs.
 export async function seedMasterItems() {
   const categoryIds = new Map<string, string>()
 

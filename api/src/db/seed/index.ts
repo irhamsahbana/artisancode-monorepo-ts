@@ -1,21 +1,19 @@
 /**
  * Database seeder — run with: bun src/db/seed/index.ts
  *
- * Seeds: reset → business profile → permissions → role → users → master items → uoms → unit conversions → customers → contacts → products → quotations → ratings → broadcasts
+ * Seeds: reset → business profile → permissions → role → users → master items (+ areas) → uoms → unit conversions → products → quotations → broadcasts
  * Safe to re-run: skips existing records by checking unique columns.
  *
  * Updated to use same data as frontend demo (web/src/data/*)
  */
+import { seedAreas } from './areas'
 import { seedBroadcasts } from './broadcasts'
 import { upsertBusinessProfile } from './business-profile'
 import { client } from './client'
-import { seedContacts } from './contacts'
-import { seedCustomers } from './customers'
 import { seedMasterItems } from './master-items'
 import { upsertPermissions } from './permissions'
 import { seedProducts } from './products'
 import { seedQuotations } from './quotations'
-import { seedRatings } from './ratings'
 import { resetDatabase } from './reset'
 import { upsertRole } from './roles'
 import { seedUnitConversions } from './unit-conversions'
@@ -28,43 +26,35 @@ async function main() {
   // Step 0: Truncate existing application data
   await resetDatabase()
 
-  console.log('\n[1/13] Business profile')
+  console.log('\n[1/10] Business profile')
   await upsertBusinessProfile()
 
-  console.log('\n[2/13] Permissions')
+  console.log('\n[2/10] Permissions')
   const permissionIds = await upsertPermissions()
 
-  console.log('\n[3/13] Role')
+  console.log('\n[3/10] Role')
   const role = await upsertRole(permissionIds)
 
-  console.log('\n[4/13] Users')
+  console.log('\n[4/10] Users')
   const credentials = await seedUsers(role.id)
 
-  console.log('\n[5/13] Master items')
-  const categoryIds = await seedMasterItems()
+  console.log('\n[5/10] Master items')
+  await seedMasterItems()
+  await seedAreas()
 
-  console.log('\n[6/13] Uoms')
+  console.log('\n[6/10] Uoms')
   const uomIds = await seedUoms()
 
-  console.log('\n[7/13] Unit conversions')
+  console.log('\n[7/10] Unit conversions')
   await seedUnitConversions(uomIds)
 
-  console.log('\n[8/13] Customers')
-  const customerIds = await seedCustomers(categoryIds)
-
-  console.log('\n[9/13] Contacts')
-  const contactIds = await seedContacts(customerIds)
-
-  console.log('\n[10/13] Products')
+  console.log('\n[8/10] Products')
   await seedProducts()
 
-  console.log('\n[11/13] Quotations')
+  console.log('\n[9/10] Quotations')
   await seedQuotations()
 
-  console.log('\n[12/13] Ratings')
-  await seedRatings(customerIds, contactIds)
-
-  console.log('\n[13/13] Broadcasts')
+  console.log('\n[10/10] Broadcasts')
   await seedBroadcasts()
 
   console.log('\nSeeding selesai!')

@@ -1,7 +1,7 @@
 import { client } from './client'
 
 export async function resetDatabase(): Promise<void> {
-  console.log('\n[0/13] Reset database (truncating tables)...')
+  console.log('\n[0/10] Reset database (truncating tables)...')
   await client.unsafe(`
     TRUNCATE TABLE
       whatsapp_login_requests,

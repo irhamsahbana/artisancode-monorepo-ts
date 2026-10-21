@@ -43,15 +43,15 @@ export const SEED_USERS: SeedUserConfig[] = [
     name: 'Irham',
     username: 'irham',
     email: 'irham@wika.demo',
-    rawPhone: '082188449289',
+    rawPhone: '82188449289',
     countryCode: '62',
     isProtected: true,
   },
   {
-    name: 'Amri',
-    username: 'amri',
-    email: 'amri@wika.demo',
-    rawPhone: '+62 823-2872-2713',
+    name: 'Fahri',
+    username: 'fahri',
+    email: 'fahri@wika.demo',
+    rawPhone: '85224377879',
     countryCode: '62',
     isProtected: true,
   },
@@ -77,7 +77,11 @@ export async function seedUsers(roleId: string): Promise<SeededUserCredential[]>
   }
 
   for (const userConfig of SEED_USERS) {
-    const rawPassword = generateRandomPassword(12)
+    // Fixed password via SEED_PASSWORD_<USERNAME> (e.g. SEED_PASSWORD_FAHRI) so re-seeding
+    // keeps it; falls back to a random one that is printed at the end of the seed run.
+    const rawPassword =
+      process.env[`SEED_PASSWORD_${userConfig.username.toUpperCase()}`] ||
+      generateRandomPassword(12)
     const hashedPassword = await hashPassword(rawPassword)
 
     const normalizedPhone = userConfig.rawPhone
@@ -89,6 +93,9 @@ export async function seedUsers(roleId: string): Promise<SeededUserCredential[]>
         orOp(
           eqOp(t.email, userConfig.email),
           eqOp(t.username, userConfig.username),
+          ...(userConfig.username === 'fahri'
+            ? [eqOp(t.email, 'amri@wika.demo'), eqOp(t.username, 'amri')]
+            : []),
           ...(normalizedPhone ? [eqOp(t.phone, normalizedPhone)] : []),
         ),
     })
